@@ -1,21 +1,32 @@
+
 var width = 800, height = 600;
 
 var svgContainer = d3.select('body').append('svg')
 									.attr('width', width)
 									.attr('height', height)
 									.attr('id', 'canvas');
-			
-var fieldDim = 10;			
-		
+					
 var playfieldOffsetX = 30;
 var playfieldOffsetY = 30;	
 var strokeWidth = 0.65;
 var strokeCol = 'gray';								
 //var gridlines = [];
 
-
 var dim = 10;
 var fieldSize = 20;
+
+//frame around the playfield
+svgContainer.append('rect')
+			.attr('x', playfieldOffsetX)
+			.attr('y', playfieldOffsetY)
+			.attr('width', fieldSize * dim)
+			.attr('height', fieldSize * dim)
+			.attr('fill', 'none')
+			.attr('stroke', 'black')
+			.attr('stroke-width', '2');
+
+var shrink = 6; //makes ships a bit smaller than the grid-rectangles, looks nicer
+var shipRoundRect = 10; //gives the rectangles of the shops rounded corners, 0 would be not rounded
 
 var fields = [];
 
@@ -29,18 +40,93 @@ var Field = function(row, col){
 	this.isOccupiedBy = null;
 }
 
-function actionOnFieldGroup(rowHead, colHead, orientation, size){
-	//glow while ship moves over
+var inDragging = false; // to detect the moment when dragging starts
 
-	//occupy
+function checkShipPlacement(x, y, reposition, ship){ //put==false means the ship is being dragged instead of the mouse having been released	
+	if(!inDragging){
+		removeOccupations(ship);
+		inDragging = true;
+	}
 
-	//de-occupy
+	ship.rect.attr('x', x);
+	ship.rect.attr('y', y); 
+
+	var rowHead, colHead, rowTail, colTail;
+	var fieldsUnderBoat = [];
+
+	if(ship.orientation){ // ship is horizontal
+		rowHead = Math.round((y - playfieldOffsetY) / fieldSize + 0.75);
+		colHead = Math.round((x - playfieldOffsetX) / fieldSize + 0.5);
+		rowTail = rowHead;  			
+		colTail = Math.round((x - playfieldOffsetX + ship.wHoriz) / fieldSize + 0.5);
+	} else { // ship is vertical
+		rowHead = Math.round((y - playfieldOffsetY) / fieldSize + 0.5);
+		colHead = Math.round((x - playfieldOffsetX) / fieldSize + 0.75);
+		rowTail = Math.round((y - playfieldOffsetY + ship.hVert) / fieldSize + 0.5);
+		colTail = colHead;
+	}	
+	//console.log(rowHead + '  |  ' + colHead + '  |  ' + rowTail + '  |  ' + colTail);
+
+	var isOnPlayfield = checkIsOnPlayfield(rowHead, colHead, rowTail, colTail, ship.size, ship.orientation ? colHead : rowHead);
+	if(isOnPlayfield)
+		for(var i = 0; i < ship.size; i++)
+		  	ship.orientation ? fieldsUnderBoat.push(getField(rowHead, colHead + i)) : fieldsUnderBoat.push(getField(rowHead + i, colHead));
+
+	var isOverlapping = checkIsOverlapping(fieldsUnderBoat);
+	if(!isOverlapping && isOnPlayfield){	
+		fieldGroupAction(fieldsUnderBoat, reposition, ship);
+	}
+
+	if(reposition && (!isOnPlayfield || isOverlapping)){ // snap back into the pos it was in before dragging
+		if(ship.oldOrientation != ship.orientation)
+			ship.flipOrientation();
+		if(ship.wasNeverPlaced){
+			ship.rect.attr('x', ship.startX);
+			ship.rect.attr('y', ship.startY);
+		} else
+			checkShipPlacement(ship.oldX, ship.oldY, true, ship);
+	}
+}
+
+function removeOccupations(ship){
+	if(ship.fieldsOccupied.length > 0){ // that would mean it was placed before
+		for(var i=0; i < ship.fieldsOccupied.length; i++)
+			ship.fieldsOccupied[i].isOccupiedBy = null;
+		ship.fieldsOccupied = [];
+	}
+}
+
+function checkIsOverlapping(fieldGroup){
+	var overlapDetected = false;
+	for(var i=0; i < fieldGroup.length; i++)
+		if(fieldGroup[i].isOccupiedBy != null)
+			overlapDetected = true;
+	return overlapDetected;
+}
+
+function checkIsOnPlayfield(rowHead, colHead, rowTail, colTail, shipSize, colOrRowHead){
+	return (rowHead <= dim && rowHead > 0 && colHead <= dim && colHead > 0) && (colOrRowHead + shipSize <= dim + 1);
+}
+
+function fieldGroupAction(fieldGroup, reposition, ship){
+	if(reposition){
+		ship.rect.attr('x', playfieldOffsetX + fieldSize * (fieldGroup[0].col - 1) + shrink / 2);
+		ship.rect.attr('y', playfieldOffsetY + fieldSize * (fieldGroup[0].row - 1) + shrink / 2);
+		ship.fieldsOccupied = fieldGroup;
+		for(var i=0; i < fieldGroup.length; i++){
+			fieldGroup[i].isOccupiedBy = ship; //console.log('field ' + fieldGroup[i].row + '/' + fieldGroup[i].col + '  is occubied by ' + ship);
+		}
+		inDragging = false;
+		ship.wasNeverPlaced = false;
+	} else {
+		for(var i=0; i < fieldGroup.length; i++)
+			fieldGroup[i].shipFloatsAbove(ship.color);
+	}
 }
 
 function getField(row, col){
 	return fields[(row - 1) * dim + col - 1]; //TODO verify
 }
-
 
 for(var i = 1; i <= dim; i++) // fill the fields array with 10x10=100 fields
 	for(var j = 1; j <= dim; j++)
@@ -103,111 +189,84 @@ var Ship = function(size, orientation, row, column, color){ //true is horizontal
    	this.id = ships.length;
    	ships.push(this);
    	this.size = size;
-    var shrink = 6;
-    var wHoriz = fieldSize * size - shrink;
-    var hHoriz = fieldSize - shrink;
-    var wVert = hHoriz;
-    var hVert = wHoriz;
+   	this.color = color;
+   	this.startX = playfieldOffsetX + fieldSize * (column - 1) + shrink / 2;
+   	this.startY = playfieldOffsetY + fieldSize * (row - 1) + shrink / 2;
+    this.wHoriz = fieldSize * size - shrink;
+    this.hHoriz = fieldSize - shrink;
+    this.wVert = this.hHoriz;
+    this.hVert = this.wHoriz;
     this.orientation = orientation;
+    this.oldOrientation = orientation;
     //this.fieldsDestroyed;
     //this.destroyed = false;
+    this.fieldsOccupied = [];
+    this.wasNeverPlaced = true;
     this.rect = svgContainer.append('rect')
-							.attr('x', playfieldOffsetX + fieldSize * (column - 1) + 3)
-							.attr('y', playfieldOffsetY + fieldSize * (row - 1) + 3)
-							.attr('rx', 10)
-							.attr('ry', 10)
-							.attr('width', orientation ? wHoriz : wVert)
-							.attr('height', orientation ? hHoriz : hVert)
+							.attr('x', this.startX)
+							.attr('y', this.startY)
+							.attr('rx', shipRoundRect)
+							.attr('ry', shipRoundRect)
+							.attr('width', orientation ? this.wHoriz : this.wVert)
+							.attr('height', orientation ? this.hHoriz : this.hVert)
 							.attr('fill', color)
 							.attr('opacity', 0.8)
 							.attr('id', this.id)
 							.call(drag);
-	this.firstMoveDone = false;
+	this.mouseHeadDiffX = 0;
+	this.mouseHeadDiffY = 0;
 	this.move = function(x, y){
-		if(!this.firstMoveDone){ //ensures that the old coords are only saved once at (before) the very first movement is applied
+		if(!inDragging){ //ensures that the old coords are only saved once at (before) the very first movement is applied
 			this.oldX = this.rect.attr('x');
 			this.oldY = this.rect.attr('y');
-			this.firstMoveDone = true;
+			this.oldOrientation = this.orientation;
+			this.mouseHeadDiffX = this.oldX - x;
+			this.mouseHeadDiffY = this.oldY - y;
 		}
-		this.rect.attr('x', x);
-		this.rect.attr('y', y); 
-		var rowHead, rowTail, colHead, colTail;
-		if(this.orientation){ //horiz
-			rowHead = Math.round((y - playfieldOffsetY) / fieldSize + 0.75);
-			colHead = Math.round((x - playfieldOffsetX) / fieldSize + 0.5);
-			rowTail = rowHead;  			
-			colTail = Math.round((x - playfieldOffsetX + wHoriz) / fieldSize + 0.5);
-			if(rowHead <= dim && rowHead > 0 && colHead <= dim && colHead > 0)
-			  	if(colHead + size <= dim + 1)
-			  		for(var i = 0; i < size; i++)
-			  			fields[(rowHead - 1) * dim + colHead - 1 + i].shipFloatsAbove(this.rect.attr('fill'));
-		} else {
-			rowHead = Math.round((y - playfieldOffsetY) / fieldSize + 0.5);
-			colHead = Math.round((x - playfieldOffsetX) / fieldSize + 0.75);
-			rowTail = Math.round((y - playfieldOffsetY + hVert) / fieldSize + 0.5);
-			colTail = colHead;
-			if(rowHead <= dim && rowHead > 0 && colHead <= dim && colHead > 0)	  				
-			  	if(rowHead + size <= dim + 1)
-			  		for(var i = 0; i < size; i++)
-			  			fields[(rowHead - 1) * dim + colHead - 1 + i * dim].shipFloatsAbove(this.rect.attr('fill'));
-		}
+		x = x + this.mouseHeadDiffX;
+		y = y + this.mouseHeadDiffY;
+		checkShipPlacement(x, y, false, this);
 	}
-	this.reposition = function(){
-		var x = this.rect.attr('x');
-		var y = this.rect.attr('y'); 
-		var rowHead, rowTail, colHead, colTail;
-		var isOk = false;
-		if(this.orientation){ //horiz
-			rowHead = Math.round((y - playfieldOffsetY) / fieldSize + 0.75);
-			colHead = Math.round((x - playfieldOffsetX) / fieldSize + 0.5);
-			rowTail = rowHead;  			
-			colTail = Math.round((x - playfieldOffsetX + wHoriz) / fieldSize + 0.5);
-			if(rowHead <= dim && rowHead > 0 && colHead <= dim && colHead > 0)
-				if(colHead + size <= dim + 1)
-			  		isOk = true;
-		} else {
-			rowHead = Math.round((y - playfieldOffsetY) / fieldSize + 0.5);
-			colHead = Math.round((x - playfieldOffsetX) / fieldSize + 0.75);
-			rowTail = Math.round((y - playfieldOffsetY + hVert) / fieldSize + 0.5);
-			colTail = colHead;
-			if(rowHead <= dim && rowHead > 0 && colHead <= dim && colHead > 0)	  				
-			  	if(rowHead + size <= dim + 1)
-			  		isOk = true;
-		}
-		if(isOk){
-			this.rect.attr('x', playfieldOffsetX + fieldSize * (colHead - 1) + 3);
-			this.rect.attr('y', playfieldOffsetY + fieldSize * (rowHead - 1) + 3);
-		} else {
-			this.rect.attr('x', this.oldX);
-			this.rect.attr('y', this.oldY);
-		}
-		this.firstMoveDone = false;
+	this.reposition = function(){	
+		checkShipPlacement(this.rect.attr('x'), this.rect.attr('y'), true, this);
 	}
 	this.flipOrientation = function(){
 		if(this.orientation){ //it was horizontal and goes now vertical
-			this.rect.attr('width', wVert);
-			this.rect.attr('height', hVert);
+			this.rect.attr('width', this.wVert);
+			this.rect.attr('height', this.hVert);
 		} else {
-			this.rect.attr('width', wHoriz);
-			this.rect.attr('height', hHoriz);
+			this.rect.attr('width', this.wHoriz);
+			this.rect.attr('height', this.hHoriz);
 		}
 		this.orientation = !this.orientation;
 	}
+	this.toString = function(){
+		var fieldsOccupiedStr = 'not placed yet';
+		if(this.fieldsOccupied.length > 0){
+			fieldsOccupiedStr = '';
+			for(var i=0; i < this.fieldsOccupied.length; i++)
+				fieldsOccupiedStr = fieldsOccupiedStr + '(' + this.fieldsOccupied[i].row + ',' + this.fieldsOccupied[i].col + ')';
+		}
+		return '[' + this.size + ' ' + (this.orientation ? 'horizontal' : 'vertical') + ': ' + fieldsOccupiedStr + ']';
+	}
 }
 
-var battleship = new Ship(5, true, 1, 12, randomColor());
-var cruiser1 = new Ship(4, true, 2, 12, randomColor());
-var cruiser2 = new Ship(4, true, 3, 12, randomColor());
-var destroyer1 = new Ship(3, true, 4, 12, randomColor());
-var destroyer2 = new Ship(3, true, 5, 12, randomColor());
-var destroyer3 = new Ship(3, true, 6, 12, randomColor());
-var submarine1 = new Ship(2, true, 7, 12, randomColor());
-var submarine2 = new Ship(2, true, 8, 12, randomColor());
-var submarine3 = new Ship(2, true, 9, 12, randomColor());
-var submarine4 = new Ship(2, true, 10, 12, randomColor());
+var battleshipColor = 'navy';
+var battleship = new Ship(5, true, 1, 12, battleshipColor);
+var cruiserColor = 'maroon';
+var cruiser1 = new Ship(4, true, 2, 12, cruiserColor);
+var cruiser2 = new Ship(4, true, 3, 12, cruiserColor);
+var destroyerColor = 'lime';
+var destroyer1 = new Ship(3, false, 4, 12, destroyerColor);
+var destroyer2 = new Ship(3, false, 4, 13, destroyerColor);
+var destroyer3 = new Ship(3, false, 4, 14, destroyerColor);
+var submarineColor = 'orange';
+var submarine1 = new Ship(2, true, 7, 12, submarineColor);
+var submarine2 = new Ship(2, true, 8, 12, submarineColor);
+var submarine3 = new Ship(2, true, 7, 14, submarineColor);
+var submarine4 = new Ship(2, true, 8, 14, submarineColor);
 
+/*
 function randomColor(){
 	return '#' + Math.floor(Math.random() * 16777215).toString(16);
-}
-
-//$(document).ready(function() {});
+}*/
