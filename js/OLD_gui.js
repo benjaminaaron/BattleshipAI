@@ -255,16 +255,16 @@ var battleshipColor = 'navy';
 var battleship = new Ship(5, true, 1, 12, battleshipColor);
 var cruiserColor = 'maroon';
 var cruiser1 = new Ship(4, true, 2, 12, cruiserColor);
-var cruiser2 = new Ship(4, true, 3, 12, cruiserColor);
+//var cruiser2 = new Ship(4, true, 3, 12, cruiserColor);
 var destroyerColor = 'lime';
 var destroyer1 = new Ship(3, false, 4, 12, destroyerColor);
-var destroyer2 = new Ship(3, false, 4, 13, destroyerColor);
-var destroyer3 = new Ship(3, false, 4, 14, destroyerColor);
+//var destroyer2 = new Ship(3, false, 4, 13, destroyerColor);
+//var destroyer3 = new Ship(3, false, 4, 14, destroyerColor);
 var submarineColor = 'orange';
 var submarine1 = new Ship(2, true, 7, 12, submarineColor);
 var submarine2 = new Ship(2, true, 8, 12, submarineColor);
-var submarine3 = new Ship(2, true, 7, 14, submarineColor);
-var submarine4 = new Ship(2, true, 8, 14, submarineColor);
+//var submarine3 = new Ship(2, true, 7, 14, submarineColor);
+//var submarine4 = new Ship(2, true, 8, 14, submarineColor);
 
 /*
 function randomColor(){

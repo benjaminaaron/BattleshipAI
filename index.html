@@ -1,19 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head> 
-		<meta name="author" content="stehrenberg, chanton1392, abstractCalculus, benjaminaaron">
-		<title>Battleship AI</title> 
+    <head> 
+        <meta name="author" content="stehrenberg, chanton1392, abstractCalculus, benjaminaaron">
+        <title>Battleship AI</title> 
 
-		<!-- libraries -->
-		<script type="text/javascript" src="js/lib/jquery-2.1.1.min.js"></script>
-		<script type="text/javascript" src="js/lib/d3.js" charset="utf-8"></script>
+        <!-- vendors -->
+        <script type="text/javascript" src="js/vendors/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="js/vendors/d3.min.js" charset="utf-8"></script>
 
-		<style></style> 
-	</head> 
-	<body> 
+        <style></style> 
+    </head> 
+    <body> 
 
-		<!-- code -->
-		<script type="text/javascript" src="js/gui.js"></script>
+        <!-- own code -->
+        <script type="text/javascript" src="js/player.js"></script>
+        <script type="text/javascript" src="js/game.js"></script>
+        <script type="text/javascript" src="js/board.js"></script>
+        <script type="text/javascript" src="js/field.js"></script>
+        <script type="text/javascript" src="js/ship.js"></script>
 
-	</body> 
+        <div id='gameHook'>enable javascript in your browser to play battleship</div>
+
+        <script>
+            
+            var players = [];
+            players.push(new Player('Max', 'human'));
+            players.push(new Player('Erika', 'human'));
+            
+            var shipTypes = [];
+            shipTypes.push(new ShipType(5, 'navy', 1));
+			shipTypes.push(new ShipType(4, 'maroon', 1));
+			shipTypes.push(new ShipType(3, 'lime', 1));
+			shipTypes.push(new ShipType(2, 'orange', 2));
+
+            var game = new Game(players, shipTypes);
+
+        </script>
+
+    </body> 
 </html>
