@@ -1,5 +1,4 @@
 
-
 var ShipType = function(size, color, quantity){
 	this.size = size;
 	this.color = color;
@@ -11,57 +10,79 @@ var Ship = function(board, id, size, color){
     this.id = id;
     this.size = size;
     this.color = color;
+
+    this.xOffset = board.xOffset;
+    this.yOffset = board.yOffset;
+    this.cellSizePx = board.cellSizePx;
+    this.xDim = board.xDim;
+    this.yDim = board.yDim;
+    this.rotationSwitchX = board.rotationSwitchX;
+    this.rotationSwitchY = board.rotationSwitchY;
+    this.rotationSwitchSize = board.rotationSwitchSize;
 }
 
 Ship.prototype = {
-    draw: function(svgContainer, x, y, orientation, cellSizePx, shrink, roundedCorner, dragReportingInstance){
-
+    drawInit: function(posNumb, orientation){
         this.orientation = orientation; //true is horizontal, false is vertical
-        this.wHoriz = cellSizePx * this.size - shrink;
-        this.hHoriz = cellSizePx - shrink;
+        this.wHoriz = this.cellSizePx * this.size;
+        this.hHoriz = this.cellSizePx;
         this.wVert = this.hHoriz;
         this.hVert = this.wHoriz;
-
-        var self = this;
-
-        this.img = svgContainer.append('rect')
-                    .attr('x', x)
-                    .attr('y', y)
-                    .attr('rx', roundedCorner)
-                    .attr('ry', roundedCorner)
-                    .attr('width', orientation ? this.wHoriz : this.wVert)
-                    .attr('height', orientation ? this.hHoriz : this.hVert)
-                    .attr('fill', this.color)
-                    .attr('opacity', 0.8)
-                    .attr('id', this.id)
-                    .call(d3.behavior.drag().on('dragstart', dragMonitor.dragstart)
-                    						.on('drag', dragMonitor.dragging)
-                    						.on('dragend', dragMonitor.dragend)); 
+        this.w = orientation ? this.wHoriz : this.wVert;
+        this.h = orientation ? this.hHoriz : this.hVert;
+        this.x = this.xOffset + (this.xDim * this.cellSizePx) + 15;
+        this.y = this.yOffset + posNumb * this.cellSizePx * 2; // x,y points to top left corner of rect
+        this.storeDiffAllowed = true;
+        this.nextFlipAllowed = true;
+    },
+    draw: function(ctx){
+        ctx.fillStyle = this.color;   
+        ctx.fillRect(this.x, this.y, this.w, this.h);
+    },
+    isOnMe: function(x, y){
+        return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
     },
     move: function(x, y){
+        if(this.storeDiffAllowed){
+            this.diffTo00cornerX = this.x - x;
+            this.diffTo00cornerY = this.y - y;
+            this.storeDiffAllowed = false;
+        }
+        this.x = x + this.diffTo00cornerX;
+        this.y = y + this.diffTo00cornerY;
+
+        if(this.x > this.xOffset && this.x < this.xOffset + this.xDim * this.cellSizePx - this.w && this.y > this.yOffset && this.y < this.yOffset + this.yDim * this.cellSizePx - this.h){
+            console.log('ship completely over field')
+        }  
+
+        if(this.y < this.rotationSwitchY + this.rotationSwitchSize && this.y + this.h > this.rotationSwitchY && this.x < this.rotationSwitchX + this.rotationSwitchSize && this.x + this.w > this.rotationSwitchX){
+            console.log('ship over rotation flip');
+            if(this.nextFlipAllowed){
+                this.flipOrientation();
+                this.nextFlipAllowed = false;
+            }
+        }
+    },
+    movingStopped: function(){
+        this.storeDiffAllowed = true;
+        this.nextFlipAllowed = true;
     },
     reposition: function(){
     },
     flipOrientation: function(){
+        if(this.orientation){ //it was horizontal and goes now vertical
+            this.w = this.wVert;
+            this.h = this.hVert;
+            this.x = this.x + this.wHoriz / 2 - this.wVert / 2;
+            this.y = this.y + this.hHoriz / 2 - this.hVert / 2;
+        } else {
+            this.w = this.wHoriz;
+            this.h = this.hHoriz;
+            this.x = this.x - this.wHoriz / 2 + this.wVert / 2;
+            this.y = this.y - this.hHoriz / 2 + this.hVert / 2;
+        }
+        this.orientation = !this.orientation;
+        this.storeDiffAllowed = true;
     },
     toString: function(){}
 };
-
-
-var dragMonitor = {
-    dragstart: function(){
-    	var shipID = d3.select(this).attr('id');
-    	var board = game.boards[shipID.split('-')[0]];
-    	var ship = board.ships[shipID.split('-')[1]];
-    	console.log(board);
-    	console.log(ship);
-    }, 
-    dragging: function(){
-    	var x = d3.event.x;
-	  	var y = d3.event.y;
-	  	console.log(x + '  ' + y);
-   	},
-   	dragend: function(){
-   		console.log('dragend');
-   	}
-}

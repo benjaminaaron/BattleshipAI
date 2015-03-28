@@ -1,9 +1,8 @@
 
-
 var Cell  = function(row, col){
     this.row = row;
     this.col = col;
-    this.img;
+    this.occupied = null;
 }
 
 var Field = function(totalRows, totalCols){
@@ -17,43 +16,36 @@ var Field = function(totalRows, totalCols){
 }
 
 Field.prototype = {
-    draw: function(svgContainer, cellSizePx, offsetX, offsetY){
-    	svgContainer.append('rect')
-            .attr('x', offsetX)
-            .attr('y', offsetY)
-            .attr('width', this.totalCols * cellSizePx)
-            .attr('height', this.totalRows * cellSizePx)
-            .attr('fill', 'none')
-            .attr('stroke', 'black')
-            .attr('stroke-width', '1.5');
+    draw: function(ctx, cellSizePx, startX, startY){    
 
-        for(var i = 0; i < this.cells.length; i++) // attach the rect-element to every cell
-            this.cells[i].img = svgContainer.append('rect')
-                .attr('x', offsetX + this.cells[i].col * cellSizePx)
-                .attr('y', offsetY + this.cells[i].row * cellSizePx)
-                .attr('width', cellSizePx)
-                .attr('height', cellSizePx)
-                .attr('fill', 'white')
-                .attr('stroke', 'silver')
-                .attr('stroke-width', '1')
-                .attr('id', 'cell_' + (this.cells[i].row + 1) + '-' + (this.cells[i].col + 1));
+        //border around field
+        ctx.strokeStyle = 'gray';  
+        ctx.lineWidth = 2;
+        ctx.rect(startX, startY, this.totalCols * cellSizePx, this.totalRows * cellSizePx);
+        ctx.stroke();
 
-        for(var i = 0; i < this.totalRows; i++) // row labels
-            svgContainer.append('text')
-                .attr('x', offsetX - 18)
-                .attr('y', i * cellSizePx + offsetY + 14)
-                .attr('font-family', 'arial')
-                .attr('font-size', '11px')
-                .attr('fill', 'gray')
-                .text(i + 1);
-
-        for(var i = 0; i < this.totalRows; i++) // col labels
-            svgContainer.append('text')
-                .attr('x', offsetX + i * cellSizePx + 7)
-                .attr('y', offsetY - 10)
-                .attr('font-family', 'arial')
-                .attr('font-size', '11px')
-                .attr('fill', 'gray')
-                .text(String.fromCharCode('A'.charCodeAt() + i));
+        // grid & labels
+        ctx.strokeStyle = 'silver'; 
+        ctx.lineWidth = 1;
+        ctx.fillStyle = 'gray';
+        ctx.font = '12px arial';           
+        for(var i=0; i <= this.totalRows; i++){
+            var yPos = startY + i * cellSizePx;
+            ctx.beginPath();
+            ctx.moveTo(startX, yPos);
+            ctx.lineTo(startX + this.totalCols * cellSizePx, yPos);
+            ctx.stroke();
+            if(i < this.totalRows)
+                ctx.fillText((i+1), startX + ((i+1) < 10 ? -16 : -20), yPos + 14);
+        }
+        for(var i=0; i <= this.totalCols; i++){
+            var xPos = startX + i * cellSizePx;
+            ctx.beginPath();
+            ctx.moveTo(xPos, startY);
+            ctx.lineTo(xPos, startY + this.totalRows * cellSizePx);
+            ctx.stroke();
+            if(i < this.totalCols)
+                ctx.fillText(String.fromCharCode('A'.charCodeAt() + i), xPos + 6, startY - 8);     
+        }
     }
 }

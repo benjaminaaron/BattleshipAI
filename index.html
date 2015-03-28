@@ -6,7 +6,6 @@
 
         <!-- vendors -->
         <script type="text/javascript" src="js/vendors/jquery-2.1.1.min.js"></script>
-        <script type="text/javascript" src="js/vendors/d3.min.js" charset="utf-8"></script>
 
         <style></style> 
     </head> 
@@ -19,7 +18,7 @@
         <script type="text/javascript" src="js/field.js"></script>
         <script type="text/javascript" src="js/ship.js"></script>
 
-        <div id='gameHook'>enable javascript in your browser to play battleship</div>
+        <div id='canvasHook'>enable javascript in your browser to play battleship</div>
 
         <script>
             
@@ -33,7 +32,9 @@
 			shipTypes.push(new ShipType(3, 'lime', 1));
 			shipTypes.push(new ShipType(2, 'orange', 2));
 
-            var game = new Game(players, shipTypes);
+            var boards = [];
+
+            var game = new Game(players, shipTypes, 10, 10, document.getElementById('canvasHook'));
 
         </script>
 
