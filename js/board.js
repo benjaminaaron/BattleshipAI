@@ -2,13 +2,15 @@
 var Board = function(id, player, shipTypes, canvas, xDim, yDim){
     this.id = id;
     this.player = player;
-    this.field = new Field(xDim, yDim);
 
     this.xDim = xDim;
     this.yDim = yDim;
     this.xOffset = 30;
     this.yOffset = 60;
     this.cellSizePx = 20;
+
+    this.field = new Field(xDim, yDim, this.xOffset, this.yOffset, this.cellSizePx);
+
     this.rotationSwitchX = this.xOffset + this.xDim * this.cellSizePx + 30;
     this.rotationSwitchY = this.yOffset - 40;
     this.rotationSwitchSize = 30;
@@ -56,7 +58,7 @@ Board.prototype = {
             ctx.fillText(this.player.name, this.xOffset, this.yOffset - 30);
 
             // field
-            this.field.draw(ctx, this.cellSizePx, this.xOffset, this.yOffset);
+            this.field.draw(this.ctx);
             
             // ships
             for(var i=0; i < this.ships.length; i++)
@@ -85,7 +87,7 @@ Board.prototype = {
     mouseup: function(e){
         if(this.selectedShip != null){
             this.selectedShip.movingStopped();
-            this.selectedShip = null;
+            this.selectedShip = null; 
         }  
         this.isActive = false;
     },

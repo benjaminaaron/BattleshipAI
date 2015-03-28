@@ -52,11 +52,12 @@ Ship.prototype = {
         this.y = y + this.diffTo00cornerY;
 
         if(this.x > this.xOffset && this.x < this.xOffset + this.xDim * this.cellSizePx - this.w && this.y > this.yOffset && this.y < this.yOffset + this.yDim * this.cellSizePx - this.h){
-            console.log('ship completely over field')
+            //console.log('ship completely over field');
+            this.board.field.reportingShipMovement(this);
         }  
 
         if(this.y < this.rotationSwitchY + this.rotationSwitchSize && this.y + this.h > this.rotationSwitchY && this.x < this.rotationSwitchX + this.rotationSwitchSize && this.x + this.w > this.rotationSwitchX){
-            console.log('ship over rotation flip');
+            //console.log('ship over rotation flip');
             if(this.nextFlipAllowed){
                 this.flipOrientation();
                 this.nextFlipAllowed = false;
@@ -66,8 +67,7 @@ Ship.prototype = {
     movingStopped: function(){
         this.storeDiffAllowed = true;
         this.nextFlipAllowed = true;
-    },
-    reposition: function(){
+        this.board.field.reportingShipPlacement(this);
     },
     flipOrientation: function(){
         if(this.orientation){ //it was horizontal and goes now vertical
