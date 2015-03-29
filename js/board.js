@@ -30,14 +30,22 @@ var Board = function(id, player, shipTypes, canvas, xDim, yDim){
 
     this.selectedShip = null;
     var self = this;
-    $(canvas).mousedown(function(e){
-        self.mousedown(e);
+
+    $(canvas).on('mousedown touchstart', function(e) {
+        e.preventDefault();
+        var xMouse = e.originalEvent.pageX - canvas.offsetLeft;
+        var yMouse = e.originalEvent.pageY - canvas.offsetTop;
+        self.mousedown(xMouse, yMouse);
     });
-    $(canvas).mousemove(function(e){
-        self.mousemove(e);
+    $(canvas).on('mousemove touchmove', function(e) {
+        e.preventDefault();
+        var xMouse = e.originalEvent.pageX - canvas.offsetLeft;
+        var yMouse = e.originalEvent.pageY - canvas.offsetTop;
+        self.mousemove(xMouse, yMouse);
     });
-    $(canvas).mouseup(function(e){
-        self.mouseup(e);
+    $(canvas).on('mouseup touchend', function(e) {
+        e.preventDefault();
+        self.mouseup();
     });
 
     this.ctx = canvas.getContext('2d');
@@ -74,8 +82,8 @@ Board.prototype = {
             ctx.font = '14px georgia';       
             ctx.fillText('R', this.rotSwitchX + 10, this.rotSwitchY + 20);
     },
-    mousedown: function(e){
-        var ship = this.getSelectedShip(e.offsetX, e.offsetY); //console.log(this.selectedShip);     
+    mousedown: function(xMouse, yMouse){
+        var ship = this.getSelectedShip(xMouse, yMouse); //console.log(this.selectedShip);     
         if(ship){
             for(var i=0; i < ship.occupyingCells.length; i++)    
                 ship.occupyingCells[i].occupiedBy = null;
@@ -86,13 +94,10 @@ Board.prototype = {
             initDraw();
         }
     },
-    mousemove: function(e){ //console.log(e.offsetX + '  ' + e.offsetY);
+    mousemove: function(xMouse, yMouse){ //console.log(e.offsetX + '  ' + e.offsetY);
         if(this.selectedShip != null){
             var ship = this.selectedShip;
-            var x = e.offsetX;
-            var y = e.offsetY;
-
-            ship.moveTo(x, y);
+            ship.moveTo(xMouse, yMouse);
 
             if(this.shipIsCompletelyOverField(ship)) //console.log('ship completely over field');
                 this.handleShipMovesOverField(ship, ship.x - this.xOffset, ship.y - this.yOffset);                
@@ -103,14 +108,8 @@ Board.prototype = {
                     ship.nextFlipAllowed = false;
                 }
         }  
-    },  
-    shipIsCompletelyOverField: function(ship){
-        return ship.x > this.xOffset && ship.x < this.rightEdgeOfFieldX - ship.w && ship.y > this.yOffset && ship.y < this.bottomEdgeOfFieldY - ship.h;
     },
-    shipTouchesRotationSwitch: function(ship){
-        return ship.y < this.rotSwitchY + this.rotSwitchSize && ship.y + ship.h > this.rotSwitchY && ship.x < this.rotSwitchX + this.rotSwitchSize && ship.x + ship.w > this.rotSwitchX;
-    },
-    mouseup: function(e){
+    mouseup: function(){
         var ship = this.selectedShip;
         if(ship != null){
             ship.movingStopped();
@@ -119,6 +118,12 @@ Board.prototype = {
             this.drawMe = false;
             this.oneMoreDraw = true; 
         }  
+    },  
+    shipIsCompletelyOverField: function(ship){
+        return ship.x > this.xOffset && ship.x < this.rightEdgeOfFieldX - ship.w && ship.y > this.yOffset && ship.y < this.bottomEdgeOfFieldY - ship.h;
+    },
+    shipTouchesRotationSwitch: function(ship){
+        return ship.y < this.rotSwitchY + this.rotSwitchSize && ship.y + ship.h > this.rotSwitchY && ship.x < this.rotSwitchX + this.rotSwitchSize && ship.x + ship.w > this.rotSwitchX;
     },
     shiftKeyDownEvent: function(){
         var ship = this.selectedShip;
