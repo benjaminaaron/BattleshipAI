@@ -21,12 +21,7 @@
         <div id='canvasHook'>enable javascript in your browser to play battleship</div>
 
         <script>
-
-            $('body').on('keydown', function(e){ 
-                if(e.shiftKey && game.activeBoard)   
-                    game.activeBoard.shiftKeyDownEvent();
-            })
-                        
+        
             var players = [];
             players.push(new Player('Max', 'human'));
             players.push(new Player('Erika', 'human'));
@@ -40,7 +35,15 @@
             var game = new Game(players, shipTypes, 10, 10, document.getElementById('canvasHook'));
 
             var animate = true;
+
             initDraw();
+
+            $('body').on('keydown', function(e){ 
+                if(e.shiftKey && game.activeBoard)   
+                    game.activeBoard.shiftKeyDownEvent();
+                if(e.keyCode == 82) // "r"
+                    game.boards[0].randomlyPlaceShips();
+            });
 
         </script>
 

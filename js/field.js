@@ -1,5 +1,11 @@
 
-var Cell  = function(row, col){
+var GridPos = function(orientation, row, col){
+    this.orientation = orientation;
+    this.row = row;
+    this.col = col;
+}
+
+var Cell = function(row, col){
     this.id = row + '_' + col;
     this.row = row;
     this.col = col;

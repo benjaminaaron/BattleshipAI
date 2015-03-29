@@ -148,14 +148,9 @@ Board.prototype = {
             //console.log(row + '  ' + col);
         }
         var cells = [];
-        var allCellsFree = true;
-        for(var i=0; i < ship.size; i++){
-            var cell = this.field.getCellByRowCol(row + (ship.orientation ? 0 : i), col + (ship.orientation ? i : 0));
-            cells.push(cell);
-            if(cell.occupiedBy != null)
-                allCellsFree = false;
-        }
-        if(allCellsFree){
+        if(this.allCellsFree(ship.size, ship.orientation, row, col)){
+            for(var i=0; i < ship.size; i++)
+                cells.push(this.field.getCellByRowCol(row + (ship.orientation ? 0 : i), col + (ship.orientation ? i : 0)));
             this.field.cellBundleHoverAction(cells, ship);
         } else
             cells = [];
@@ -169,5 +164,59 @@ Board.prototype = {
             ship.x = this.xOffset + bundlesFirstCell.col * this.cellSizePx;
             ship.y = this.yOffset + bundlesFirstCell.row * this.cellSizePx;
         }
+    },
+    placeShipByCoords: function(ship, orientation, row, col){     
+        if(ship.orientation != orientation)
+            ship.flipOrientation();
+        ship.x = this.xOffset + col * this.cellSizePx;
+        ship.y = this.yOffset + row * this.cellSizePx;
+        for(var i=0; i < ship.size; i++){
+            var cell = this.field.getCellByRowCol(row + (orientation ? 0 : i), col + (orientation ? i : 0));
+            cell.occupiedBy = ship;
+            ship.occupyingCells.push(cell); 
+        }
+        this.oneMoreDraw = true; 
+        initDraw();
+    },
+    randomlyPlaceShips: function(){
+        this.clearShipPositions();
+/*      
+        var unplacedShips = [];
+        for(var i=0; i < this.ships.length; i++)
+            if(this.ships[i].occupyingCells.length == 0)
+                unplacedShips.push(this.ships[i]);
+*/
+        for(var i=0; i < this.ships.length; i++){
+            var ship = this.ships[i];
+            var validPositions = [];
+            // add horizontal valid positions
+            for(var row=0; row < this.yDim; row++)
+                for(var col=0; col < this.xDim - ship.size + 1; col++)
+                    if(this.allCellsFree(ship.size, true, row, col))
+                        validPositions.push(new GridPos(true, row, col));
+            // add vertical valid positions
+            for(var row=0; row < this.yDim - ship.size + 1; row++)
+                for(var col=0; col < this.xDim; col++)
+                    if(this.allCellsFree(ship.size, false, row, col))
+                        validPositions.push(new GridPos(false, row, col));
+
+            var randomIndex = Math.round(Math.random() * (validPositions.length - 1)); //if no valid positions available this goes negative and throws an error
+            var randomGridPos = validPositions[randomIndex];
+            this.placeShipByCoords(ship, randomGridPos.orientation, randomGridPos.row, randomGridPos.col);
+        }
+    },
+    allCellsFree: function(shipSize, orientation, rowHead, colHead){
+        for(var i=0; i < shipSize; i++){
+            var cell = this.field.getCellByRowCol(rowHead + (orientation ? 0 : i), colHead + (orientation ? i : 0));
+            if(cell.occupiedBy != null)
+                return false;
+        }
+        return true;
+    },
+    clearShipPositions: function(){
+        for(var i=0; i < this.field.cells.length; i++)
+            this.field.cells[i].occupiedBy = null;
+        for(var i=0; i < this.ships.length; i++)
+            this.ships[i].occupyingCells = []; 
     }
 };
