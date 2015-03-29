@@ -1,37 +1,33 @@
 
 var Cell  = function(row, col){
+    this.id = row + '_' + col;
     this.row = row;
     this.col = col;
-    this.occupied = null;
+    this.occupiedBy = null;
+    this.hoveredBy = null;
+    this.orientationWhileHovering = true;
     this.toString = function(){
         return '(' + this.row + '/' + this.col + ')';
     }
 }
 
-var Field = function(totalRows, totalCols, xOffset, yOffset, cellSizePx){
+var Field = function(totalRows, totalCols){
     this.totalRows = totalRows;
     this.totalCols = totalCols;
-    this.xOffset = xOffset;
-    this.yOffset = yOffset;
-    this.cellSizePx = cellSizePx;
-
     this.cells = [];
     for(var i = 0; i < totalRows; i++)
         for(var j = 0; j < totalRows; j++)
             this.cells.push(new Cell(i, j));
-    
-    this.occupiedFields = [];
-    this.shipFloatingAboveCells = [];
+    this.cellBundleMemory = [];
 }
 
 Field.prototype = {
-    draw: function(ctx){    
+    draw: function(ctx, xOffset, yOffset, cellSizePx){    
 
         //border around field
         ctx.strokeStyle = 'gray';  
         ctx.lineWidth = 2;
-
-        ctx.rect(this.xOffset, this.yOffset, this.totalCols * this.cellSizePx, this.totalRows * this.cellSizePx);
+        ctx.rect(xOffset, yOffset, this.totalCols * cellSizePx, this.totalRows * cellSizePx);
         ctx.stroke();
 
         // grid & labels
@@ -40,69 +36,71 @@ Field.prototype = {
         ctx.fillStyle = 'gray';
         ctx.font = '12px arial';           
         for(var i=0; i <= this.totalRows; i++){
-            var yPos = this.yOffset + i * this.cellSizePx;
+            var yPos = yOffset + i * cellSizePx;
             ctx.beginPath();
-            ctx.moveTo(this.xOffset, yPos);
-            ctx.lineTo(this.xOffset + this.totalCols * this.cellSizePx, yPos);
+            ctx.moveTo(xOffset, yPos);
+            ctx.lineTo(xOffset + this.totalCols * cellSizePx, yPos);
             ctx.stroke();
             if(i < this.totalRows)
-                ctx.fillText((i+1), this.xOffset + ((i+1) < 10 ? -16 : -20), yPos + 14);
+                ctx.fillText((i+1), xOffset + ((i+1) < 10 ? -16 : -20), yPos + 14);
         }
         for(var i=0; i <= this.totalCols; i++){
-            var xPos = this.xOffset + i * this.cellSizePx;
+            var xPos = xOffset + i * cellSizePx;
             ctx.beginPath();
-            ctx.moveTo(xPos, this.yOffset);
-            ctx.lineTo(xPos, this.yOffset + this.totalRows * this.cellSizePx);
+            ctx.moveTo(xPos, yOffset);
+            ctx.lineTo(xPos, yOffset + this.totalRows * cellSizePx);
             ctx.stroke();
             if(i < this.totalCols)
-                ctx.fillText(String.fromCharCode('A'.charCodeAt() + i), xPos + 6, this.yOffset - 8);     
+                ctx.fillText(String.fromCharCode('A'.charCodeAt() + i), xPos + 6, yOffset - 8);     
         }
 
-        ctx.fillStyle = 'silver';    
-        for(var i=0; i < this.shipFloatingAboveCells.length; i++){
-            var cell = this.shipFloatingAboveCells[i]
-            ctx.fillRect(this.xOffset + cell.col * this.cellSizePx, this.yOffset + cell.row * this.cellSizePx, this.cellSizePx, this.cellSizePx);
+        // cell coloring for hovered cells
+        for(var i=0; i < this.cells.length; i++){
+            var cell = this.cells[i];
+            if(cell.hoveredBy != null){
+                ctx.fillStyle = 'silver';    
+                ctx.fillRect(xOffset + cell.col * cellSizePx, yOffset + cell.row * cellSizePx, cellSizePx, cellSizePx);
+            }
         }
-
-    },
-    reportingShipMovement: function(ship){
-        var size = ship.size;
-        var orientation = ship.orientation;
-        var x = ship.x - this.xOffset;
-        var y = ship.y - this.yOffset;
-
-        if(orientation){
-            var col = Math.round(x / this.cellSizePx);
-            var row = Math.round(y / this.cellSizePx);
-            //console.log(row + '  ' + col);
-        } else {
-            var col = Math.round(x / this.cellSizePx);
-            var row = Math.round(y / this.cellSizePx);
-            //console.log(row + '  ' + col);
-        }
-        
-        this.shipFloatingAboveCells = [];
-        var isOk = true;
-        for(var i=0; i < size; i++){
-            var cell = this.getCellByRowCol(row + (orientation ? 0 : i), col + (orientation ? i : 0));
-            this.shipFloatingAboveCells.push(cell);
-            if(cell.occupied != null)
-                isOk = false;
-        }
-        if(!isOk)
-            this.shipFloatingAboveCells = [];
-    },
-    reportingShipPlacement: function(ship){
-/*       
-        if(this.shipFloatingAboveCells.length > 0){
-            for(var i=0; i < this.shipFloatingAboveCells.length; i++)
-                this.shipFloatingAboveCells[i].occupied = ship;
-            ship.x = this.xOffset + this.shipFloatingAboveCells[0].col * this.cellSizePx;
-            ship.y = this.yOffset + this.shipFloatingAboveCells[0].row * this.cellSizePx;
-        }
-*/        
     },
     getCellByRowCol: function(row, col){
         return this.cells[row * this.totalCols + col];;
+    },
+    cellBundleHoverAction: function(cells, ship){ //occupy false means hovering     
+        if(!this.isSameCellBundle(this.cellBundleMemory, cells))
+            for(var i=0; i < this.cellBundleMemory.length; i++)
+                this.cellBundleMemory[i].hoveredBy = null;
+        for(var i=0; i < cells.length; i++){
+            cells[i].hoveredBy = ship;
+            cells[i].orientationWhileHovering = ship.orientation;
+        }
+        this.cellBundleMemory = cells;
+    },
+    placeLastCellBundleMemory: function(){
+        if(this.cellBundleMemory.length > 0){
+            var ship = this.cellBundleMemory[0].hoveredBy;
+            for(var i=0; i < this.cellBundleMemory.length; i++){
+                var cell = this.cellBundleMemory[i];
+                cell.occupiedBy = ship;
+                cell.hoveredBy = null;
+            }
+            ship.occupyingCells = this.cellBundleMemory;
+            var firstCell = this.cellBundleMemory[0];
+            this.cellBundleMemory = []; 
+            return firstCell; //just need first field to place the ship correctly
+        }
+        else
+            return null;  
+    },
+    isSameCellBundle: function(bundle1, bundle2){ 
+        if(bundle1.length == 0 || bundle2.length == 0)
+            return false;
+        if(bundle1.length == bundle2.length){
+            for(var i=0; i < bundle1.length; i++)
+                if(bundle1[i].id != bundle2[i].id)
+                    return false;
+            return true;
+        }
+        return false;
     }
 }

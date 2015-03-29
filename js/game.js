@@ -7,6 +7,9 @@ var Game = function(players, shipTypes, xDim, yDim, canvasHook){
     var boardWidthPx = 400;
     var boardHeightPx = 300;
 
+    this.boards = [];
+    this.activeBoard = null;
+
     for(var i=0; i < players.length; i++){
         var canvas = document.createElement("canvas");
         canvas.id = "canvas_" + i;
@@ -18,21 +21,46 @@ var Game = function(players, shipTypes, xDim, yDim, canvasHook){
 
         players[i].board = board;
         board.draw();
-        boards.push(board);
+        this.boards.push(board);
     }
-    
+
+    this.initDrawDone = false;
+}
+
+Game.prototype = {
+    draw: function(){
+        if(!this.initDrawDone){
+            for(var i=0; i < this.boards.length; i++)
+                this.boards[i].draw();
+            this.initDrawDone = true;
+        }
+
+        this.activeBoard = this.getActiveBoard();
+        
+        if(this.activeBoard != null){
+            this.activeBoard.draw();
+            animate = true;
+        }
+        else
+            animate = false;
+    },
+    getActiveBoard: function(){
+        for(var i=0; i < this.boards.length; i++)
+            if(this.boards[i].drawMe || this.boards[i].oneMoreDraw){
+                this.boards[i].oneMoreDraw = false;
+                return this.boards[i];
+            }
+        return null;
+    }
+}
+
+function initDraw(){
     window.requestAnimationFrame(draw);
 }
 
-function getActiveBoard(){
-    for(var i=0; i < boards.length; i++)
-        if(boards[i].isActive)
-            return boards[i];
-    return false;
-}
-
-function draw(){  
-    var board = getActiveBoard();
-    if(board)
-        board.draw();
+function draw(){
+    //console.log('draw called');
+    game.draw();
+    if(animate)
+        window.requestAnimationFrame(draw);
 }
