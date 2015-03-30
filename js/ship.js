@@ -23,7 +23,7 @@ Ship.prototype = {
         this.w = orientation ? this.wHoriz : this.wVert;
         this.h = orientation ? this.hHoriz : this.hVert;
         this.x = rightEdgeOfFieldX + 15;
-        this.y = yOffset + posNumb * cellSizePx * 2; // x,y points to top left corner of rect
+        this.y = yOffset + 20 + posNumb * cellSizePx * 2; // x,y points to top left corner of rect
         this.storeDiffAllowed = true;
         this.nextFlipAllowed = true;
     },

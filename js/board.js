@@ -2,6 +2,7 @@
 var Board = function(id, player, shipTypes, canvas, xDim, yDim){
     this.id = id;
     this.player = player;
+    this.iAmActiveBoard = false;
 
     this.xDim = xDim;
     this.yDim = yDim;
@@ -32,23 +33,31 @@ var Board = function(id, player, shipTypes, canvas, xDim, yDim){
     var self = this;
 
     $(canvas).on('mousedown touchstart', function(e) {
-        e.preventDefault();
-        var xMouse = e.originalEvent.pageX - canvas.offsetLeft;
-        var yMouse = e.originalEvent.pageY - canvas.offsetTop;
-        self.mousedown(xMouse, yMouse);
+        if(self.iAmActiveBoard){
+            e.preventDefault();
+            var canvasElement = canvas.getBoundingClientRect(); // rect.top, rect.right, rect.bottom, rect.left
+            var xMouse = e.originalEvent.pageX - canvasElement.left;
+            var yMouse = e.originalEvent.pageY - canvasElement.top;
+            self.mousedown(xMouse, yMouse);
+        }
     });
     $(canvas).on('mousemove touchmove', function(e) {
-        e.preventDefault();
-        var xMouse = e.originalEvent.pageX - canvas.offsetLeft;
-        var yMouse = e.originalEvent.pageY - canvas.offsetTop;
-        self.mousemove(xMouse, yMouse);
+        if(self.iAmActiveBoard){ 
+            e.preventDefault();
+            var canvasElement = canvas.getBoundingClientRect();
+            var xMouse = e.originalEvent.pageX - canvasElement.left;
+            var yMouse = e.originalEvent.pageY - canvasElement.top;
+            self.mousemove(xMouse, yMouse);
+        }
     });
     $(canvas).on('mouseup touchend', function(e) {
-        e.preventDefault();
-        self.mouseup();
+        if(self.iAmActiveBoard){
+            e.preventDefault();
+            self.mouseup();
+        }
     });
 
-    this.ctx = canvas.getContext('2d');
+    this.ctx = $(canvas)[0].getContext('2d');
     this.drawMe = false;
     this.oneMoreDraw = false;
 }
@@ -57,15 +66,15 @@ Board.prototype = {
     draw: function(){
             var ctx = this.ctx;
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); 
-
+/*
             // board frame
             ctx.strokeStyle = 'black';     
             ctx.lineWidth = 1;
-            ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);   
-
+            ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);  
+*/ 
             // name
             ctx.fillStyle = 'navy';
-            ctx.font = '20px georgia';       
+            ctx.font = '20px georgia'; 
             ctx.fillText(this.player.name, this.xOffset, this.yOffset - 30);
 
             // field
