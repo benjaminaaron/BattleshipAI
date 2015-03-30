@@ -227,5 +227,11 @@ Board.prototype = {
             this.field.cells[i].occupiedBy = null;
         for(var i=0; i < this.ships.length; i++)
             this.ships[i].occupyingCells = []; 
+    },
+    allShipsPlaced: function(){
+        for(var i=0; i < this.ships.length; i++)
+            if(this.ships[i].occupyingCells.length == 0)
+                return false;
+        return true;
     }
 };

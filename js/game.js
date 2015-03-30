@@ -4,6 +4,8 @@ var Game = function(players, shipTypes, xDim, yDim, gameHook){
 
     this.players = players;
 
+    this.buildGameControlDOMelements(gameHook);
+
     var canvasWidthPx = 370;
     var canvasHeightPx = 300;
 
@@ -18,14 +20,8 @@ var Game = function(players, shipTypes, xDim, yDim, gameHook){
         this.boards.push(board);
     }
 
-    this.currentPlayerIndex = 0;
-    this.players[this.currentPlayerIndex].myTurn = true;
-    this.activeBoard = this.boards[this.currentPlayerIndex];
-    this.activeBoard.iAmActiveBoard = true;
-    $('#container_' + this.currentPlayerIndex).addClass('activeContainer');
-    $('#doneBtn_' + this.currentPlayerIndex).prop('disabled', false);
-    $('#randomBtn_' + this.currentPlayerIndex).prop('disabled', false);
-
+    this.gameHasStarted = false;
+    this.activeBoard = null;
     this.initDrawDone = false; // draws all boards for the first time, after that only the active board will be re-drawn upon action
 }
 
@@ -36,11 +32,14 @@ Game.prototype = {
                 this.boards[i].draw();
             this.initDrawDone = true;
         }      
-        if(this.activeBoard.drawMe || this.activeBoard.oneMoreDraw){
-            this.activeBoard.oneMoreDraw = false;
-            this.activeBoard.draw();
-            animate = true;
-        }
+        if(this.activeBoard)
+            if(this.activeBoard.drawMe || this.activeBoard.oneMoreDraw){
+                this.activeBoard.oneMoreDraw = false;
+                this.activeBoard.draw();
+                animate = true;
+            }
+            else
+                animate = false;
         else
             animate = false;
     },
@@ -93,7 +92,10 @@ Game.prototype = {
         return canvas;
     },
     doneClicked: function(){
-        this.nextPlayersTurn();
+        if(this.activeBoard.allShipsPlaced())
+            this.nextPlayersTurn();
+        else
+            alert('not all ships are placed yet');
     },
     nextPlayersTurn: function(){
         this.players[this.currentPlayerIndex].myTurn = false;
@@ -102,14 +104,72 @@ Game.prototype = {
         $('#doneBtn_' + this.currentPlayerIndex).prop('disabled', true);
         $('#randomBtn_' + this.currentPlayerIndex).prop('disabled', true);
         this.currentPlayerIndex ++;
-        if(this.currentPlayerIndex >= this.players.length)
+        if(this.currentPlayerIndex >= this.players.length){
+            $('#statusLabel').html('&nbsp;&nbsp;&nbsp;in play-phase');
             this.currentPlayerIndex = 0;
+        }
         this.players[this.currentPlayerIndex].myTurn = true;
         this.activeBoard = this.boards[this.currentPlayerIndex];
         this.activeBoard.iAmActiveBoard = true;
         $('#container_' + this.currentPlayerIndex).addClass('activeContainer');
         $('#doneBtn_' + this.currentPlayerIndex).prop('disabled', false);
         $('#randomBtn_' + this.currentPlayerIndex).prop('disabled', false);
+    },
+    buildGameControlDOMelements: function(gameHook){
+    var gameControls = $('<div>').attr({
+        'id': 'gameControls'
+        });
+    $(gameHook).append(gameControls);
+
+    var nav = $('<nav>');
+    $(gameControls).append(nav);
+
+    var startBtn = $('<input>').attr({
+        'id': 'startBtn',
+        'type': 'button',
+        'value': 'start game'
+    });
+    var self = this;
+    $(startBtn).click(function(){
+        self.startBtnClicked();
+    }); 
+    $(nav).append(startBtn);
+
+    var infoBtn = $('<input>').attr({
+        'id': 'infoBtn',
+        'type': 'button',
+        'value': 'info'
+    });
+    $(infoBtn).click(function(){
+        self.infoBtnClicked();
+    });  
+    $(nav).append(infoBtn);
+
+    var statusLabel = $('<div>').attr({
+            'id': 'statusLabel'
+        });
+    $(statusLabel).append('&nbsp;&nbsp;&nbsp;game hasn\'t started yet');
+    $(gameControls).append(statusLabel);
+    },
+    infoBtnClicked: function(){
+        alert('some info here...');
+    },
+    startBtnClicked: function(){
+        if(!this.gameHasStarted){
+            this.gameHasStarted = true;
+            this.currentPlayerIndex = 0;
+            this.players[this.currentPlayerIndex].myTurn = true;
+            this.activeBoard = this.boards[this.currentPlayerIndex];
+            this.activeBoard.iAmActiveBoard = true;
+            $('#container_' + this.currentPlayerIndex).addClass('activeContainer');
+            $('#doneBtn_' + this.currentPlayerIndex).prop('disabled', false);
+            $('#randomBtn_' + this.currentPlayerIndex).prop('disabled', false);
+
+            $('#statusLabel').html('&nbsp;&nbsp;&nbsp;in ship-setup phase');
+            $('#startBtn').prop('value', 'reset');
+        }
+        else
+            location.reload();
     }
 }
 
