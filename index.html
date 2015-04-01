@@ -13,40 +13,50 @@
 
         <!-- own css -->
         <link href="css/style.css" rel="stylesheet"/>
-        <!-- own code -->
-        <script type="text/javascript" src="js/player.js"/></script>
-        <script type="text/javascript" src="js/game.js"></script>
-        <script type="text/javascript" src="js/board.js"></script>
-        <script type="text/javascript" src="js/field.js"></script>
-        <script type="text/javascript" src="js/ship.js"></script>
+        <!-- own js -->
+        <script type="text/javascript" src="js/player/AbstractPlayer.js"/></script>
+        <script type="text/javascript" src="js/player/Human.js"/></script>
+        <script type="text/javascript" src="js/player/Bot.js"/></script>
+        <script type="text/javascript" src="js/Game.js"></script>
+        <script type="text/javascript" src="js/Board.js"></script>
+        <script type="text/javascript" src="js/Field.js"></script>
+        <script type="text/javascript" src="js/Ship.js"></script>
 
         <div id='gameHook'>enable javascript in your browser to play battleship</div>
 
         <script>
-        
-            var players = [];
-            players.push(new Player('Max', 'human'));
-            players.push(new Player('Erika', 'human'));
 
-            var shipTypes = [];
-            shipTypes.push(new ShipType(5, 'navy', 1));
-			shipTypes.push(new ShipType(4, 'maroon', 1));
-			shipTypes.push(new ShipType(3, 'lime', 1));
-			shipTypes.push(new ShipType(2, 'orange', 2));
+            var player1 = new Human('Max');
+            var player2 = new Bot();
+            var players = [player1, player2];
+            var shipTypes = [new ShipType(5, 'aqua', 1), new ShipType(4, 'maroon', 1), new ShipType(3, 'lime', 1), new ShipType(2, 'orange', 2)];
 
             var game = new Game(players, shipTypes, 10, 10, document.getElementById('gameHook'));
 
-            var animate = true;
+            var animate = false;
 
-            initDraw();
-            
+            function initDraw(){
+                window.requestAnimationFrame(draw);
+            }
+
+            var drawCount = 0;
+            function draw(){
+                drawCount ++;
+                //console.log(drawCount);
+                game.draw();
+                if(animate)
+                    window.requestAnimationFrame(draw);
+            }
+                        
             $('body').on('keydown', function(e){ 
                 if(e.shiftKey && game.activeBoard)  
-                    if(game.activeBoard) 
-                        game.activeBoard.shiftKeyDownEvent();
-                if(e.keyCode == 82) // "r"
-                    if(game.activeBoard)
-                        game.activeBoard.randomlyPlaceShips();
+                    if(game.currentPlayer)
+                        if(game.currentPlayer.type == 'human')
+                            game.currentPlayer.flipShipsOrientation(false);
+                if(e.keyCode == 82) // r
+                    if(game.currentPlayer)
+                        if(game.currentPlayer.type == 'human')
+                            game.currentPlayer.btnCallback('random');
             });
 
         </script>

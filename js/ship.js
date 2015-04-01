@@ -5,27 +5,39 @@ var ShipType = function(size, color, quantity){
 	this.quantity = quantity;
 }
 
-var Ship = function(board, id, size, color){ 
-    this.board = board;
+var Ship = function(id, size, color, cellSizePx, fieldLeft, fieldTop){ 
     this.id = id;
     this.size = size;
     this.color = color;
+    this.orientation; //true is horizontal, false is vertical
+
+    this.cellSizePx = cellSizePx;
+    this.fieldLeft = fieldLeft;
+    this.fieldTop = fieldTop;
+
+    this.wHoriz = this.cellSizePx * this.size;
+    this.hHoriz = this.cellSizePx;
+    this.wVert = this.hHoriz;
+    this.hVert = this.wHoriz;
+
+    this.w; // actual width & height
+    this.h;
+    this.x; // actual x & y position
+    this.y;
+
     this.occupyingCells = [];
+
+    this.storeDiffAllowed = true; // to store the difference btwn top-left corner of ship and grabbing pos just in the moment of grabbing
+    this.nextFlipAllowed = true; // to avoid ongoing flipping while ship touches rotation area 
 }
 
 Ship.prototype = {
-    initPlacement: function(posNumb, orientation, cellSizePx, rightEdgeOfFieldX, yOffset){
-        this.orientation = orientation; //true is horizontal, false is vertical
-        this.wHoriz = cellSizePx * this.size;
-        this.hHoriz = cellSizePx;
-        this.wVert = this.hHoriz;
-        this.hVert = this.wHoriz;
+    initPlacement: function(posNumb, orientation){
+        this.orientation = orientation; 
         this.w = orientation ? this.wHoriz : this.wVert;
         this.h = orientation ? this.hHoriz : this.hVert;
-        this.x = rightEdgeOfFieldX + 15;
-        this.y = yOffset + 20 + posNumb * cellSizePx * 2; // x,y points to top left corner of rect
-        this.storeDiffAllowed = true;
-        this.nextFlipAllowed = true;
+        this.x = this.fieldLeft + 15;
+        this.y = this.fieldTop + 20 + posNumb * this.cellSizePx * 2; // x,y points always to top left corner of rect
     },
     draw: function(ctx){
         ctx.fillStyle = this.color;   
@@ -36,12 +48,12 @@ Ship.prototype = {
     },
     moveTo: function(x, y){
         if(this.storeDiffAllowed){
-            this.diffTo00cornerX = this.x - x;
-            this.diffTo00cornerY = this.y - y;
+            this.diffToTopLeftCornerX = this.x - x;
+            this.diffToTopLeftCornerY = this.y - y;
             this.storeDiffAllowed = false;
         }
-        this.x = x + this.diffTo00cornerX;
-        this.y = y + this.diffTo00cornerY;
+        this.x = x + this.diffToTopLeftCornerX;
+        this.y = y + this.diffToTopLeftCornerY;
     },
     movingStopped: function(){
         this.storeDiffAllowed = true;
@@ -60,9 +72,9 @@ Ship.prototype = {
             this.y = this.y - this.hHoriz / 2 + this.hVert / 2;
         }
         this.orientation = !this.orientation;
-        this.storeDiffAllowed = true;
+        this.storeDiffAllowed = true; // position of ship has changed, therefore need to allow the calc of new difference    
     },
     toString: function(){
-        return 'ship: ' + this.id + ' on board: ' + this.board.id + ' size: ' + this.size + ' color:' + this.color;
+        return 'ship: ' + this.id + ' size: ' + this.size + ' color:' + this.color;
     }
 };

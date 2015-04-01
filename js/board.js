@@ -1,88 +1,70 @@
 
-var Board = function(id, player, shipTypes, canvas, xDim, yDim){
+var Board = function(id, container, btnCallback, player, shipTypes, rows, cols){
     this.id = id;
     this.player = player;
-    this.iAmActiveBoard = false;
 
-    this.xDim = xDim;
-    this.yDim = yDim;
-    this.xOffset = 30;
-    this.yOffset = 60;
+    this.canvasWidthPx = 370;
+    this.canvasHeightPx = 300;
+
+    var canvas = $(this.buildDOM(container, player))[0];
+    player.init(this, canvas);
+
+    this.ctx = canvas.getContext('2d');
+    this.drawMe = false;
+    this.oneMoreDraw = false;
+
+    this.rows = rows;
+    this.cols = cols;
+
+    // field
     this.cellSizePx = 20;
-
-    this.field = new Field(xDim, yDim);
-
-    this.rightEdgeOfFieldX = this.xOffset + this.xDim * this.cellSizePx;
-    this.bottomEdgeOfFieldY = this.yOffset + this.yDim * this.cellSizePx;
+    this.fieldLeft = 30;
+    this.fieldTop = 60;
+    this.fieldRight = this.fieldLeft + rows * this.cellSizePx;
+    this.fieldBottom = this.fieldTop + cols * this.cellSizePx;    
+    this.field = new Field(rows, cols, this.ctx, this.fieldLeft, this.fieldTop, this.cellSizePx);
 
     // rotation switch
-    this.rotSwitchX = this.rightEdgeOfFieldX + 30; 
-    this.rotSwitchY = this.yOffset - 40;
+    this.rotSwitchX = this.fieldRight + 30; 
+    this.rotSwitchY = this.fieldTop - 40;
     this.rotSwitchSize = 30;
 
     //add ships as defined in shipTypes
     this.ships = [];
     for(var i=0; i < shipTypes.length; i++)
     	for(var j=0; j < shipTypes[i].quantity; j++){
-            var ship = new Ship(this, id + '-' + this.ships.length, shipTypes[i].size, shipTypes[i].color);
-            ship.initPlacement(this.ships.length, true, this.cellSizePx, this.rightEdgeOfFieldX, this.yOffset);
+            var ship = new Ship(this.id + '-' + this.ships.length, shipTypes[i].size, shipTypes[i].color, this.cellSizePx, this.fieldRight, this.fieldTop);   
+            ship.initPlacement(this.ships.length, true);
     		this.ships.push(ship);
         }
 
     this.selectedShip = null;
-    var self = this;
-
-    $(canvas).on('mousedown touchstart', function(e) {
-        if(self.iAmActiveBoard){
-            e.preventDefault();
-            var canvasElement = canvas.getBoundingClientRect(); // rect.top, rect.right, rect.bottom, rect.left
-            var xMouse = e.originalEvent.pageX - canvasElement.left;
-            var yMouse = e.originalEvent.pageY - canvasElement.top;
-            self.mousedown(xMouse, yMouse);
-        }
-    });
-    $(canvas).on('mousemove touchmove', function(e) {
-        if(self.iAmActiveBoard){ 
-            e.preventDefault();
-            var canvasElement = canvas.getBoundingClientRect();
-            var xMouse = e.originalEvent.pageX - canvasElement.left;
-            var yMouse = e.originalEvent.pageY - canvasElement.top;
-            self.mousemove(xMouse, yMouse);
-        }
-    });
-    $(canvas).on('mouseup touchend', function(e) {
-        if(self.iAmActiveBoard){
-            e.preventDefault();
-            self.mouseup();
-        }
-    });
-
-    this.ctx = $(canvas)[0].getContext('2d');
-    this.drawMe = false;
-    this.oneMoreDraw = false;
 }
 
 Board.prototype = {
     draw: function(){
             var ctx = this.ctx;
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); 
-/*
-            // board frame
-            ctx.strokeStyle = 'black';     
-            ctx.lineWidth = 1;
-            ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);  
-*/ 
+
             // name
             ctx.fillStyle = 'navy';
             ctx.font = '20px georgia'; 
-            ctx.fillText(this.player.name, this.xOffset, this.yOffset - 30);
+            var name = this.player.name;
+            var nameWidth = ctx.measureText(name).width;
+            ctx.fillText(name, this.fieldLeft, this.fieldTop - 30);
+            ctx.fillStyle = 'maroon';
+            ctx.font = '10px georgia'; 
+            ctx.fillText(this.player.type, this.fieldLeft + nameWidth + 10, this.fieldTop - 30);
 
             // field
-            this.field.draw(this.ctx, this.xOffset, this.yOffset, this.cellSizePx);
-            
+            this.field.draw();
+
             // ships
             for(var i=0; i < this.ships.length; i++)
                 this.ships[i].draw(ctx);
+
+            // hits
+            this.field.drawHits();
 
             //rotation switch
             ctx.fillStyle = '#DDD';    
@@ -91,53 +73,54 @@ Board.prototype = {
             ctx.font = '14px georgia';       
             ctx.fillText('R', this.rotSwitchX + 10, this.rotSwitchY + 20);
     },
-    mousedown: function(xMouse, yMouse){
-        var ship = this.getSelectedShip(xMouse, yMouse); //console.log(this.selectedShip);     
-        if(ship){
-            for(var i=0; i < ship.occupyingCells.length; i++)    
-                ship.occupyingCells[i].occupiedBy = null;
-            this.field.cellBundleHoverAction(ship.occupyingCells, ship); // leaves a shadow-footprint from the last position, in that way it's not possible for ships that were dragged again from the field-border to loose their last position
-            ship.occupyingCells = [];  
-            this.selectedShip = ship;
-            this.drawMe = true;
-            initDraw();
+    buildDOM: function(container, player){     
+        var canvas = $('<canvas>').attr({
+            'id': 'canvas_' + this.id,
+            'width': this.canvasWidthPx,
+            'height': this.canvasHeightPx
+        });
+        $(container).append(canvas);
+
+        if(player.type == 'human'){
+            var btnList = $('<ul>').attr({
+                'class': 'btnList'
+            });
+            $(container).append(btnList);
+            
+            var listElement = $('<li>');
+            $(btnList).append(listElement);
+            var doneBtn = $('<input>').attr({
+                'id': 'doneBtn_' + this.id,
+                'type': 'button',
+                'value': 'done',
+                'disabled': true
+            });
+            $(doneBtn).click(function(){
+                player.btnCallback('done');
+            });  
+            $(listElement).append(doneBtn);
+
+            listElement = $('<li>');
+            $(btnList).append(listElement);
+            var randomBtn = $('<input>').attr({
+                'id': 'randomBtn_' + this.id,
+                'type': 'button',
+                'value': 'random',
+                'disabled': true
+            });
+            $(randomBtn).click(function(){
+                player.btnCallback('random');
+            }); 
+            $(listElement).append(randomBtn);
         }
-    },
-    mousemove: function(xMouse, yMouse){ //console.log(e.offsetX + '  ' + e.offsetY);
-        if(this.selectedShip != null){
-            var ship = this.selectedShip;
-            ship.moveTo(xMouse, yMouse);
 
-            if(this.shipIsCompletelyOverField(ship)) //console.log('ship completely over field');
-                this.handleShipMovesOverField(ship, ship.x - this.xOffset, ship.y - this.yOffset);                
-
-            if(this.shipTouchesRotationSwitch(ship)) //console.log('ship over rotation flip');
-                if(ship.nextFlipAllowed){
-                    ship.flipOrientation();
-                    ship.nextFlipAllowed = false;
-                }
-        }  
+        return canvas;
     },
-    mouseup: function(){
-        var ship = this.selectedShip;
-        if(ship != null){
-            ship.movingStopped();
-            this.placeShip();
-            this.selectedShip = null; 
-            this.drawMe = false;
-            this.oneMoreDraw = true; 
-        }  
-    },  
     shipIsCompletelyOverField: function(ship){
-        return ship.x > this.xOffset && ship.x < this.rightEdgeOfFieldX - ship.w && ship.y > this.yOffset && ship.y < this.bottomEdgeOfFieldY - ship.h;
+        return ship.x > this.fieldLeft && ship.x < this.fieldRight - ship.w && ship.y > this.fieldTop && ship.y < this.fieldBottom - ship.h;
     },
     shipTouchesRotationSwitch: function(ship){
         return ship.y < this.rotSwitchY + this.rotSwitchSize && ship.y + ship.h > this.rotSwitchY && ship.x < this.rotSwitchX + this.rotSwitchSize && ship.x + ship.w > this.rotSwitchX;
-    },
-    shiftKeyDownEvent: function(){
-        var ship = this.selectedShip;
-        if(ship)
-            ship.flipOrientation();
     },
     getSelectedShip: function(x, y){
         for(var i=0; i < this.ships.length; i++)
@@ -145,68 +128,61 @@ Board.prototype = {
                 return this.ships[i];
         return null;
     },
-    handleShipMovesOverField: function(ship, relXpos, relYpos){
-        var row, col;
-        if(ship.orientation){
-            col = Math.round(relXpos / this.cellSizePx);
-            row = Math.round(relYpos / this.cellSizePx);
-            //console.log(row + '  ' + col);
-        } else {
-            col = Math.round(relXpos / this.cellSizePx);
-            row = Math.round(relYpos / this.cellSizePx);
-            //console.log(row + '  ' + col);
-        }
-        var cells = [];
-        if(this.allCellsFree(ship.size, ship.orientation, row, col)){
+    handleShipMovesOverField: function(ship){
+        var relXpos = ship.x - this.fieldLeft;
+        var relYpos = ship.y - this.fieldTop;
+        var row = Math.round(relYpos / this.cellSizePx);
+        var col = Math.round(relXpos / this.cellSizePx);
+
+        if(this.field.allCellsFree(ship.size, ship.orientation, row, col)){
+            var cells = [];
             for(var i=0; i < ship.size; i++)
                 cells.push(this.field.getCellByRowCol(row + (ship.orientation ? 0 : i), col + (ship.orientation ? i : 0)));
-            this.field.cellBundleHoverAction(cells, ship);
-        } else
-            cells = [];
+            this.field.updateShadowCells(cells, ship);
+        }
     },
     placeShip: function(){
-        var bundlesFirstCell = this.field.placeLastCellBundleMemory();
-        if(bundlesFirstCell != null){
-            var ship = bundlesFirstCell.occupiedBy;
-            if(ship.orientation != bundlesFirstCell.orientationWhileHovering)
+        // the field part
+        var headCell = this.field.placeLastShadowShipCells();
+        // the ship part
+        if(headCell){
+            var ship = headCell.occupiedBy;
+            if(ship.orientation != headCell.orientationWhileHovering)
                 ship.flipOrientation();
-            ship.x = this.xOffset + bundlesFirstCell.col * this.cellSizePx;
-            ship.y = this.yOffset + bundlesFirstCell.row * this.cellSizePx;
+            ship.x = this.fieldLeft + headCell.col * this.cellSizePx;
+            ship.y = this.fieldTop + headCell.row * this.cellSizePx;
         }
     },
     placeShipByCoords: function(ship, orientation, row, col){     
         if(ship.orientation != orientation)
             ship.flipOrientation();
-        ship.x = this.xOffset + col * this.cellSizePx;
-        ship.y = this.yOffset + row * this.cellSizePx;
+        ship.x = this.fieldLeft + col * this.cellSizePx;
+        ship.y = this.fieldTop + row * this.cellSizePx;
         for(var i=0; i < ship.size; i++){
             var cell = this.field.getCellByRowCol(row + (orientation ? 0 : i), col + (orientation ? i : 0));
             cell.occupiedBy = ship;
             ship.occupyingCells.push(cell); 
+
+            //TODO move to field?
+            this.field.neighbourBlast(cell, 1);
         }
         this.oneMoreDraw = true; 
         initDraw();
     },
-    randomlyPlaceShips: function(){
-        this.clearShipPositions();
-/*      
-        var unplacedShips = [];
-        for(var i=0; i < this.ships.length; i++)
-            if(this.ships[i].occupyingCells.length == 0)
-                unplacedShips.push(this.ships[i]);
-*/
+    randomlyPlaceShips: function(){    
+        this.clearField();
         for(var i=0; i < this.ships.length; i++){
             var ship = this.ships[i];
             var validPositions = [];
             // add horizontal valid positions
-            for(var row=0; row < this.yDim; row++)
-                for(var col=0; col < this.xDim - ship.size + 1; col++)
-                    if(this.allCellsFree(ship.size, true, row, col))
+            for(var row=0; row < this.cols; row++)
+                for(var col=0; col < this.rows - ship.size + 1; col++)
+                    if(this.field.allCellsFree(ship.size, true, row, col))
                         validPositions.push(new GridPos(true, row, col));
             // add vertical valid positions
-            for(var row=0; row < this.yDim - ship.size + 1; row++)
-                for(var col=0; col < this.xDim; col++)
-                    if(this.allCellsFree(ship.size, false, row, col))
+            for(var row=0; row < this.cols - ship.size + 1; row++)
+                for(var col=0; col < this.rows; col++)
+                    if(this.field.allCellsFree(ship.size, false, row, col))
                         validPositions.push(new GridPos(false, row, col));
 
             var randomIndex = Math.round(Math.random() * (validPositions.length - 1)); //if no valid positions available this goes negative and throws an error
@@ -214,17 +190,12 @@ Board.prototype = {
             this.placeShipByCoords(ship, randomGridPos.orientation, randomGridPos.row, randomGridPos.col);
         }
     },
-    allCellsFree: function(shipSize, orientation, rowHead, colHead){
-        for(var i=0; i < shipSize; i++){
-            var cell = this.field.getCellByRowCol(rowHead + (orientation ? 0 : i), colHead + (orientation ? i : 0));
-            if(cell.occupiedBy != null)
-                return false;
+    clearField: function(){ // TODO move to field?
+        for(var i=0; i < this.field.cells.length; i++){
+            var cell = this.field.cells[i];
+            cell.occupiedBy = null;
+            cell.shipsInMyNeighbourhood = 0;
         }
-        return true;
-    },
-    clearShipPositions: function(){
-        for(var i=0; i < this.field.cells.length; i++)
-            this.field.cells[i].occupiedBy = null;
         for(var i=0; i < this.ships.length; i++)
             this.ships[i].occupyingCells = []; 
     },
@@ -233,5 +204,18 @@ Board.prototype = {
             if(this.ships[i].occupyingCells.length == 0)
                 return false;
         return true;
+    },
+    fire: function(mouseX, mouseY){
+        var relXpos = mouseX - this.fieldLeft;
+        var relYpos = mouseY - this.fieldTop;
+        var row = Math.abs(Math.round((relYpos - this.cellSizePx / 2) / this.cellSizePx));
+        var col = Math.abs(Math.round((relXpos - this.cellSizePx / 2) / this.cellSizePx));
+
+        var fireResult = this.field.getCellByRowCol(row, col).fire();
+
+        this.oneMoreDraw = true; 
+        initDraw();
+
+        return fireResult;
     }
 };

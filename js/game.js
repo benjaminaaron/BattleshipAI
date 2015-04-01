@@ -1,184 +1,130 @@
 
-var Game = function(players, shipTypes, xDim, yDim, gameHook){
+var Game = function(players, shipTypes, totalRows, totalCols, gameHook){
     gameHook.innerHTML = '';
-
     this.players = players;
-
-    this.buildGameControlDOMelements(gameHook);
-
-    var canvasWidthPx = 370;
-    var canvasHeightPx = 300;
+    this.buildGameControlDOM(gameHook);
 
     this.boards = [];
 
     for(var i=0; i < players.length; i++){
-        var jQueryCanvas = this.buildBoardDOMelements(gameHook, i, canvasWidthPx, canvasHeightPx);
-        var board = new Board(i, players[i], shipTypes, $(jQueryCanvas)[0], xDim, yDim);
-        players[i].board = board;
-
-        board.draw();
-        this.boards.push(board);
-    }
-
-    this.gameHasStarted = false;
-    this.activeBoard = null;
-    this.initDrawDone = false; // draws all boards for the first time, after that only the active board will be re-drawn upon action
-}
-
-Game.prototype = {
-    draw: function(){
-        if(!this.initDrawDone){
-            for(var i=0; i < this.boards.length; i++)
-                this.boards[i].draw();
-            this.initDrawDone = true;
-        }      
-        if(this.activeBoard)
-            if(this.activeBoard.drawMe || this.activeBoard.oneMoreDraw){
-                this.activeBoard.oneMoreDraw = false;
-                this.activeBoard.draw();
-                animate = true;
-            }
-            else
-                animate = false;
-        else
-            animate = false;
-    },
-    buildBoardDOMelements: function(gameHook, boardNumb, canvasWidthPx, canvasHeightPx){
         var container = $('<div>').attr({
-            'id': 'container_' + boardNumb,
+            'id': 'container_' + i,
             'class': 'container'
         });
         $(gameHook).append(container);
 
-        var canvas = $('<canvas>').attr({
-            'id': 'canvas_' + boardNumb,
-            'width': canvasWidthPx,
-            'height': canvasHeightPx
-        });
-        $(container).append(canvas);
+        var board = new Board(i, container, this.btnCallback, players[i], shipTypes, totalRows, totalCols); //$(jQueryCanvas)[0] gets the pure canvas element without the jQuery Wrapper
+        players[i].board = board;
+        board.draw(); // draw them here instead of in draw() func with a initDrawDone toggle, seems better
+        this.boards.push(board);
+    }
 
-        var btnList = $('<ul>').attr({
-            'class': 'btnList'
-        });
-        $(container).append(btnList);
-        
-        var listElement = $('<li>');
-        $(btnList).append(listElement);
-        var doneBtn = $('<input>').attr({
-            'id': 'doneBtn_' + boardNumb,
+    this.currentPlayerIndex;
+    this.currentPlayer = null;
+    this.activeBoard = null;
+
+    this.inPlayPhase = false;
+}
+
+Game.prototype = {
+    draw: function(){   
+        if(this.activeBoard.drawMe || this.activeBoard.oneMoreDraw){
+            this.activeBoard.oneMoreDraw = false;
+            this.activeBoard.draw();
+            animate = true;
+        }
+        else
+            animate = false;
+    },
+    buildGameControlDOM: function(gameHook){
+        var gameControls = $('<div>').attr({
+            'id': 'gameControls'
+            });
+        $(gameHook).append(gameControls);
+
+        var nav = $('<nav>');
+        $(gameControls).append(nav);
+
+        var startBtn = $('<input>').attr({
+            'id': 'startBtn',
             'type': 'button',
-            'value': 'done',
-            'disabled': true
+            'value': 'start game'
         });
         var self = this;
-        $(doneBtn).click(function(){
-            self.doneClicked();
-        });  
-        $(listElement).append(doneBtn);
-
-        listElement = $('<li>');
-        $(btnList).append(listElement);
-        var randomBtn = $('<input>').attr({
-            'id': 'randomBtn_' + boardNumb,
-            'type': 'button',
-            'value': 'random',
-            'disabled': true
-        });
-        $(randomBtn).click(function(){
-            self.activeBoard.randomlyPlaceShips();
+        $(startBtn).click(function(){
+            self.startBtnClicked();
         }); 
-        $(listElement).append(randomBtn);
+        $(nav).append(startBtn);
 
-        return canvas;
+        var infoBtn = $('<input>').attr({
+            'id': 'infoBtn',
+            'type': 'button',
+            'value': 'info'
+        });
+        $(infoBtn).click(function(){
+            self.infoBtnClicked();
+        });  
+        $(nav).append(infoBtn);
+
+        var statusLabel = $('<div>').attr({
+                'id': 'statusLabel'
+            });
+        $(statusLabel).append('&nbsp;&nbsp;&nbsp;game hasn\'t started yet');
+        $(gameControls).append(statusLabel);
     },
-    doneClicked: function(){
-        if(this.activeBoard.allShipsPlaced())
-            this.nextPlayersTurn();
-        else
-            alert('not all ships are placed yet');
-    },
-    nextPlayersTurn: function(){
-        this.players[this.currentPlayerIndex].myTurn = false;
-        this.activeBoard.iAmActiveBoard = false;
+
+    shutDownPlayerInSetupPhase: function(){
         $('#container_' + this.currentPlayerIndex).removeClass('activeContainer');
-        $('#doneBtn_' + this.currentPlayerIndex).prop('disabled', true);
-        $('#randomBtn_' + this.currentPlayerIndex).prop('disabled', true);
-        this.currentPlayerIndex ++;
-        if(this.currentPlayerIndex >= this.players.length){
-            $('#statusLabel').html('&nbsp;&nbsp;&nbsp;in play-phase');
-            this.currentPlayerIndex = 0;
+        if(!this.inPlayPhase){
+            $('#doneBtn_' + this.currentPlayerIndex).prop('disabled', true);
+            $('#randomBtn_' + this.currentPlayerIndex).prop('disabled', true);
         }
-        this.players[this.currentPlayerIndex].myTurn = true;
-        this.activeBoard = this.boards[this.currentPlayerIndex];
-        this.activeBoard.iAmActiveBoard = true;
-        $('#container_' + this.currentPlayerIndex).addClass('activeContainer');
-        $('#doneBtn_' + this.currentPlayerIndex).prop('disabled', false);
-        $('#randomBtn_' + this.currentPlayerIndex).prop('disabled', false);
+        this.currentPlayer.yourTurnIsOver();
     },
-    buildGameControlDOMelements: function(gameHook){
-    var gameControls = $('<div>').attr({
-        'id': 'gameControls'
-        });
-    $(gameHook).append(gameControls);
+    startUpPlayerInSetupPhase: function(){
+        this.activeBoard = this.boards[this.currentPlayerIndex];
+        $('#container_' + this.currentPlayerIndex).addClass('activeContainer');
+        if(!this.inPlayPhase){
+            $('#doneBtn_' + this.currentPlayerIndex).prop('disabled', false);
+            $('#randomBtn_' + this.currentPlayerIndex).prop('disabled', false);
+        }
+        this.currentPlayer = this.players[this.currentPlayerIndex];
+        this.currentPlayer.yourTurn();
+    },
 
-    var nav = $('<nav>');
-    $(gameControls).append(nav);
 
-    var startBtn = $('<input>').attr({
-        'id': 'startBtn',
-        'type': 'button',
-        'value': 'start game'
-    });
-    var self = this;
-    $(startBtn).click(function(){
-        self.startBtnClicked();
-    }); 
-    $(nav).append(startBtn);
+    nextPlayersTurn: function(){     
+        this.shutDownPlayerInSetupPhase();
+        this.currentPlayerIndex ++;
 
-    var infoBtn = $('<input>').attr({
-        'id': 'infoBtn',
-        'type': 'button',
-        'value': 'info'
-    });
-    $(infoBtn).click(function(){
-        self.infoBtnClicked();
-    });  
-    $(nav).append(infoBtn);
+        if(this.currentPlayerIndex >= this.players.length){       
+            this.currentPlayerIndex = 0;    
+            if(!this.inPlayPhase){
+                $('#statusLabel').html('&nbsp;&nbsp;&nbsp;in <b>play-phase</>');            
+                this.inPlayPhase = true;
+                for(var i=0; i < this.players.length; i++){
+                    this.players[i].switchBtwnPhases(true);
+                    if(this.players[i].type == 'human'){
+                        $('#doneBtn_' + i).hide();
+                        $('#randomBtn_' + i).hide();
+                    }
+                }
+            } 
+        }
 
-    var statusLabel = $('<div>').attr({
-            'id': 'statusLabel'
-        });
-    $(statusLabel).append('&nbsp;&nbsp;&nbsp;game hasn\'t started yet');
-    $(gameControls).append(statusLabel);
+        this.startUpPlayerInSetupPhase();
+    },
+    startBtnClicked: function(){
+        if(this.currentPlayer == null){ 
+            $('#statusLabel').html('&nbsp;&nbsp;&nbsp;in ship-setup phase');
+            $('#startBtn').prop('value', 'reset'); 
+            this.currentPlayerIndex = 0;
+            this.startUpPlayerInSetupPhase();         
+        }
+        else
+            location.reload();
     },
     infoBtnClicked: function(){
         alert('some info here...');
     },
-    startBtnClicked: function(){
-        if(!this.gameHasStarted){
-            this.gameHasStarted = true;
-            this.currentPlayerIndex = 0;
-            this.players[this.currentPlayerIndex].myTurn = true;
-            this.activeBoard = this.boards[this.currentPlayerIndex];
-            this.activeBoard.iAmActiveBoard = true;
-            $('#container_' + this.currentPlayerIndex).addClass('activeContainer');
-            $('#doneBtn_' + this.currentPlayerIndex).prop('disabled', false);
-            $('#randomBtn_' + this.currentPlayerIndex).prop('disabled', false);
-
-            $('#statusLabel').html('&nbsp;&nbsp;&nbsp;in ship-setup phase');
-            $('#startBtn').prop('value', 'reset');
-        }
-        else
-            location.reload();
-    }
-}
-
-function initDraw(){
-    window.requestAnimationFrame(draw);
-}
-
-function draw(){
-    game.draw();
-    if(animate)
-        window.requestAnimationFrame(draw);
 }
