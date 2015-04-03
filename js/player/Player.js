@@ -1,11 +1,11 @@
 
-var AbstractPlayer = function(){
+var Player = function(){
    	this.name;
    	this.myTurn = false;
    	this.inPlayPhase = false;
 }
 
-AbstractPlayer.prototype = {
+Player.prototype = {
 	btnCallback: function(btnType){},
 	
 	switchBtwnPhases: function(playPhase){

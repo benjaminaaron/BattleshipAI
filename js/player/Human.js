@@ -1,6 +1,6 @@
 
 var Human = function(name){
-	AbstractPlayer.call(this);
+	Player.call(this);
 	this.name = name;
 	this.type = 'human';
 
@@ -8,7 +8,7 @@ var Human = function(name){
 }
 
 Human.prototype = { 
-	__proto__: AbstractPlayer.prototype,
+	__proto__: Player.prototype,
 
 	init: function(board, canvas){
 		this.board = board;

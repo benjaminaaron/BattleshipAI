@@ -1,11 +1,11 @@
 
 var Bot = function(){
-	AbstractPlayer.call(this);
+	Player.call(this);
 	this.name = 'AI';
 	this.type = 'bot';
 }
 Bot.prototype = {
-	__proto__: AbstractPlayer.prototype,
+	__proto__: Player.prototype,
 
 	init: function(board, canvas){
 		this.board = board;
