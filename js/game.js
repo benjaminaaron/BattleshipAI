@@ -82,7 +82,7 @@ Game.prototype = {
     },
     setupCompleted: function(caller){
         if(this.isSingleGame){
-            $('#statusLabel').html('in <b>play-phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+            $('#statusLabel').html('in <b>play phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
             this.inPlayPhase = true;
             this.currentPlayer.yourTurn();
         } else {
@@ -91,6 +91,7 @@ Game.prototype = {
                 this.currentPlayer.yourSetup(); 
             } else {
                 this.inPlayPhase = true;
+                $('#statusLabel').html('in <b>play phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
                 this.currentPlayer = this.player0;
                 this.currentPlayer.yourTurn(); 
             }

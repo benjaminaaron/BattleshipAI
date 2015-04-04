@@ -1,8 +1,8 @@
 
 var ShipType = function(size, color, quantity){
-	this.size = size;
-	this.color = color;
-	this.quantity = quantity;
+    this.size = size;
+    this.color = color;
+    this.quantity = quantity;
 }
 
 var Ship = function(id, size, color){ 

@@ -7,9 +7,9 @@ var Board = function(id, container, player, shipTypes, rows, cols){
     this.canvasHeightPx = 300;
 
     var canvas = $('<canvas>').attr({
-            'id': 'canvas_' + this.id,
-            'width': this.canvasWidthPx,
-            'height': this.canvasHeightPx
+        'id': 'canvas_' + this.id,
+        'width': this.canvasWidthPx,
+        'height': this.canvasHeightPx
     });
     $(container).append(canvas);
     this.canvas = $(canvas)[0];
@@ -30,10 +30,10 @@ var Board = function(id, container, player, shipTypes, rows, cols){
     //add ships as defined in shipTypes
     this.ships = [];
     for(var i=0; i < shipTypes.length; i++)
-    	for(var j=0; j < shipTypes[i].quantity; j++){
+        for(var j=0; j < shipTypes[i].quantity; j++){
             var ship = new Ship(this.id + '-' + this.ships.length, shipTypes[i].size, shipTypes[i].color);   
             ship.initPlacement(this.ships.length, true, this.cellSizePx, this.fieldRight, this.fieldTop);
-    		this.ships.push(ship);
+            this.ships.push(ship);
         }
 
     this.showShips = true;
@@ -44,60 +44,60 @@ var Board = function(id, container, player, shipTypes, rows, cols){
 
 Board.prototype = {
     draw: function(){
-            var ctx = this.canvas.getContext('2d');
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); 
+        var ctx = this.canvas.getContext('2d');
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); 
 
-            // winner board effects
-            if(this.winnerBoard){
-                ctx.fillStyle = 'yellow';
-                ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.width);
-            }
+        // winner board effects
+        if(this.winnerBoard){
+            ctx.fillStyle = 'yellow';
+            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.width);
+        }
 
-            // field
-            this.field.draw();
+        // field
+        this.field.draw();
 
-            // ships
-            if(this.showShips)
-                for(var i=0; i < this.ships.length; i++)
-                    this.ships[i].draw(ctx);
+        // ships
+        if(this.showShips)
+            for(var i=0; i < this.ships.length; i++)
+                this.ships[i].draw(ctx);
                 
-            // hits
-            this.field.drawHits();
+        // hits
+        this.field.drawHits();
 
-            // destroyed
-            ctx.strokeStyle = 'black'; 
-            ctx.lineWidth = 2;
-            for(var i=0; i < this.ships.length; i++){
-                var ship = this.ships[i];
-                if(ship.destroyed){
-                    ctx.rect(ship.x, ship.y, ship.w, ship.h);
-                    ctx.stroke();
-                }
-            }
-
-            // looser board effect
-            if(this.looserBoard){
-                ctx.strokeStyle = 'red'; 
-                ctx.lineWidth = 20;
-                ctx.beginPath();
-                ctx.moveTo(0, 0);
-                ctx.lineTo(ctx.canvas.width, ctx.canvas.height);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(0, ctx.canvas.height);
-                ctx.lineTo(ctx.canvas.width, 0);
+        // destroyed
+        ctx.strokeStyle = 'black'; 
+        ctx.lineWidth = 2;
+        for(var i=0; i < this.ships.length; i++){
+            var ship = this.ships[i];
+            if(ship.destroyed){
+                ctx.rect(ship.x, ship.y, ship.w, ship.h);
                 ctx.stroke();
             }
+        }
 
-            // name
-            ctx.fillStyle = 'navy';
-            ctx.font = '20px georgia'; 
-            var name = this.player.name;
-            var nameWidth = ctx.measureText(name).width;
-            ctx.fillText(name, this.fieldLeft, this.fieldTop - 30);
-            ctx.fillStyle = 'maroon';
-            ctx.font = '10px georgia'; 
-            ctx.fillText(this.player.type, this.fieldLeft + nameWidth + 10, this.fieldTop - 30);
+        // looser board effect
+        if(this.looserBoard){
+            ctx.strokeStyle = 'red'; 
+            ctx.lineWidth = 10;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(ctx.canvas.width, ctx.canvas.height);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(0, ctx.canvas.height);
+            ctx.lineTo(ctx.canvas.width, 0);
+            ctx.stroke();
+        }
+
+        // name
+        ctx.fillStyle = 'navy';
+        ctx.font = '20px georgia'; 
+        var name = this.player.name;
+        var nameWidth = ctx.measureText(name).width;
+        ctx.fillText(name, this.fieldLeft, this.fieldTop - 30);
+        ctx.fillStyle = 'maroon';
+        ctx.font = '10px georgia'; 
+        ctx.fillText(this.player.type, this.fieldLeft + nameWidth + 10, this.fieldTop - 30);
     },
     installCanvasListener: function(canvas){
         var self = this;

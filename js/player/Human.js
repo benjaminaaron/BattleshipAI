@@ -1,18 +1,18 @@
 
 var Human = function(name){
-	Player.call(this, name);
-	this.type = 'human';
+    Player.call(this, name);
+    this.type = 'human';
 
-	this.selectedShip = null;
+    this.selectedShip = null;
 }
 
 Human.prototype = { 
-	__proto__: Player.prototype,
+    __proto__: Player.prototype,
 
-	init: function(id, board){
+    init: function(id, board){
         Player.prototype.init.call(this, id, board); 
         var canvas = board.canvas;
-	},
+    },
     yourSetup: function(){
         Player.prototype.yourSetup.call(this); 
         if(this.type == 'human' && this == this.opponent){ // case single human
@@ -24,7 +24,7 @@ Human.prototype = {
             }, 10); 
         } 
     },
- 	mousedown: function(xMouse, yMouse){    
+     mousedown: function(xMouse, yMouse){    
         Player.prototype.mousedown.call(this, xMouse, yMouse);   
         if(!this.inPlayPhase){
             this.xMousedown = xMouse;
@@ -45,8 +45,8 @@ Human.prototype = {
         if(mousemoved && ship){
             ship.moveTo(xMouse, yMouse);
             if(this.board.shipIsCompletelyOverField(ship))
-             	this.board.shipMovesOverField(ship);  
-            draw();		
+                 this.board.shipMovesOverField(ship);  
+            draw();        
         } 
     },
     mouseup: function(xMouse, yMouse){

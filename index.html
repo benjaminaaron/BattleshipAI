@@ -78,7 +78,7 @@
                 $('#gameOptions').hide();
                 $('#startBtn').hide();
                 $('#resetBtn').show();
-                $('#statusLabel').html('in setup-phase&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+                $('#statusLabel').html('in <b>setup phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
                 var gameControlsWidth = (player1 ? 2 : 1) * 370 + (player1 ? 4 : 0);
                 $('#gameControls').css('cssText', 'width: ' + gameControlsWidth + 'px !important');
 
@@ -92,12 +92,23 @@
             }
 
             function drawGame(){
-                console.log('drawing');
+                //console.log('drawing');
                 game.draw();
             }
 
             function info(){
-                alert('build by:\n@stehrenberg\n@chanton1392\n@abstractCalculus\n@benjaminaaron\n\nmore info at:\nhttps://github.com/benjaminaaron/BattleshipAI');
+
+                var str = 'Setup phase:\n' +
+                          '- drag ships to place them\n' + 
+                          '- click on a ship will flip its orientation\n' +
+                          '- click on the field will randomly place all ships\n' +
+                          '- click on your board outside of the field means you finished setting up ships\n\n' +
+                          'Play phase:\n' +
+                          '- just go ahead shooting around on the opponents field\n\n' + 
+                          'The single modes are there as benchmarks and for development and training of the AI.\n\n' + 
+                          'Build by:\n@stehrenberg\n@chanton1392\n@abstractCalculus\n@benjaminaaron\n\n' + 
+                          'More info at:\nhttps://github.com/benjaminaaron/BattleshipAI';
+                alert(str);
             }
 
             function reset(){
