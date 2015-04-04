@@ -1,6 +1,6 @@
 
 #gameControls {
-    width: 884px !important;
+    width: 744px !important;
     height: 40px !important;
     border-style: solid;
     border-width: 2px;
@@ -9,21 +9,21 @@
     margin: 0 0 10px 0;          
 }
 
-#gameControls input {
-    float: left;
+input, select {
     margin: 10px 0 10px 10px;  
 }
 
 #statusLabel {
     font-family: Georgia, sans-serif;
-    font-size:  12px;
-    color: #999;
+    font-size:  14px;
+    color: #666;
     margin: 14px 0 0 0;
+    float: right;
 }
 
 .container {
     float:left;
-    width: 440px !important;
+    width: 370px !important;
     border-style: solid;
     border-width: 2px;
     border-color: #CCC;
@@ -36,15 +36,4 @@
 
 canvas {
     float: left;
-}
-
-.btnList {
-    float: left;
-    list-style-type: none;
-    margin: 30px 0 0 0;   
-    padding: 0;  
-}
-
-.btnList li {
-    margin: 0 0 10px 0;
 }

@@ -5,6 +5,14 @@ var GridPos = function(orientation, row, col){
     this.col = col;
 }
 
+var shot = {
+    NONE : 0,
+    HIT : 1,
+    DESTROYED : 2,
+    ALREADYSHOT : 3,
+    ALLDESTROYED : 4
+}
+
 var Cell = function(row, col){
     this.id = row + '_' + col;
     this.row = row;
@@ -12,20 +20,23 @@ var Cell = function(row, col){
     this.occupiedBy = null;
     this.hoveredBy = null;
     this.shipsInMyNeighbourhood = 0;
-    this.orientationWhileHovering = true;
-
+    
     this.fired = false;
     this.fire = function(){
-        this.fired = true;
-        if(this.occupiedBy)
-            return true;
-        else
-            return false;
-    }
-
+        if(this.fired)
+            return shot.ALREADYSHOT;
+        else {
+            this.fired = true;
+            var ship = this.occupiedBy;
+            if(ship)
+                return ship.fire();
+            else
+                return shot.NONE;
+        }
+    };
     this.toString = function(){
         return '(' + this.row + '/' + this.col + ') occupiedBy: [' + this.occupiedBy + '] all neighbour cells are free: ' + this.shipsInMyNeighbourhood;
-    }
+    };
 }
 
 
@@ -42,7 +53,7 @@ var Field = function(rows, cols, ctx, fieldLeft, fieldTop, cellSizePx){
         for(var j = 0; j < rows; j++)
             this.cells.push(new Cell(i, j));
 
-    this.shadowShipCells = [];
+    this.lastValidShipPositionCells = [];
 }
 
 Field.prototype = {
@@ -111,7 +122,7 @@ Field.prototype = {
                     ctx.arc(xMiddle, yMiddle, a / 2, 0, Math.PI*2); 
                     ctx.closePath();
                     ctx.fill();
-                } else {        
+                } else {
                     ctx.beginPath();
                     ctx.moveTo(xMiddle - a, yMiddle - a);
                     ctx.lineTo(xMiddle + a, yMiddle + a);
@@ -136,29 +147,29 @@ Field.prototype = {
         }
         return true; 
     },
-    updateShadowCells: function(cells, ship){ //occupy false means hovering     
-        if(!this.isSameCellBundle(this.shadowShipCells, cells))
-            for(var i=0; i < this.shadowShipCells.length; i++) // means new position, therefore wipe old shadow position
-                this.shadowShipCells[i].hoveredBy = null;
+    clearShadowCells: function(){ // not very effective to run through all
+        for(var i=0; i < this.cells.length; i++)
+            this.cells[i].hoveredBy = null;
+    },
+    updateValidShipPositionCells: function(cells, ship){ //occupy false means hovering     
+        this.clearShadowCells();
         for(var i=0; i < cells.length; i++)
             cells[i].hoveredBy = ship;
-        if(cells.length > 0)
-            cells[0].orientationWhileHovering = ship.orientation;
-        this.shadowShipCells = cells;
+        this.lastValidShipPositionCells = cells;
     },
-    placeLastShadowShipCells: function(){
-        if(this.shadowShipCells.length > 0){
-            var firstCell = this.shadowShipCells[0];
+    placeShipAtLastValidPosition: function(){
+        if(this.lastValidShipPositionCells.length > 0){
+            var firstCell = this.lastValidShipPositionCells[0];
             var ship = firstCell.hoveredBy;
 
-            for(var i=0; i < this.shadowShipCells.length; i++){          
-                var cell = this.shadowShipCells[i];
+            for(var i=0; i < this.lastValidShipPositionCells.length; i++){          
+                var cell = this.lastValidShipPositionCells[i];
                 cell.occupiedBy = ship;
-                cell.hoveredBy = null;   
                 this.neighbourBlast(cell, 1);
             }
-            ship.occupyingCells = this.shadowShipCells;    
-            this.shadowShipCells = []; 
+            ship.occupyingCells = this.lastValidShipPositionCells;    
+            this.lastValidShipPositionCells = []; 
+            this.clearShadowCells();
             return firstCell; //just need first field to place the ship correctly
         }
         else
@@ -182,16 +193,13 @@ Field.prototype = {
         if(W)   W.shipsInMyNeighbourhood    += val;
         if(NW)  NW.shipsInMyNeighbourhood   += val;
     },
-    isSameCellBundle: function(bundle1, bundle2){ //TODO beter way?
-        if(bundle1.length == 0 || bundle2.length == 0)
-            return false;
-        if(bundle1.length == bundle2.length){
-            for(var i=0; i < bundle1.length; i++)
-                if(bundle1[i].id != bundle2[i].id)
-                    return false;
-            return true;
+    clear: function(){
+        for(var i=0; i < this.cells.length; i++){
+            var cell = this.cells[i];
+            cell.occupiedBy = null;
+            cell.hoveredBy = null;
+            cell.shipsInMyNeighbourhood = 0;
         }
-        return false;
     },
     toString: function(){
         var str = '';

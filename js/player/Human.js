@@ -1,7 +1,6 @@
 
 var Human = function(name){
-	Player.call(this);
-	this.name = name;
+	Player.call(this, name);
 	this.type = 'human';
 
 	this.selectedShip = null;
@@ -10,115 +9,78 @@ var Human = function(name){
 Human.prototype = { 
 	__proto__: Player.prototype,
 
-	init: function(board, canvas){
-		this.board = board;
-		this.canvas = canvas;
-
-		var self = this;
-
-		$(canvas).on('mousedown touchstart', function(e) {
-        if(self.myTurn){
-            e.preventDefault();
-            var canvasElement = canvas.getBoundingClientRect(); // rect.top, rect.right, rect.bottom, rect.left
-            var xMouse = e.originalEvent.pageX - canvasElement.left;
-            var yMouse = e.originalEvent.pageY - canvasElement.top;
-			if(!self.inPlayPhase)
-            	self.mousedown(xMouse, yMouse);
-            else
-            	self.fire(xMouse, yMouse);
-        }
-	    });
-	    $(canvas).on('mousemove touchmove', function(e) {
-	        if(self.myTurn && !self.inPlayPhase){ 
-	            e.preventDefault();
-	            var canvasElement = canvas.getBoundingClientRect();
-	            var xMouse = e.originalEvent.pageX - canvasElement.left;
-	            var yMouse = e.originalEvent.pageY - canvasElement.top;
-	            self.mousemove(xMouse, yMouse);
-	        }
-	    });
-	    $(canvas).on('mouseup touchend', function(e) {
-	        if(self.myTurn && !self.inPlayPhase){
-	            e.preventDefault();
-	           	self.mouseup();
-	        }
-	    });
+	init: function(id, board){
+        Player.prototype.init.call(this, id, board); 
+        var canvas = board.canvas;
 	},
-	btnCallback: function(btnType){
-        var myBoard = game.activeBoard;
-        if(btnType == 'done'){ 
-           if(myBoard.allShipsPlaced())
-                game.nextPlayersTurn();
-            else
-                alert('not all ships are placed yet');
-        }
-        if(btnType == 'random')
-        	myBoard.randomlyPlaceShips();   
+    yourSetup: function(){
+        Player.prototype.yourSetup.call(this); 
+        if(this.type == 'human' && this == this.opponent){ // case single human
+            this.board.randomlyPlaceShips();
+            this.board.showShips = false;
+            var self = this;
+            setTimeout(function(){
+                self.finishedSetup();
+            }, 10); 
+        } 
     },
- 	mousedown: function(xMouse, yMouse){
- 		var board = this.board;
-        var ship = board.getSelectedShip(xMouse, yMouse); 
-
-        if(ship){
-        	// act on possible previous placement
-            for(var i=0; i < ship.occupyingCells.length; i++){ // free the cells in case it was already placed before
-                var cell = ship.occupyingCells[i];
-                cell.occupiedBy = null;
-                board.field.neighbourBlast(cell, -1);
+ 	mousedown: function(xMouse, yMouse){    
+        Player.prototype.mousedown.call(this, xMouse, yMouse);   
+        if(!this.inPlayPhase){
+            this.xMousedown = xMouse;
+            this.yMousedown = yMouse;
+            var ship = this.board.getSelectedShip(xMouse, yMouse);
+            if(ship){
+                this.board.revokeShipPlacement(ship);
+                this.selectedShip = ship;
             }
-
-            // act on possible previous floating ("shadow ship")
-            board.field.updateShadowCells(ship.occupyingCells, ship); // leaves a shadow-footprint from the last position, in that way it's not possible for ships that were dragged again from the field-border to loose their last position
-            
-            ship.occupyingCells = [];  
-            board.drawMe = true; // causes continuous drawing until this is false again
-			this.selectedShip = ship;
-            initDraw();      
         }
+        else
+            this.fireOnCoords(xMouse, yMouse);
     },
     mousemove: function(xMouse, yMouse){
-    	var board = this.board;
-        // because drawMe is true, animation will render continously
-        if(this.selectedShip){
-            var ship = this.selectedShip;
+        Player.prototype.mousemove.call(this, xMouse, yMouse); 
+        var mousemoved = Math.abs(this.xMousedown - xMouse) > 2 || Math.abs(this.yMousedown - yMouse) > 2;
+        var ship = this.selectedShip;
+        if(mousemoved && ship){
             ship.moveTo(xMouse, yMouse);
-
-            if(board.shipIsCompletelyOverField(ship)){
-            	board.handleShipMovesOverField(ship);  
-            	ship.nextFlipAllowed = true;
+            if(this.board.shipIsCompletelyOverField(ship))
+             	this.board.shipMovesOverField(ship);  
+            draw();		
+        } 
+    },
+    mouseup: function(xMouse, yMouse){
+        Player.prototype.mouseup.call(this, xMouse, yMouse); 
+        var isClick = Math.abs(this.xMousedown - xMouse) < 2 && Math.abs(this.yMousedown - yMouse) < 2;
+        var ship = this.selectedShip;
+        if(isClick){
+            if(ship)
+                this.board.flipShipsOrientation(ship);
+            else
+                if(this.board.posIsOverField(xMouse, yMouse))
+                    this.board.randomlyPlaceShips();
+                else
+                    if(this.board.allShipsPlaced())
+                        this.finishedSetup();
+                    else
+                        alert('not all ships are placed yet');
+        } else
+            if(ship){
+                ship.movingStopped();
+                this.board.placeShip(ship);
             }
-           	if(board.shipTouchesRotationSwitch(ship))
-           		this.flipShipsOrientation(true);		
-        }  
+        this.selectedShip = null;
+        draw();
     },
-    mouseup: function(){
-        if(this.selectedShip){
-            this.selectedShip.movingStopped();
-            this.board.placeShip();
-            this.selectedShip = null; 
-            this.board.drawMe = false;
-            this.board.oneMoreDraw = true;
-        }  
-    },
-    flipShipsOrientation: function(justOnce){
-    	var ship = this.selectedShip;
-    	if(ship)
-	    	if(ship.nextFlipAllowed || !justOnce){
-	            ship.flipOrientation();
-	            ship.nextFlipAllowed = false;
-	       	}
-    },
-    yourTurn: function(){
-		this.myTurn = true;
-		console.log('>> it\'s my turn in ' + (this.inPlayPhase ? 'play-phase' : 'setup-phase') + ' says ' + this.name);
-	},
-	yourTurnIsOver: function(){
-		console.log('<< my turn is over says ' + this.name);
-	},
-	fire: function(xMouse, yMouse){ 	
-    	if(this.board.fire(xMouse, yMouse))
-    		console.log('yeah, a hit!');
-    	else
-    		console.log('no hit');
-	}
+    fireOnCoords: function(xMouse, yMouse){
+        if(this.board.posIsOverField(xMouse, yMouse)){
+            var relXpos = xMouse - this.board.fieldLeft;
+            var relYpos = yMouse - this.board.fieldTop;
+            var cellSizePx = this.board.cellSizePx;
+            var row = Math.abs(Math.round((relYpos - cellSizePx / 2) / cellSizePx));
+            var col = Math.abs(Math.round((relXpos - cellSizePx / 2) / cellSizePx));     
+            if(this.posNotFiredYet(row, col))
+                this.fire(row, col);
+        }
+    }
 }

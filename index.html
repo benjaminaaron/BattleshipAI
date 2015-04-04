@@ -22,32 +22,92 @@
         <script type="text/javascript" src="js/field.js"></script>
         <script type="text/javascript" src="js/ship.js"></script>
 
-        <div id='gameHook'>enable javascript in your browser to play battleship</div>
+        <!-- <input type='button' value='debug' onclick='debug();'> -->
+
+        <div id='gameHook'>
+            <div id='gameControls'>
+                    <select id='gameOptions' style="width:135px">
+                        <option value='hb'>human vs. bot</option>
+                        <option value='hh'>human vs. human</option>
+                        <option value='bb'>bot vs. bot</option>
+                        <option value='b'>single bot</option>
+                        <option value='h'>single human</option>
+                    </select>
+                    <input type='button' id='startBtn' value='start game' onclick='initGame();'>
+                    <input type='button' id='resetBtn' value='reset' onclick='reset();'>
+                    <input type='button' id='infoBtn' value='info' onclick='info();'>
+                <div id='statusLabel'>enable javascript in your browser to play battleship&nbsp;&nbsp;&nbsp;</div>
+            </div>
+        </div>
 
         <script>
 
-            var player1 = new Human('Max');
-            var player2 = new Bot();
-            var players = [player1, player2];
-            var shipTypes = [new ShipType(5, 'aqua', 1), new ShipType(4, 'maroon', 1), new ShipType(3, 'lime', 1), new ShipType(2, 'orange', 2)];
+            $('#statusLabel').html('game hasn\'t started yet&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+            $('#resetBtn').hide();
 
-            var game = new Game(players, shipTypes, 10, 10, document.getElementById('gameHook'));
+            var game;
 
-            var animate = false;
+            function initGame(){
 
-            function initDraw(){
-                window.requestAnimationFrame(draw);
+                var player0 = player1 = null;
+
+                switch($('#gameOptions').val()){
+                    case 'hb':
+                        var name = prompt('Enter your name:', 'Max');
+                        player0 = new Human(name);
+                        player1 = new Bot('random bot');                        
+                        break;
+                    case 'hh': 
+                        var name = prompt('Enter the name of Player 1:', 'Max');
+                        player0 = new Human(name);
+                        name = prompt('Enter the name of Player 2:', 'Erika');
+                        player1 = new Human(name);              
+                        break;
+                    case 'bb':
+                        player0 = new Bot('random bot 1');  
+                        player1 = new Bot('random bot 2');
+                        break;
+                    case 'b':
+                        player0 = new Bot('random bot');    
+                        break;
+                    case 'h':
+                        var name = prompt('Enter your name:', 'Max');
+                        player0 = new Human(name);
+                        break;
+                }
+                $('#gameOptions').hide();
+                $('#startBtn').hide();
+                $('#resetBtn').show();
+                $('#statusLabel').html('in setup-phase&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+                var gameControlsWidth = (player1 ? 2 : 1) * 370 + (player1 ? 4 : 0);
+                $('#gameControls').css('cssText', 'width: ' + gameControlsWidth + 'px !important');
+
+                var shipTypes = [new ShipType(5, 'aqua', 1), new ShipType(4, 'maroon', 1), new ShipType(3, 'lime', 1), new ShipType(2, 'orange', 2)];
+
+                game = new Game(player0, player1, shipTypes, 10, 10, document.getElementById('gameHook'));
             }
 
-            var drawCount = 0;
             function draw(){
-                drawCount ++;
-                //console.log(drawCount);
-                game.draw();
-                if(animate)
-                    window.requestAnimationFrame(draw);
+                window.requestAnimationFrame(drawGame);
             }
-                        
+
+            function drawGame(){
+                console.log('drawing');
+                game.draw();
+            }
+
+            function info(){
+                alert('build by:\n@stehrenberg\n@chanton1392\n@abstractCalculus\n@benjaminaaron\n\nmore info at:\nhttps://github.com/benjaminaaron/BattleshipAI');
+            }
+
+            function reset(){
+                location.reload();
+            }
+/*          
+            function debug(){      
+                console.log(game.boards[0].ships);
+            }                  
+            
             $('body').on('keydown', function(e){ 
                 if(e.shiftKey && game.activeBoard)  
                     if(game.currentPlayer)
@@ -58,7 +118,7 @@
                         if(game.currentPlayer.type == 'human')
                             game.currentPlayer.btnCallback('random');
             });
-
+*/
         </script>
 
     </body> 
