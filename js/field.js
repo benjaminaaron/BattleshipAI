@@ -1,6 +1,12 @@
 
-var GridPos = function(orientation, row, col){
+var ShipPos = function(orientation, row, col){
     this.orientation = orientation;
+    this.row = row;
+    this.col = col;
+}
+
+var FirePos = function(shotType, row, col){
+    this.shotType = shotType;
     this.row = row;
     this.col = col;
 }

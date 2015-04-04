@@ -14,9 +14,10 @@
         <!-- own css -->
         <link href="css/style.css" rel="stylesheet"/>
         <!-- own js -->
-        <script type="text/javascript" src="js/player/Player.js"/></script>
+        <script type="text/javascript" src="js/player/AbstractPlayer.js"/></script>
         <script type="text/javascript" src="js/player/Human.js"/></script>
-        <script type="text/javascript" src="js/player/Bot.js"/></script>
+        <script type="text/javascript" src="js/player/AbstractBot.js"/></script>
+        <script type="text/javascript" src="js/player/RandomBot.js"/></script>
         <script type="text/javascript" src="js/game.js"></script>
         <script type="text/javascript" src="js/board.js"></script>
         <script type="text/javascript" src="js/field.js"></script>
@@ -55,7 +56,7 @@
                     case 'hb':
                         var name = prompt('Enter your name:', 'Max');
                         player0 = new Human(name);
-                        player1 = new Bot('random bot');                        
+                        player1 = new RandomBot('random bot');                        
                         break;
                     case 'hh': 
                         var name = prompt('Enter the name of Player 1:', 'Max');
@@ -64,11 +65,11 @@
                         player1 = new Human(name);              
                         break;
                     case 'bb':
-                        player0 = new Bot('random bot 1');  
-                        player1 = new Bot('random bot 2');
+                        player0 = new RandomBot('random bot 1');  
+                        player1 = new RandomBot('random bot 2');
                         break;
                     case 'b':
-                        player0 = new Bot('random bot');    
+                        player0 = new RandomBot('random bot');    
                         break;
                     case 'h':
                         var name = prompt('Enter your name:', 'Max');

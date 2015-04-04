@@ -1,5 +1,5 @@
 
-var Player = function(name){
+var AbstractPlayer = function(name){
     this.name = name;
     this.myTurn = false;
     this.inPlayPhase = false;
@@ -7,7 +7,7 @@ var Player = function(name){
     this.firedMemory = [];
 }
 
-Player.prototype = {
+AbstractPlayer.prototype = {
     init: function(id, board){
         this.id = id;
         this.board = board;
@@ -54,7 +54,7 @@ Player.prototype = {
                 game.iWon(this);
                 break;  
         }
-        this.firedMemory.push(new GridPos(true, row, col));
+        this.firedMemory.push(new FirePos(result, row, col));
         this.finishedTurn();
     },
     posNotFiredYet: function(row, col){

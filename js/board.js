@@ -212,7 +212,7 @@ Board.prototype = {
         for(var row=0; row < this.cols; row++)
             for(var col=0; col < this.rows - ship.size + 1; col++)
                 if(this.field.allCellsFree(ship.size, true, row, col))
-                    validPositions.push(new GridPos(true, row, col));
+                    validPositions.push(new ShipPos(true, row, col));
         return validPositions;
     },
     getVerticalValidShipPositions: function(ship){
@@ -220,7 +220,7 @@ Board.prototype = {
         for(var row=0; row < this.cols - ship.size + 1; row++)
             for(var col=0; col < this.rows; col++)
                 if(this.field.allCellsFree(ship.size, false, row, col))
-                    validPositions.push(new GridPos(false, row, col));
+                    validPositions.push(new ShipPos(false, row, col));
         return validPositions;
     },
     clear: function(){

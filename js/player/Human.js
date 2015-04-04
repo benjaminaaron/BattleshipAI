@@ -1,20 +1,20 @@
 
 var Human = function(name){
-    Player.call(this, name);
+    AbstractPlayer.call(this, name);
     this.type = 'human';
 
     this.selectedShip = null;
 }
 
 Human.prototype = { 
-    __proto__: Player.prototype,
+    __proto__: AbstractPlayer.prototype,
 
     init: function(id, board){
-        Player.prototype.init.call(this, id, board); 
+        AbstractPlayer.prototype.init.call(this, id, board); 
         var canvas = board.canvas;
     },
     yourSetup: function(){
-        Player.prototype.yourSetup.call(this); 
+        AbstractPlayer.prototype.yourSetup.call(this); 
         if(this.type == 'human' && this == this.opponent){ // case single human
             this.board.randomlyPlaceShips();
             this.board.showShips = false;
@@ -25,7 +25,7 @@ Human.prototype = {
         } 
     },
      mousedown: function(xMouse, yMouse){    
-        Player.prototype.mousedown.call(this, xMouse, yMouse);   
+        AbstractPlayer.prototype.mousedown.call(this, xMouse, yMouse);   
         if(!this.inPlayPhase){
             this.xMousedown = xMouse;
             this.yMousedown = yMouse;
@@ -39,7 +39,7 @@ Human.prototype = {
             this.fireOnCoords(xMouse, yMouse);
     },
     mousemove: function(xMouse, yMouse){
-        Player.prototype.mousemove.call(this, xMouse, yMouse); 
+        AbstractPlayer.prototype.mousemove.call(this, xMouse, yMouse); 
         var mousemoved = Math.abs(this.xMousedown - xMouse) > 2 || Math.abs(this.yMousedown - yMouse) > 2;
         var ship = this.selectedShip;
         if(mousemoved && ship){
@@ -50,7 +50,7 @@ Human.prototype = {
         } 
     },
     mouseup: function(xMouse, yMouse){
-        Player.prototype.mouseup.call(this, xMouse, yMouse); 
+        AbstractPlayer.prototype.mouseup.call(this, xMouse, yMouse); 
         var isClick = Math.abs(this.xMousedown - xMouse) < 2 && Math.abs(this.yMousedown - yMouse) < 2;
         var ship = this.selectedShip;
         if(isClick){
