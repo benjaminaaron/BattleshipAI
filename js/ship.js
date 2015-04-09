@@ -26,9 +26,9 @@ var Ship = function(id, size, color){
         this.hits ++;
         if(this.hits >= this.size){
             this.destroyed = true;
-            return shot.DESTROYED;
+            return cellStatus.DESTROYED;
         }
-        return shot.HIT;
+        return cellStatus.HIT;
     };
 }
 

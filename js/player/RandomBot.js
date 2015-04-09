@@ -18,7 +18,7 @@ RandomBot.prototype = {
         while(!ok){
             row = Math.round(Math.random() * (game.rows - 1));
             col = Math.round(Math.random() * (game.cols - 1));
-            ok = this.posNotFiredYet(row, col);
+            ok = this.fieldMemory.getCellStatus(row, col) == cellStatus.UNTOUCHED;
         }
         var self = this;
         setTimeout(function(){

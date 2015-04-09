@@ -232,10 +232,10 @@ Board.prototype = {
     },
     fire: function(row, col){
         var fireResult = this.field.getCellByRowCol(row, col).fire();
-        if(fireResult == shot.DESTROYED)
+        if(fireResult == cellStatus.DESTROYED)
             this.destroyedShips ++;
         if(this.destroyedShips == this.ships.length)
-            fireResult = shot.ALLDESTROYED;
+            fireResult = cellStatus.ALLSHIPSDESTROYED; // TODO win case, catch here instead of letting player call iWon
         draw();
         return fireResult;
     }

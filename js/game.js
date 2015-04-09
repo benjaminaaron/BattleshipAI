@@ -117,10 +117,10 @@ Game.prototype = {
             }
         }
     },
-    iWon: function(caller){
+    iWon: function(caller, shotsFired){
         this.gameRunning = false;
         setTimeout(function(){
-            $('#statusLabel').html('<b>' + caller.name + ' won!</b>&nbsp;&nbsp;&nbsp;' + caller.firedMemory.length + ' (' + game.totalShipCells + '-' + game.totalCells + ')&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'); 
+            $('#statusLabel').html('<b>' + caller.name + ' won!</b>&nbsp;&nbsp;&nbsp;' + shotsFired + ' (' + game.totalShipCells + '-' + game.totalCells + ')&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'); 
             caller.board.winnerBoard = true;
             caller.opponent.board.looserBoard = true;  
             draw(); 

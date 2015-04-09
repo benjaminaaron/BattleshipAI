@@ -5,39 +5,26 @@ var ShipPos = function(orientation, row, col){
     this.col = col;
 }
 
-var FirePos = function(shotType, row, col){
-    this.shotType = shotType;
-    this.row = row;
-    this.col = col;
-}
-
-var shot = {
-    NONE : 0,
-    HIT : 1,
-    DESTROYED : 2,
-    ALREADYSHOT : 3,
-    ALLDESTROYED : 4
-}
-
 var Cell = function(row, col){
+    AbstractCell.call(this, row, col);
     this.id = row + '_' + col;
-    this.row = row;
-    this.col = col;
+
     this.occupiedBy = null;
     this.hoveredBy = null;
     this.shipsInMyNeighbourhood = 0;
     
     this.fired = false;
     this.fire = function(){
-        if(this.fired)
-            return shot.ALREADYSHOT;
+        if(this.fired){
+            //return cellStatus.ALREADYSHOT;
+        }
         else {
             this.fired = true;
             var ship = this.occupiedBy;
             if(ship)
                 return ship.fire();
             else
-                return shot.NONE;
+                return cellStatus.FIRED;
         }
     };
     this.toString = function(){
@@ -47,22 +34,19 @@ var Cell = function(row, col){
 
 
 var Field = function(rows, cols, ctx, fieldLeft, fieldTop, cellSizePx){
-    this.rows = rows;
-    this.cols = cols;
+    AbstractField.call(this, rows, cols);
+
     this.ctx = ctx;
     this.fieldLeft = fieldLeft;
     this.fieldTop = fieldTop;
     this.cellSizePx = cellSizePx;
 
-    this.cells = [];
-    for(var i = 0; i < rows; i++)
-        for(var j = 0; j < rows; j++)
-            this.cells.push(new Cell(i, j));
-
     this.lastValidShipPositionCells = [];
 }
 
 Field.prototype = {
+    __proto__: AbstractField.prototype,
+
     draw: function(){    
         var ctx = this.ctx;
         var fieldLeft = this.fieldLeft;
@@ -139,11 +123,6 @@ Field.prototype = {
                     ctx.stroke();
                 }
         }
-    },
-    getCellByRowCol: function(row, col){
-        if(row > this.rows - 1 || col > this.cols - 1)
-            return false;
-        return this.cells[row * this.cols + col];
     },
     allCellsFree: function(shipSize, orientation, rowHead, colHead){       
         for(var i=0; i < shipSize; i++){

@@ -4,7 +4,6 @@ var AbstractPlayer = function(name){
     this.myTurn = false;
     this.inPlayPhase = false;
     this.opponent = null;
-    this.firedMemory = [];
 }
 
 AbstractPlayer.prototype = {
@@ -12,6 +11,8 @@ AbstractPlayer.prototype = {
         this.id = id;
         this.board = board;
         this.canvas = board.canvas;
+
+        this.fieldMemory = new AbstractField(board.rows, board.cols); 
     },
     setOpponent: function(opponent){
         this.opponent = opponent;
@@ -35,26 +36,23 @@ AbstractPlayer.prototype = {
     },
     fire: function(row, col){
         var result = game.fire(this, row, col);
-        console.log(this.name + ' shot was:');
+        console.log(this.name + ' cellStatus after shot:');
         switch(result){
-            case shot.NONE:
+            case cellStatus.FIRED:
                 console.log('no hit');
                 break;
-            case shot.HIT:
+            case cellStatus.HIT:
                 console.log('hit');
                 break;
-            case shot.DESTROYED:
+            case cellStatus.DESTROYED:
                 console.log('destroyed');
                 break;
-            case shot.ALREADYSHOT:
-                console.log('already shot');
-                break;
-            case shot.ALLDESTROYED:
+            case cellStatus.ALLSHIPSDESTROYED:
                 console.log('all ships destroyed');
-                game.iWon(this);
+                game.iWon(this, this.fieldMemory.countFiredCells());
                 break;  
         }
-        this.firedMemory.push(new FirePos(result, row, col));
+        this.fieldMemory.setCellStatus(row, col, result);
         this.finishedTurn();
     },
     posNotFiredYet: function(row, col){

@@ -79,7 +79,7 @@ Human.prototype = {
             var cellSizePx = this.board.cellSizePx;
             var row = Math.abs(Math.round((relYpos - cellSizePx / 2) / cellSizePx));
             var col = Math.abs(Math.round((relXpos - cellSizePx / 2) / cellSizePx));     
-            if(this.posNotFiredYet(row, col))
+            if(this.fieldMemory.getCellStatus(row, col) == cellStatus.UNTOUCHED);
                 this.fire(row, col);
         }
     }
