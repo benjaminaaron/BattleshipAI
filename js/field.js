@@ -41,6 +41,11 @@ var Field = function(rows, cols, ctx, fieldLeft, fieldTop, cellSizePx){
     this.fieldTop = fieldTop;
     this.cellSizePx = cellSizePx;
 
+    this.cells = [];
+    for(var i = 0; i < rows; i++)
+        for(var j = 0; j < cols; j++)
+            this.cells.push(new Cell(i, j)); //solve better with AbstractField/Cell
+
     this.lastValidShipPositionCells = [];
 }
 

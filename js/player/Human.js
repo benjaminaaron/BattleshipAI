@@ -24,7 +24,7 @@ Human.prototype = {
             }, 10); 
         } 
     },
-     mousedown: function(xMouse, yMouse){    
+    mousedown: function(xMouse, yMouse){    
         AbstractPlayer.prototype.mousedown.call(this, xMouse, yMouse);   
         if(!this.inPlayPhase){
             this.xMousedown = xMouse;
@@ -79,7 +79,7 @@ Human.prototype = {
             var cellSizePx = this.board.cellSizePx;
             var row = Math.abs(Math.round((relYpos - cellSizePx / 2) / cellSizePx));
             var col = Math.abs(Math.round((relXpos - cellSizePx / 2) / cellSizePx));     
-            if(this.fieldMemory.getCellStatus(row, col) == cellStatus.UNTOUCHED);
+            if(this.fieldMemory.getCellStatus(row, col) == cellStatus.UNTOUCHED)
                 this.fire(row, col);
         }
     }

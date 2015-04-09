@@ -58,7 +58,7 @@
                     case 'hb':
                         var name = prompt('Enter your name:', 'Max');
                         player0 = new Human(name);
-                        player1 = new RandomBot('random bot');                        
+                        player1 = new RandomDestroyerBot('random destroyer bot');                        
                         break;
                     case 'hh': 
                         var name = prompt('Enter the name of Player 1:', 'Max');
@@ -67,7 +67,7 @@
                         player1 = new Human(name);              
                         break;
                     case 'bb':
-                        player0 = new RandomBot('random bot 1');  
+                        player0 = new RandomDestroyerBot('random destroyer bot 1');  
                         player1 = new RandomBot('random bot 2');
                         break;
                     case 'b':

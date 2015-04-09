@@ -20,7 +20,7 @@ var AbstractField = function(rows, cols){
     this.cells = [];
     for(var i = 0; i < rows; i++)
         for(var j = 0; j < cols; j++)
-            this.cells.push(new Cell(i, j));
+            this.cells.push(new AbstractCell(i, j));
 
     this.lastTouchedCell = null;
 }
