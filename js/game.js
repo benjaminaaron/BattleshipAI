@@ -119,11 +119,21 @@ Game.prototype = {
     },
     iWon: function(caller, shotsFired){
         this.gameRunning = false;
+        var self = this;
         setTimeout(function(){
             $('#statusLabel').html('<b>' + caller.name + ' won!</b>&nbsp;&nbsp;&nbsp;' + shotsFired + ' (' + game.totalShipCells + '-' + game.totalCells + ')&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'); 
             caller.board.winnerBoard = true;
             caller.opponent.board.looserBoard = true;  
             draw(); 
+            if(!self.isSingleGame && firebase){
+                firebase.push({
+                    timestamp: getFormattedDate(),
+                    player0: self.player0.name,
+                    player1: self.player1.name,
+                    winner: caller.id,
+                    shots: shotsFired
+                });
+            }
         }, 10);  
     }
 }

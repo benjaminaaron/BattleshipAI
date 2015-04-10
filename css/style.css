@@ -37,3 +37,7 @@ input, select {
 canvas {
     float: left;
 }
+
+.ui-widget {
+  font-size: 1em;
+}
