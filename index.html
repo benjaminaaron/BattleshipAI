@@ -21,8 +21,11 @@
         <script type="text/javascript" src="js/player/AbstractPlayer.js"/></script>
         <script type="text/javascript" src="js/player/Human.js"/></script>
         <script type="text/javascript" src="js/player/AbstractBot.js"/></script>
-        <script type="text/javascript" src="js/player/RandomBot.js"/></script>
-        <script type="text/javascript" src="js/player/RandomDestroyerBot.js"/></script>
+        <script type="text/javascript" src="js/player/bots/BotToolkit.js"/></script>
+        <script type="text/javascript" src="js/player/bots/RandomBot.js"/></script>
+        <script type="text/javascript" src="js/player/bots/RandomDestroyerBot.js"/></script>
+        <script type="text/javascript" src="js/player/bots/ZoningSquareDestroyerBot.js"/></script>
+        <script type="text/javascript" src="js/player/bots/ZoningRectDestroyerBot.js"/></script>
         <script type="text/javascript" src="js/game.js"></script>
         <script type="text/javascript" src="js/board.js"></script>
         <script type="text/javascript" src="js/AbstractField.js"></script>
@@ -56,7 +59,7 @@
         <script>
          
             $('.dialog').dialog({
-                width: 800,
+                width: 850,
                 autoOpen: false,
                 show: {
                     effect: 'fade',
@@ -94,7 +97,7 @@
             var game;
 
             function createBot(){
-                var type = prompt('What kind of bot (r, rd, zd, po):', 'r');
+                var type = prompt('What kind of bot (r, rd, zsd, (zrd, po)):', 'r');
                 var bot = false;
                 switch(type){
                     case 'r':
@@ -102,6 +105,12 @@
                         break;
                     case 'rd':
                         bot = new RandomDestroyerBot('random destroyer bot');
+                        break;
+                    case 'zsd':
+                        bot = new ZoningSquareDestroyerBot('zoning square destroyer bot');
+                        break;
+                    case 'zrd':
+                        bot = new ZoningRectDestroyerBot('zoning rect destroyer bot');
                         break;
                 }
                 if(!bot){
@@ -213,7 +222,7 @@
             }
 
             function showHighscore(){
-                var popup = $('#highscoreDialog');
+                var popup = $('#highscoreDialog');  
                 popup.dialog('open');
 
                 if(firebase){
@@ -231,6 +240,7 @@
                         }
                         // TODO sort highscoreEntries
                         popup.children().remove();
+                        popup.html(''); 
                         var table = $('<table>');
                         popup.append(table);
                         var tr, td;

@@ -22,5 +22,13 @@ AbstractBot.prototype = {
     },
     yourTurn: function(){
         AbstractPlayer.prototype.yourTurn.call(this); 
+    },
+    randomFire: function(){
+        var untouchedCells = this.fieldMemory.getUntouchedCells();
+        var randomCell = untouchedCells[Math.random() * (untouchedCells.length - 1)];
+        var self = this;
+        setTimeout(function(){
+            self.fire(randomCell.row, randomCell.col);
+        }, 10);  
     }
 }

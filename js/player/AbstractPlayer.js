@@ -55,12 +55,6 @@ AbstractPlayer.prototype = {
         this.fieldMemory.setCellStatus(row, col, result);
         this.finishedTurn();
     },
-    posNotFiredYet: function(row, col){
-        for(var i=0; i < this.firedMemory.length; i++)
-            if(this.firedMemory[i].row == row && this.firedMemory[i].col == col)
-                return false;
-        return true;
-    },
     finishedTurn: function(){
         this.myTurn = false;
         $('#container_' + this.id).removeClass('activeContainer');    
@@ -71,7 +65,6 @@ AbstractPlayer.prototype = {
     mousemove: function(xMouse, yMouse){},
     mouseup: function(xMouse, yMouse){}
 };
-
 
 /*          var Animal = function(){
                 this.legs;

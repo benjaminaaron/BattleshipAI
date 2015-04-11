@@ -27,15 +27,23 @@ var AbstractField = function(rows, cols){
 
 AbstractField.prototype = {
 	getCellByRowCol: function(row, col){
-        if(row > this.rows - 1 || col > this.cols - 1)
+        if(row > this.rows - 1 || row < 0 || col > this.cols - 1 || col < 0)
             return false;
         return this.cells[row * this.cols + col];
     },
     getCellStatus: function(row, col){
     	return this.getCellByRowCol(row, col).status;
     },
+    cellIsExistingAndUntouched: function(row, col){
+        var cell = this.getCellByRowCol(row, col);
+        if(cell)
+            if(cell.status == cellStatus.UNTOUCHED)
+                return cell;
+        return false;
+        //console.log('cell ' + row + '/' + col + ' is being checked - is ' + returnVal);
+    },
     setCellStatus: function(row, col, status){
-    	var cell = this.getCellByRowCol(row, col);
+    	var cell = this.getCellByRowCol(row, col);    
     	cell.status = status;
     	this.lastTouchedCell = cell;
     },
@@ -45,6 +53,13 @@ AbstractField.prototype = {
     		if(this.cells[i].status != cellStatus.UNTOUCHED)
     			count ++;
     	return count;
+    },
+    getUntouchedCells: function(){
+        var cells = [];
+        for(var i=0; i < this.cells.length; i++)
+            if(this.cells[i].status == cellStatus.UNTOUCHED)
+                cells.push(this.cells[i]);
+        return cells;
     }
 }
 
