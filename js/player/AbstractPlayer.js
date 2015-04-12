@@ -35,21 +35,24 @@ AbstractPlayer.prototype = {
         console.log('>> it\'s my turn says ' + this.name);
     },
     fire: function(row, col){
-        var result = game.fire(this, row, col);
-        console.log(this.name + ' cellStatus after shot:');
+        var resultMsg = game.fire(this, row, col);
+        var result = resultMsg.status;
+        console.log(this.name + ' CellStatus after shot:');
         switch(result){
-            case cellStatus.FIRED:
+            case CellStatus.FIRED:
                 console.log('no hit');
                 break;
-            case cellStatus.HIT:
+            case CellStatus.HIT:
                 console.log('hit');
                 break;
-            case cellStatus.DESTROYED:
+            case CellStatus.DESTROYED:
                 console.log('destroyed');
+                this.fieldMemory.setCellStatusesAroundShipToSpare(resultMsg.destroyedShip);
+                console.log(this.fieldMemory);
                 break;
-            case cellStatus.ALLSHIPSDESTROYED:
+            case CellStatus.ALLSHIPSDESTROYED:
                 console.log('all ships destroyed');
-                game.iWon(this, this.fieldMemory.countFiredCells());
+                game.iWon(this, this.fieldMemory.countFiredCells() + 1);
                 break;  
         }
         this.fieldMemory.setCellStatus(row, col, result);

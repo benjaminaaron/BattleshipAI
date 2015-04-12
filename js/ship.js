@@ -26,9 +26,11 @@ var Ship = function(id, size, color){
         this.hits ++;
         if(this.hits >= this.size){
             this.destroyed = true;
-            return cellStatus.DESTROYED;
+            var msg = new CellStatusMsg(CellStatus.DESTROYED);
+            msg.destroyedShip = this;
+            return msg;
         }
-        return cellStatus.HIT;
+        return new CellStatusMsg(CellStatus.HIT);
     };
 }
 

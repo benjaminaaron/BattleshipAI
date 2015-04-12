@@ -20,9 +20,9 @@ RandomDestroyerBot.prototype = {
         
         var lastTouchedCell = this.fieldMemory.lastTouchedCell;
         if(lastTouchedCell){
-            if(lastTouchedCell.status == cellStatus.HIT && this.goal == null)
+            if(lastTouchedCell.status == CellStatus.HIT && this.goal == null)
                 this.goal = new DestructionGoal(lastTouchedCell, this);
-            if(lastTouchedCell.status == cellStatus.DESTROYED)
+            if(lastTouchedCell.status == CellStatus.DESTROYED)
                 this.goal = null;
         }
 
@@ -33,7 +33,7 @@ RandomDestroyerBot.prototype = {
             while(!ok){
                 row = Math.round(Math.random() * (game.rows - 1));
                 col = Math.round(Math.random() * (game.cols - 1));
-                ok = this.fieldMemory.getCellStatus(row, col) == cellStatus.UNTOUCHED;
+                ok = this.fieldMemory.getCellStatus(row, col) == CellStatus.UNTOUCHED;
             }
             var self = this;
             setTimeout(function(){

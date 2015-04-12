@@ -1,16 +1,22 @@
 
-var cellStatus = {
+var CellStatus = {
     UNTOUCHED: 0,
     FIRED : 1,
     HIT : 2,
     DESTROYED : 3,
-    ALLSHIPSDESTROYED : 4
+    SPARE: 4, // for neighbour cells of destroyed ships
+    ALLSHIPSDESTROYED : 5
+}
+
+var CellStatusMsg = function(status) {
+    this.status = status;
+    this.destroyedShip; // if there is one
 }
 
 var AbstractCell = function(row, col){
     this.row = row;
     this.col = col;
-    this.status = cellStatus.UNTOUCHED;
+    this.status = CellStatus.UNTOUCHED;
 }
 
 var AbstractField = function(rows, cols){
@@ -37,7 +43,7 @@ AbstractField.prototype = {
     cellIsExistingAndUntouched: function(row, col){
         var cell = this.getCellByRowCol(row, col);
         if(cell)
-            if(cell.status == cellStatus.UNTOUCHED)
+            if(cell.status == CellStatus.UNTOUCHED)
                 return cell;
         return false;
         //console.log('cell ' + row + '/' + col + ' is being checked - is ' + returnVal);
@@ -50,16 +56,47 @@ AbstractField.prototype = {
     countFiredCells: function(){
     	var count = 0;
     	for(var i=0; i < this.cells.length; i++)
-    		if(this.cells[i].status != cellStatus.UNTOUCHED)
+    		if(this.cells[i].status == CellStatus.HIT || this.cells[i].status == CellStatus.DESTROYED || this.cells[i].status == CellStatus.FIRED)
     			count ++;
     	return count;
     },
     getUntouchedCells: function(){
         var cells = [];
         for(var i=0; i < this.cells.length; i++)
-            if(this.cells[i].status == cellStatus.UNTOUCHED)
+            if(this.cells[i].status == CellStatus.UNTOUCHED)
                 cells.push(this.cells[i]);
         return cells;
+    },
+    setCellStatusesAroundShipToSpare: function(ship){
+        var firstCell = ship.occupyingCells[0];
+        var neighbourCells = [];
+        if(ship.orientation){ 
+            //west
+            neighbourCells.push(this.getCellByRowCol(firstCell.row, firstCell.col - 1));
+            //east
+            neighbourCells.push(this.getCellByRowCol(firstCell.row, firstCell.col + ship.size));
+            //north and south
+            for(var i=0; i < ship.size + 2; i++){
+                neighbourCells.push(this.getCellByRowCol(firstCell.row - 1, firstCell.col - 1 + i));
+                neighbourCells.push(this.getCellByRowCol(firstCell.row + 1, firstCell.col - 1 + i));
+            }
+        } else {
+            //north
+            neighbourCells.push(this.getCellByRowCol(firstCell.row - 1, firstCell.col));
+            //south
+            neighbourCells.push(this.getCellByRowCol(firstCell.row + ship.size, firstCell.col));
+            //east and west
+            for(var i=0; i < ship.size + 2; i++){
+                neighbourCells.push(this.getCellByRowCol(firstCell.row - 1 + i, firstCell.col - 1));
+                neighbourCells.push(this.getCellByRowCol(firstCell.row - 1 + i, firstCell.col + 1));
+            }
+        }
+        for(var i=0; i < neighbourCells.length; i++){
+            var cell = neighbourCells[i];
+            if(cell)
+                if(cell.status == CellStatus.UNTOUCHED)
+                    cell.status = CellStatus.SPARE;
+        }
     }
 }
 

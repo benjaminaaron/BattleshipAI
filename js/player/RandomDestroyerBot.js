@@ -20,9 +20,9 @@ RandomDestroyerBot.prototype = {
         
         var lastTouchedCell = this.fieldMemory.lastTouchedCell;
         if(lastTouchedCell){
-            if(lastTouchedCell.status == cellStatus.HIT && this.goal == null)
+            if(lastTouchedCell.status == CellStatus.HIT && this.goal == null)
                 this.goal = new DestructionGoal(lastTouchedCell, this);
-            if(lastTouchedCell.status == cellStatus.DESTROYED)
+            if(lastTouchedCell.status == CellStatus.DESTROYED)
                 this.goal = null;
         }
 
@@ -56,10 +56,10 @@ var DestructionGoal = function(cell, caller){
     var rows = caller.board.rows;
     var cols = caller.board.cols; // 10x10
 
-    var northDone = cell.row == 0 || this.fieldMemory.getCellByRowCol(cell.row - 1, cell.col).status == cellStatus.FIRED;
-    var eastDone = cell.col == cols - 1 || this.fieldMemory.getCellByRowCol(cell.row, cell.col + 1).status == cellStatus.FIRED;
-    var southDone = cell.row == rows - 1 || this.fieldMemory.getCellByRowCol(cell.row + 1, cell.col).status == cellStatus.FIRED;
-    var westDone = cell.col == 0 || this.fieldMemory.getCellByRowCol(cell.row, cell.col - 1).status == cellStatus.FIRED;
+    var northDone = cell.row == 0 || this.fieldMemory.getCellByRowCol(cell.row - 1, cell.col).status == CellStatus.FIRED;
+    var eastDone = cell.col == cols - 1 || this.fieldMemory.getCellByRowCol(cell.row, cell.col + 1).status == CellStatus.FIRED;
+    var southDone = cell.row == rows - 1 || this.fieldMemory.getCellByRowCol(cell.row + 1, cell.col).status == CellStatus.FIRED;
+    var westDone = cell.col == 0 || this.fieldMemory.getCellByRowCol(cell.row, cell.col - 1).status == CellStatus.FIRED;
 
     this.directions = [];
     if(!northDone)
@@ -81,7 +81,7 @@ DestructionGoal.prototype = {
 
         var lastTouchedCell = this.fieldMemory.lastTouchedCell;
 
-        if(this.cell != lastTouchedCell && lastTouchedCell.status == cellStatus.HIT){
+        if(this.cell != lastTouchedCell && lastTouchedCell.status == CellStatus.HIT){
             this.secondHitFound = true;
             console.log('2nd hit was in dir ' + this.lastDir.name);
         }
@@ -100,12 +100,12 @@ DestructionGoal.prototype = {
             var testTargetCol = this.cell.col + this.lastDir.mulDeltaCol(this.mulFact + 1);
             var testTargetCell = this.fieldMemory.getCellByRowCol(testTargetRow, testTargetCol);
 
-            if(lastTouchedCell.status != cellStatus.HIT || !testTargetCell){              
+            if(lastTouchedCell.status != CellStatus.HIT || !testTargetCell){              
                 this.lastDir.flip();
                 this.mulFact = 0;
             } else {
                 if(testTargetCell)
-                    if(testTargetCell.status == cellStatus.FIRED){
+                    if(testTargetCell.status == CellStatus.FIRED){
                         this.lastDir.flip();
                         this.mulFact = 0;
                     }

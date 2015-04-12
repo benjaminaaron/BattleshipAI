@@ -16,7 +16,7 @@ var Cell = function(row, col){
     this.fired = false;
     this.fire = function(){
         if(this.fired){
-            //return cellStatus.ALREADYSHOT;
+            //return CellStatus.ALREADYSHOT;
         }
         else {
             this.fired = true;
@@ -24,7 +24,7 @@ var Cell = function(row, col){
             if(ship)
                 return ship.fire();
             else
-                return cellStatus.FIRED;
+                return new CellStatusMsg(CellStatus.FIRED);
         }
     };
     this.toString = function(){

@@ -23,10 +23,10 @@ var DestructionGoal = function(cell, caller){
     var rows = caller.board.rows;
     var cols = caller.board.cols; // 10x10
 
-    var northDone = cell.row == 0 || this.fieldMemory.getCellByRowCol(cell.row - 1, cell.col).status == cellStatus.FIRED;
-    var eastDone = cell.col == cols - 1 || this.fieldMemory.getCellByRowCol(cell.row, cell.col + 1).status == cellStatus.FIRED;
-    var southDone = cell.row == rows - 1 || this.fieldMemory.getCellByRowCol(cell.row + 1, cell.col).status == cellStatus.FIRED;
-    var westDone = cell.col == 0 || this.fieldMemory.getCellByRowCol(cell.row, cell.col - 1).status == cellStatus.FIRED;
+    var northDone = cell.row == 0 || this.fieldMemory.getCellByRowCol(cell.row - 1, cell.col).status == CellStatus.FIRED;
+    var eastDone = cell.col == cols - 1 || this.fieldMemory.getCellByRowCol(cell.row, cell.col + 1).status == CellStatus.FIRED;
+    var southDone = cell.row == rows - 1 || this.fieldMemory.getCellByRowCol(cell.row + 1, cell.col).status == CellStatus.FIRED;
+    var westDone = cell.col == 0 || this.fieldMemory.getCellByRowCol(cell.row, cell.col - 1).status == CellStatus.FIRED;
 
     this.directions = [];
     if(!northDone)
@@ -48,7 +48,7 @@ DestructionGoal.prototype = {
 
         var lastTouchedCell = this.fieldMemory.lastTouchedCell;
 
-        if(this.cell != lastTouchedCell && lastTouchedCell.status == cellStatus.HIT){
+        if(this.cell != lastTouchedCell && lastTouchedCell.status == CellStatus.HIT){
             this.secondHitFound = true;
             console.log('2nd hit was in dir ' + this.lastDir.name);
         }
@@ -67,12 +67,12 @@ DestructionGoal.prototype = {
             var testTargetCol = this.cell.col + this.lastDir.mulDeltaCol(this.mulFact + 1);
             var testTargetCell = this.fieldMemory.getCellByRowCol(testTargetRow, testTargetCol);
 
-            if(lastTouchedCell.status != cellStatus.HIT || !testTargetCell){              
+            if(lastTouchedCell.status != CellStatus.HIT || !testTargetCell){              
                 this.lastDir.flip();
                 this.mulFact = 0;
             } else {
                 if(testTargetCell)
-                    if(testTargetCell.status == cellStatus.FIRED){
+                    if(testTargetCell.status == CellStatus.FIRED){
                         this.lastDir.flip();
                         this.mulFact = 0;
                     }
@@ -165,13 +165,44 @@ Zone.getCentreOfBiggestSquare = function(fieldMemory) {
 	return untouchedCells[choiceIndex];
 }
 
+
+
+Zone.expandIntoDir = function(fieldMemory, startCell, rowDir, colDir){
+	var nextCell = startCell;
+	var expand = true;
+	var freeFieldsAhead = -1;
+	while(expand){
+		freeFieldsAhead ++;
+		nextCell = fieldMemory.cellIsExistingAndUntouched(nextCell.row + rowDir, nextCell.col + colDir);
+		if(!nextCell)
+			expand = false;
+	}
+	return freeFieldsAhead;
+}																					
+
+
+Zone.expandBarIntoDir = function(fieldMemory, barlength, startRow, startCol, rowDir, colDir){
+	var expand = true;
+	var bar = -1;
+	while(expand){
+		bar ++;
+		for(var i=0; i < barlength; i++){
+			var row = startRow + rowDir + i * Math.abs(colDir) + bar * rowDir;
+			var col = startCol + colDir + i * Math.abs(rowDir) + bar * colDir;
+			expand = expand && fieldMemory.cellIsExistingAndUntouched(row, col);
+		}
+	}
+	return bar;
+}
+
+
 Zone.getCentreOfBiggestRect = function(fieldMemory){
-
-	fieldMemory.setCellStatus(2, 3, cellStatus.FIRED);
-    fieldMemory.setCellStatus(1, 7, cellStatus.FIRED);
-    fieldMemory.setCellStatus(5, 8, cellStatus.FIRED);
-    fieldMemory.setCellStatus(7, 5, cellStatus.FIRED);
-
+/*	//debug
+	fieldMemory.setCellStatus(2, 3, CellStatus.FIRED);
+    fieldMemory.setCellStatus(1, 7, CellStatus.FIRED);
+    fieldMemory.setCellStatus(5, 8, CellStatus.FIRED);
+    fieldMemory.setCellStatus(7, 5, CellStatus.FIRED);
+*/
 	var untouchedCells = fieldMemory.getUntouchedCells();
 
 	var maxArea = 0;
@@ -179,174 +210,99 @@ Zone.getCentreOfBiggestRect = function(fieldMemory){
 
 	var patches = new Patches();
 
-	console.log('here');
-
-
 	for(var i=0; i < untouchedCells.length; i++){
-		console.log('>>looking at untouched cell ' + i + ' of ' + untouchedCells.length);
-
-/*		var i = 55; //DEBUG
-		fieldMemory.setCellStatus(2, 3, cellStatus.FIRED);
-		fieldMemory.setCellStatus(1, 7, cellStatus.FIRED);
-		fieldMemory.setCellStatus(5, 8, cellStatus.FIRED);
-		fieldMemory.setCellStatus(7, 5, cellStatus.FIRED);	*/
-
 		var cell = untouchedCells[i];
 		var row = cell.row;
 		var col = cell.col;
-		
-		var nextCell, expand;
+		//console.log('>>looking at untouched cell ' + i + ' (' + row + '/' + col + ') of ' + untouchedCells.length);
 
 		// HORIZONTAL-FIRST expansion area
 
 		// horizontal bar from east to west
-		// east
-		nextCell = cell;
-		expand = true;
-		var east = -1;
-		while(expand){
-			east ++;
-			nextCell = fieldMemory.cellIsExistingAndUntouched(nextCell.row, nextCell.col + 1);
-			if(!nextCell)
-				expand = false;
-		}
-		console.log('east: ' + east);
+		var east = this.expandIntoDir(fieldMemory, cell, 0, 1);
+		//console.log('east: ' + east);
 
-		//west
-		nextCell = cell;
-		expand = true;
-		var west = -1;
-		while(expand){
-			west ++;
-			nextCell = fieldMemory.cellIsExistingAndUntouched(nextCell.row, nextCell.col - 1);
-			if(!nextCell)
-				expand = false;
-		}
-		console.log('west: ' + west);
+		var west = this.expandIntoDir(fieldMemory, cell, 0, -1);
+		//console.log('west: ' + west);
 		
 		// expand horizontal bar vertically from south to north
 		var horizSpanning = west + east + 1;
-		// south
-		expand = true;
-		var southbar = 0;
-		nextCell = fieldMemory.getCellByRowCol(cell.row + 1, cell.col - west);	
 
-		while(expand){
-			southbar ++;
-			for(var j=1; j < horizSpanning - 1; j++)
-				expand = expand && fieldMemory.cellIsExistingAndUntouched(cell.row + southbar, cell.col - west + j);
-			if(!expand)
-				southbar--;
-		}
-		console.log('southbar: ' + southbar);
+		var southbar = this.expandBarIntoDir(fieldMemory, horizSpanning, cell.row, cell.col - west, 1, 0);
+		//console.log('southbar: ' + southbar);
 
-		//north 
-		expand = true;
-		var northbar = 0;
-		nextCell = fieldMemory.getCellByRowCol(cell.row - 1, cell.col - west);
+		var northbar = this.expandBarIntoDir(fieldMemory, horizSpanning, cell.row, cell.col - west, -1, 0);
+		//console.log('northbar: ' + northbar);
 
-		while(expand){
-			northbar ++;
-			for(var j=1; j < horizSpanning - 1; j++)
-				expand = expand && fieldMemory.cellIsExistingAndUntouched(cell.row - northbar, cell.col - west + j);
-			if(!expand)
-				northbar--;
-		}
-		console.log('northbar: ' + northbar);
 		var vertSpanning = southbar + northbar + 1;
 		patches.push(new Patch(cell.row - northbar, cell.col - west, vertSpanning, horizSpanning));
-
 
 		// VERTICAL-FIRST expansion area
 
 		// vertical bar from south to north
-		// south
-		nextCell = cell;
-		expand = true;
-		var south = -1;
-		while(expand){
-			south ++;
-			nextCell = fieldMemory.cellIsExistingAndUntouched(nextCell.row + 1, nextCell.col);
-			if(!nextCell)
-				expand = false;
-		}
-		console.log('south: ' + south);
+		var south = this.expandIntoDir(fieldMemory, cell, 1, 0);
+		//console.log('south: ' + south);
 
-		// north
-		nextCell = cell;
-		expand = true;
-		var north = -1;
-		while(expand){
-			north ++;
-			nextCell = fieldMemory.cellIsExistingAndUntouched(nextCell.row - 1, nextCell.col);
-			if(!nextCell)
-				expand = false;
-		}
-		console.log('north: ' + north);
+		var north = this.expandIntoDir(fieldMemory, cell, -1, 0);
+		//console.log('north: ' + north);
 
 		// expand vertical bar horizontally from east to west
 		vertSpanning = south + north + 1;
-		// east
-		expand = true;
-		var eastbar = 0;
-		nextCell = fieldMemory.getCellByRowCol(cell.row - north, cell.col + 1);	
 
-		while(expand){
-			eastbar ++;
-			for(var j=1; j < vertSpanning - 1; j++)
-				expand = expand && fieldMemory.cellIsExistingAndUntouched(cell.row - north + j, cell.col + eastbar);
-			if(!expand)
-				eastbar--;
-		}
-		console.log('eastbar: ' + eastbar);
+		var eastbar = this.expandBarIntoDir(fieldMemory, vertSpanning, cell.row - north, cell.col, 0, 1);
+		//console.log('eastbar: ' + eastbar);
 
-		// west
-		expand = true;
-		var westbar = 0;
-		nextCell = fieldMemory.getCellByRowCol(cell.row - north, cell.col - 1);	
+		var westbar = this.expandBarIntoDir(fieldMemory, vertSpanning, cell.row - north, cell.col, 0, -1);
+		//console.log('westbar: ' + westbar);
 
-		while(expand){
-			westbar ++;
-			for(var j=1; j < vertSpanning - 1; j++)
-				expand = expand && fieldMemory.cellIsExistingAndUntouched(cell.row - north + j, cell.col - westbar);
-			if(!expand)
-				westbar--;
-		}
-		console.log('westbar: ' + westbar);
 		horizSpanning = eastbar + westbar + 1;
 		patches.push(new Patch(cell.row - north, cell.col - westbar, vertSpanning, horizSpanning));
 	}
-
-	//console.log(patches.length());
 	//patches.show();
-
+	return patches.getOneBiggestPatch().getOneMiddleCell();
 }
 
 
 var Patches = function(){
 	this.patches = [];
-	this.push = function(patch){
+	this.biggestPatches = [];
+	this.biggestPatchArea = 0;
+}
+
+Patches.prototype = {
+	push: function(patch){
 		var existsAlready = false;
 		for(var i=0; i < this.patches.length; i++)
 			if(this.patches[i].id == patch.id)
 				existsAlready = true;
-		if(!existsAlready)
+		if(!existsAlready){
 			this.patches.push(patch);
-	}
-	this.length = function(){
+			if(patch.area > this.biggestPatchArea){
+				this.biggestPatchArea = patch.area;
+				this.biggestPatches = [];
+				this.biggestPatches.push(patch);		
+			} else
+				if(patch.area == this.biggestPatchArea)
+					this.biggestPatches.push(patch);
+		}
+	},
+	length: function(){
 		return this.patches.length;
-	} 
-	this.show = function(){
+	}, 
+	show: function(){
 		for(var i=0; i < this.patches.length; i++)
 			console.log('' + this.patches[i]);
+	},
+	getOneBiggestPatch: function(){
+		var index = 0;
+		if(this.biggestPatches.length > 1)
+			index = Math.round(Math.random() * (this.biggestPatches.length - 1));
+		return this.biggestPatches[index];
 	}
 }
 
 
 var Patch = function(NWrow, NWcol, rowsHigh, colsWide){ //is one free rectangular spot
-	
-	console.log('in new Patch');
-
 	this.NWcell = new Coord(NWrow, NWcol);
 	this.rowsHigh = rowsHigh;
 	this.colsWide = colsWide;
@@ -355,14 +311,9 @@ var Patch = function(NWrow, NWcol, rowsHigh, colsWide){ //is one free rectangula
 	
 	this.id = this.NWcell.id + '_' + this.SEcell.id;
 
-	
-
 	this.toString = function(){
-		return this.id + ': new patch with NWcell ' + NWrow + '/' + NWcol + ' and SEcell ' + this.SEcell.row + '/' + this.SEcell.col + ' >> rowsHigh: ' + rowsHigh + ' colsWide: ' + colsWide;
+		return this.id + ': new patch with NWcell ' + NWrow + '/' + NWcol + ' and SEcell ' + this.SEcell.row + '/' + this.SEcell.col + ' >> rowsHigh: ' + rowsHigh + ' colsWide: ' + colsWide + ' > area: ' + this.area;
 	}
-
-	console.log(this.toString());
-
 	//console.log(this.getOneMiddleCell());
 }
 

@@ -20,19 +20,19 @@ ZoningRectDestroyerBot.prototype = {
         
         var lastTouchedCell = this.fieldMemory.lastTouchedCell;
         if(lastTouchedCell){
-            if(lastTouchedCell.status == cellStatus.HIT && this.goal == null)
+            if(lastTouchedCell.status == CellStatus.HIT && this.goal == null)
                 this.goal = new DestructionGoal(lastTouchedCell, this);
-            if(lastTouchedCell.status == cellStatus.DESTROYED)
+            if(lastTouchedCell.status == CellStatus.DESTROYED)
                 this.goal = null;
         }
 
         if(this.goal){
             this.goal.think();
         } else {
-            //var chosenCell = Zone.getCentreOfBiggestRect(this.fieldMemory);
+            var chosenCell = Zone.getCentreOfBiggestRect(this.fieldMemory);
             var self = this;
             setTimeout(function(){
-                //self.fire(chosenCell.row, chosenCell.col);
+                self.fire(chosenCell.row, chosenCell.col);
             }, 10);      
         }
     }

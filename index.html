@@ -79,12 +79,6 @@
                     },
                     'RandomDestroyerBot': function() {
                         botChoice = 1;
-                    },
-                    'ZoningDestroyerBot': function() {
-                        botChoice = 2;
-                    },
-                    'ProbabilityOptimizerBot': function() {
-                        botChoice = 3;
                     }
                 }
             });
@@ -97,7 +91,7 @@
             var game;
 
             function createBot(){
-                var type = prompt('What kind of bot (r, rd, zsd, (zrd, po)):', 'r');
+                var type = prompt('Choose the type of bot\n\nr      RandomBot\nrd    RandomDestroyerBot\nzsd  ZoningSquareDestroyerBot\nzrd  ZoningRectDestroyerBot\n', 'r');           
                 var bot = false;
                 switch(type){
                     case 'r':

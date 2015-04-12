@@ -78,7 +78,7 @@ Board.prototype = {
         // looser board effect
         if(this.looserBoard){
             ctx.strokeStyle = 'red'; 
-            ctx.lineWidth = 10;
+            ctx.lineWidth = 5;
             ctx.beginPath();
             ctx.moveTo(0, 0);
             ctx.lineTo(ctx.canvas.width, ctx.canvas.height);
@@ -232,10 +232,10 @@ Board.prototype = {
     },
     fire: function(row, col){
         var fireResult = this.field.getCellByRowCol(row, col).fire();
-        if(fireResult == cellStatus.DESTROYED)
+        if(fireResult.status == CellStatus.DESTROYED)
             this.destroyedShips ++;
         if(this.destroyedShips == this.ships.length)
-            fireResult = cellStatus.ALLSHIPSDESTROYED; // TODO win case, catch here instead of letting player call iWon
+            fireResult = new CellStatusMsg(CellStatus.ALLSHIPSDESTROYED); // TODO win case, catch here instead of letting player call iWon
         draw();
         return fireResult;
     }
