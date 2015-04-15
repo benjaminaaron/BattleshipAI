@@ -68,31 +68,3 @@ AbstractPlayer.prototype = {
     mousemove: function(xMouse, yMouse){},
     mouseup: function(xMouse, yMouse){}
 };
-
-/*          var Animal = function(){
-                this.legs;
-                this.owner;
-            }
-            Animal.prototype = {
-                init: function(legs, owner){
-                    console.log(legs, owner);
-                    this.legs = legs;
-                    this.owner = owner;
-                }
-            };
-
-            var Dog = function(){
-                Animal.call(this);
-            }
-            Dog.prototype = {
-                __proto__: Animal.prototype,
-
-                init: function(legs, owner){
-                    this.__proto__.init(legs, owner); 
-                    //Animal.prototype.init.call(this, legs, owner); 
-                    this.character = 'loyal';
-                }
-            }
-            var myDog = new Dog();
-            myDog.init(4, 'Max');
-*/
