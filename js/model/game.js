@@ -1,10 +1,11 @@
 
-var Game = function(player0, player1, shipTypes, rows, cols, gameHook){
-    this.rows = rows;
-    this.cols = cols;
+var Game = function(player0, player1, shipTypes, viewModule, gameHook){
+    this.viewModule = viewModule;
+    this.rows = 10;
+    this.cols = 10;
     this.boards = [];
 
-    this.totalCells = rows * cols;
+    this.totalCells = this.rows * this.cols;
     this.totalShipCells = 0; // counting them for winning stats
     for(var i=0; i < shipTypes.length; i++)
         this.totalShipCells = this.totalShipCells + shipTypes[i].quantity * shipTypes[i].size;
@@ -15,7 +16,7 @@ var Game = function(player0, player1, shipTypes, rows, cols, gameHook){
         'class': 'container'
     });
     $(gameHook).append(container);
-    var board = new Board(0, container, player0, shipTypes, rows, cols);
+    var board = new Board(0, container, player0, shipTypes, this.rows, this.cols);
     player0.init(0, board);
     this.boards.push(board);
     this.player0 = player0;
@@ -28,7 +29,7 @@ var Game = function(player0, player1, shipTypes, rows, cols, gameHook){
             'class': 'container'
         });
         $(gameHook).append(container);
-        board = new Board(1, container, player1, shipTypes, rows, cols);
+        board = new Board(1, container, player1, shipTypes, this.rows, this.cols);
         player1.init(1, board);
         this.boards.push(board);
         this.player1 = player1;

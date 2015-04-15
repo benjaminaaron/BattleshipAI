@@ -16,8 +16,7 @@ $('#statusLabel').html('game hasn\'t started yet&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n
 $('#resetBtn').hide();
 
 var firebase = new Firebase('https://torrid-inferno-2196.firebaseio.com');  
-
-var game;
+var game, viewModule;
 
 function startGame(){
     var player0 = player1 = null;
@@ -49,6 +48,9 @@ function startGame(){
 
     $('#gameOptions').hide();
     $('#startBtn').hide();
+    $('#gameviewRadioBtn').hide();
+    $('#statsviewRadioBtn').hide();
+
     $('#resetBtn').show();
     $('#statusLabel').html('in <b>setup phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
     var gameControlsWidth = (player1 ? 2 : 1) * 370 + (player1 ? 4 : 0);
@@ -56,9 +58,16 @@ function startGame(){
 
     var shipTypes = [new ShipType(5, 'aqua', 1), new ShipType(4, 'maroon', 1), new ShipType(3, 'lime', 1), new ShipType(2, 'orange', 2)];
 
-    //TODO init view module and pass to game?
+    var viewContainer = document.getElementById('viewContainer');
 
-    game = new Game(player0, player1, shipTypes, 10, 10, document.getElementById('gameHook'));
+    if($('#gameviewRadioBtn').is(':checked'))
+        viewModule = new GameView();
+    if($('#statsviewRadioBtn').is(':checked'))
+        viewModule = new StatsView();
+
+    viewModule.init(viewContainer, player0, player1);
+
+    game = new Game(player0, player1, shipTypes, viewModule, viewContainer);
 }
 
 function createBot(){

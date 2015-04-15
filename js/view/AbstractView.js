@@ -1,17 +1,13 @@
 
 var AbstractView = function(){
 
-	var container = $('<div>').attr({
-        'id': 'container_0',
-        'class': 'container'
-    });
-    //$(gameHook).append(container);
-
-
 }
 
 AbstractView.prototype = {
-	doSomething: function(){
+	init: function(viewContainer, player0, player1){
+		this.viewContainer = viewContainer;
+		this.player0 = player0;
+		this.player1 = player1;
 
 	}
 }

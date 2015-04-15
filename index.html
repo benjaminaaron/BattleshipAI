@@ -8,7 +8,7 @@
     <body>
 
         <!-- <input type='button' value='debug' onclick='debug();'> -->
-        <div id='gameHook'>
+        <div id='viewContainer'>
             <div id='gameControls'>
                     <select id='gameOptions' style="width:135px">
                         <option value='hb'>human vs. bot</option>
@@ -17,8 +17,8 @@
                         <option value='b'>single bot</option>
                         <option value='h'>single human</option>
                     </select>
-                    <input type='radio' name='ViewTypeGroup' title='game view' checked="checked"/>
-                    <input type='radio' name='ViewTypeGroup' title='stats view'/>
+                    <input type='radio' id='gameviewRadioBtn' name='ViewTypeGroup' title='game view' checked="checked"/>
+                    <input type='radio' id='statsviewRadioBtn' name='ViewTypeGroup' title='stats view'/>
                     <input type='button' id='startBtn' value='start game' onclick='startGame();'>
                     <input type='button' id='resetBtn' value='reset' onclick='reset();'>
                     <input type='button' id='infoBtn' value='info' onclick='info();'>
