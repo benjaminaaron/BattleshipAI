@@ -11,7 +11,6 @@ AbstractPlayer.prototype = {
         this.id = id;
         this.board = board;
         this.canvas = board.canvas;
-
         this.fieldMemory = new AbstractField(board.rows, board.cols); 
     },
     setOpponent: function(opponent){
@@ -19,13 +18,13 @@ AbstractPlayer.prototype = {
     },
     yourSetup: function(){
         this.myTurn = true;
-        $('#container_' + this.id).addClass('activeContainer');    
+        //$('#container_' + this.id).addClass('activeContainer');    
         console.log('>> i am setting up ships says ' + this.name);
     },
     finishedSetup: function(){
         this.myTurn = false;
         this.inPlayPhase = true;
-        $('#container_' + this.id).removeClass('activeContainer');    
+        //$('#container_' + this.id).removeClass('activeContainer');    
         console.log('<< i am done setting up ships says ' + this.name);        
         game.setupCompleted(this);
     },
@@ -48,12 +47,12 @@ AbstractPlayer.prototype = {
             case CellStatus.DESTROYED:
                 console.log('destroyed');
                 this.fieldMemory.setCellStatusesAroundShipToSpare(resultMsg.destroyedShip);
-                console.log(this.fieldMemory);
+                //console.log(this.fieldMemory);
+                if(resultMsg.allShipsDestroyed){
+                    console.log('all ships destroyed');
+                    game.iWon(this, this.fieldMemory.countFiredCells() + 1); 
+                }
                 break;
-            case CellStatus.ALLSHIPSDESTROYED:
-                console.log('all ships destroyed');
-                game.iWon(this, this.fieldMemory.countFiredCells() + 1);
-                break;  
         }
         this.fieldMemory.setCellStatus(row, col, result);
         this.finishedTurn();
@@ -68,31 +67,3 @@ AbstractPlayer.prototype = {
     mousemove: function(xMouse, yMouse){},
     mouseup: function(xMouse, yMouse){}
 };
-
-/*          var Animal = function(){
-                this.legs;
-                this.owner;
-            }
-            Animal.prototype = {
-                init: function(legs, owner){
-                    console.log(legs, owner);
-                    this.legs = legs;
-                    this.owner = owner;
-                }
-            };
-
-            var Dog = function(){
-                Animal.call(this);
-            }
-            Dog.prototype = {
-                __proto__: Animal.prototype,
-
-                init: function(legs, owner){
-                    this.__proto__.init(legs, owner); 
-                    //Animal.prototype.init.call(this, legs, owner); 
-                    this.character = 'loyal';
-                }
-            }
-            var myDog = new Dog();
-            myDog.init(4, 'Max');
-*/

@@ -29,10 +29,12 @@ input, select {
     border-color: #CCC;
 }
 
+/*
 .activeContainer {
     border-width: 2px;
     border-color: #FF7F00;  
 }
+*/
 
 canvas {
     float: left;

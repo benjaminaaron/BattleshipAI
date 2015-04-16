@@ -2,17 +2,12 @@
 var Human = function(name){
     AbstractPlayer.call(this, name);
     this.type = 'human';
-
     this.selectedShip = null;
 }
 
 Human.prototype = { 
     __proto__: AbstractPlayer.prototype,
 
-    init: function(id, board){
-        AbstractPlayer.prototype.init.call(this, id, board); 
-        var canvas = board.canvas;
-    },
     yourSetup: function(){
         AbstractPlayer.prototype.yourSetup.call(this); 
         if(this.type == 'human' && this == this.opponent){ // case single human
@@ -42,12 +37,8 @@ Human.prototype = {
         AbstractPlayer.prototype.mousemove.call(this, xMouse, yMouse); 
         var mousemoved = Math.abs(this.xMousedown - xMouse) > 2 || Math.abs(this.yMousedown - yMouse) > 2;
         var ship = this.selectedShip;
-        if(mousemoved && ship){
-            ship.moveTo(xMouse, yMouse);
-            if(this.board.shipIsCompletelyOverField(ship))
-                 this.board.shipMovesOverField(ship);  
-            draw();        
-        } 
+        if(mousemoved && ship)
+            this.board.shipIsMoving(ship, xMouse, yMouse);
     },
     mouseup: function(xMouse, yMouse){
         AbstractPlayer.prototype.mouseup.call(this, xMouse, yMouse); 
@@ -70,7 +61,6 @@ Human.prototype = {
                 this.board.placeShip(ship);
             }
         this.selectedShip = null;
-        draw();
     },
     fireOnCoords: function(xMouse, yMouse){
         if(this.board.posIsOverField(xMouse, yMouse)){
@@ -79,7 +69,8 @@ Human.prototype = {
             var cellSizePx = this.board.cellSizePx;
             var row = Math.abs(Math.round((relYpos - cellSizePx / 2) / cellSizePx));
             var col = Math.abs(Math.round((relXpos - cellSizePx / 2) / cellSizePx));     
-            if(this.fieldMemory.getCellStatus(row, col) == CellStatus.UNTOUCHED)
+            var cellStatus = this.fieldMemory.getCellStatus(row, col);
+            if(cellStatus == CellStatus.UNTOUCHED || cellStatus == CellStatus.SPARE) //second one is to allow dumbness :) meaning humans are allowed to shoot directly next to a destroyed ship
                 this.fire(row, col);
         }
     }
