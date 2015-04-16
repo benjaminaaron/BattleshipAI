@@ -1,11 +1,6 @@
 
-var Field = function(rows, cols, ctx, fieldLeft, fieldTop, cellSizePx){
+var Field = function(rows, cols){
     AbstractField.call(this, rows, cols);
-
-    this.ctx = ctx;
-    this.fieldLeft = fieldLeft;
-    this.fieldTop = fieldTop;
-    this.cellSizePx = cellSizePx;
 
     this.cells = [];
     for(var i = 0; i < rows; i++)
@@ -17,84 +12,6 @@ var Field = function(rows, cols, ctx, fieldLeft, fieldTop, cellSizePx){
 
 Field.prototype = {
     __proto__: AbstractField.prototype,
-
-    draw: function(){    
-        var ctx = this.ctx;
-        var fieldLeft = this.fieldLeft;
-        var fieldTop = this.fieldTop;
-        var cellSizePx = this.cellSizePx;
-
-        //border around field
-        ctx.strokeStyle = 'gray';  
-        ctx.lineWidth = 2;
-        ctx.rect(fieldLeft, fieldTop, this.cols * cellSizePx, this.rows * cellSizePx);
-        ctx.stroke();
-
-        // grid & labels
-        ctx.strokeStyle = 'silver'; 
-        ctx.lineWidth = 1;
-        ctx.fillStyle = 'gray';
-        ctx.font = '12px arial';           
-        for(var i=0; i <= this.rows; i++){
-            var yPos = fieldTop + i * cellSizePx;
-            ctx.beginPath();
-            ctx.moveTo(fieldLeft, yPos);
-            ctx.lineTo(fieldLeft + this.cols * cellSizePx, yPos);
-            ctx.stroke();
-            if(i < this.rows)
-                ctx.fillText((i+1), fieldLeft + ((i+1) < 10 ? -16 : -20), yPos + 14);
-        }
-        for(var i=0; i <= this.cols; i++){
-            var xPos = fieldLeft + i * cellSizePx;
-            ctx.beginPath();
-            ctx.moveTo(xPos, fieldTop);
-            ctx.lineTo(xPos, fieldTop + this.rows * cellSizePx);
-            ctx.stroke();
-            if(i < this.cols)
-                ctx.fillText(String.fromCharCode('A'.charCodeAt() + i), xPos + 6, fieldTop - 8);     
-        }
-
-        // cell coloring for hovered cells
-        for(var i=0; i < this.cells.length; i++){
-            var cell = this.cells[i];
-            if(cell.hoveredBy){
-                ctx.fillStyle = 'silver';    
-                ctx.fillRect(fieldLeft + cell.col * cellSizePx, fieldTop + cell.row * cellSizePx, cellSizePx, cellSizePx);
-            }
-        }
-    },
-    drawHits: function(){
-        var ctx = this.ctx;
-        var fieldLeft = this.fieldLeft;
-        var fieldTop = this.fieldTop;
-        var cellSizePx = this.cellSizePx;
-        var a = cellSizePx / 2 - 4;
-        ctx.strokeStyle = 'black'; 
-        ctx.fillStyle = 'black';
-        ctx.lineWidth = 2;
-
-        for(var i=0; i < this.cells.length; i++){
-            var cell = this.cells[i];
-            var xMiddle = fieldLeft + cell.col * cellSizePx + cellSizePx / 2;
-            var yMiddle = fieldTop + cell.row * cellSizePx + cellSizePx / 2;
-            if(cell.fired)
-                if(cell.occupiedBy == null){
-                    ctx.beginPath();
-                    ctx.arc(xMiddle, yMiddle, a / 2, 0, Math.PI*2); 
-                    ctx.closePath();
-                    ctx.fill();
-                } else {
-                    ctx.beginPath();
-                    ctx.moveTo(xMiddle - a, yMiddle - a);
-                    ctx.lineTo(xMiddle + a, yMiddle + a);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(xMiddle - a, yMiddle + a);
-                    ctx.lineTo(xMiddle + a, yMiddle - a);
-                    ctx.stroke();
-                }
-        }
-    },
     allCellsFree: function(shipSize, orientation, rowHead, colHead){       
         for(var i=0; i < shipSize; i++){
             var cell = this.getCellByRowCol(rowHead + (orientation ? 0 : i), colHead + (orientation ? i : 0));

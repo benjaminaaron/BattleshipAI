@@ -48,12 +48,12 @@ AbstractPlayer.prototype = {
             case CellStatus.DESTROYED:
                 console.log('destroyed');
                 this.fieldMemory.setCellStatusesAroundShipToSpare(resultMsg.destroyedShip);
-                console.log(this.fieldMemory);
+                //console.log(this.fieldMemory);
+                if(resultMsg.allShipsDestroyed){
+                    console.log('all ships destroyed');
+                    game.iWon(this, this.fieldMemory.countFiredCells() + 1); 
+                }
                 break;
-            case CellStatus.ALLSHIPSDESTROYED:
-                console.log('all ships destroyed');
-                game.iWon(this, this.fieldMemory.countFiredCells() + 1);
-                break;  
         }
         this.fieldMemory.setCellStatus(row, col, result);
         this.finishedTurn();

@@ -46,10 +46,6 @@ Ship.prototype = {
         this.x = fieldRight + 15;
         this.y = fieldTop + 20 + posNumb * cellSizePx * 2; // x,y points always to top left corner of rect
     },
-    draw: function(ctx){
-        ctx.fillStyle = this.color;   
-        ctx.fillRect(this.x, this.y, this.w, this.h);
-    },
     isOnMe: function(x, y){
         return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
     },

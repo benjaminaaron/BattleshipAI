@@ -1,5 +1,5 @@
 
-var Game = function(player0, player1, shipTypes, viewModule, gameHook){
+var Game = function(player0, player1, shipTypes, viewModule){
     this.viewModule = viewModule;
     this.rows = 10;
     this.cols = 10;
@@ -11,61 +11,53 @@ var Game = function(player0, player1, shipTypes, viewModule, gameHook){
         this.totalShipCells = this.totalShipCells + shipTypes[i].quantity * shipTypes[i].size;
 
     // PLAYER 0
-    var container = $('<div>').attr({
-        'id': 'container_0',
-        'class': 'container'
-    });
-    $(gameHook).append(container);
-    var board = new Board(0, container, player0, shipTypes, this.rows, this.cols);
+    var board = new Board(0, player0, shipTypes, this.rows, this.cols);
     player0.init(0, board);
     this.boards.push(board);
     this.player0 = player0;
-    player0.setOpponent(player0); // own one
+    player0.setOpponent(player0); // single player case
 
     // PLAYER 1
     if(player1){
-        container = $('<div>').attr({
-            'id': 'container_1',
-            'class': 'container'
-        });
-        $(gameHook).append(container);
-        board = new Board(1, container, player1, shipTypes, this.rows, this.cols);
+        board = new Board(1, player1, shipTypes, this.rows, this.cols);
         player1.init(1, board);
         this.boards.push(board);
         this.player1 = player1;
-
         player0.setOpponent(player1);
         player1.setOpponent(player0);
     }    
 
     this.isSingleGame = this.player1 == null;
     this.inPlayPhase = false;
-    draw();
     this.currentPlayer = player0;
-    this.currentPlayer.yourSetup(); 
-    this.gameRunning = true;
+    this.gameRunning = false;
+    viewModule.draw();
 }
 
 Game.prototype = {
-    draw: function(){          
-        for(var i=0; i < this.boards.length; i++)
-            this.boards[i].draw();     
+    start: function(){
+        this.gameRunning = true;
+        this.currentPlayer.yourSetup(); 
+        viewModule.draw();
     },
-    handleCanvasEvent: function(board, type, e){
-        var canvasElement = board.canvas.getBoundingClientRect();
-        var xMouse = e.originalEvent.pageX - canvasElement.left;
-        var yMouse = e.originalEvent.pageY - canvasElement.top;
-
+    updatedBoard: function(board){
+        viewModule.draw();
+    },
+    newValidShipPosition: function(board){
+        //viewModule.newValidShipPosition(); // TODO
+    },
+    handleCanvasEvent: function(type, id, xMouse, yMouse){
         var player = this.currentPlayer;
+        var eventOriginBoardOwner = id == 0 ? this.player0 : this.player1;
 
         var sendCanvasEventToPlayer;
         if(!this.inPlayPhase)
-            sendCanvasEventToPlayer = player.board == board;
+            sendCanvasEventToPlayer = player == eventOriginBoardOwner;
         else
             if(this.isSingleGame)
                 sendCanvasEventToPlayer = true;
             else
-                sendCanvasEventToPlayer = player.board != board;
+                sendCanvasEventToPlayer = player != eventOriginBoardOwner;
 
         if(sendCanvasEventToPlayer){
             switch(type){
@@ -97,6 +89,7 @@ Game.prototype = {
                 this.currentPlayer.yourTurn(); 
             }
         }
+        viewModule.draw();
     },
     fire: function(caller, row, col){
         var targetBoard = caller.opponent.board;
@@ -117,6 +110,7 @@ Game.prototype = {
                 }
             }
         }
+        viewModule.draw();
     },
     iWon: function(caller, shotsFired){
         this.gameRunning = false;
@@ -125,7 +119,6 @@ Game.prototype = {
             $('#statusLabel').html('<b>' + caller.name + ' won!</b>&nbsp;&nbsp;&nbsp;' + shotsFired + ' (' + game.totalShipCells + '-' + game.totalCells + ')&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'); 
             caller.board.winnerBoard = true;
             caller.opponent.board.looserBoard = true;  
-            draw(); 
             if(!self.isSingleGame && firebase){
                 firebase.push({
                     timestamp: getFormattedDate(),
@@ -135,6 +128,7 @@ Game.prototype = {
                     shots: shotsFired
                 });
             }
-        }, 10);  
+            viewModule.draw();
+        }, 10);   
     }
 }

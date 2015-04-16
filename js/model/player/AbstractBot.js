@@ -10,10 +10,8 @@ AbstractBot.prototype = {
     yourSetup: function(){
         AbstractPlayer.prototype.yourSetup.call(this); 
 
-        if(this.type == 'bot' && this.opponent.type == 'human'){ // case human vs. bot
+        if(this.type == 'bot' && this.opponent.type == 'human')// case human vs. bot
             this.board.showShips = false;
-            draw();
-        }
         
         var self = this;
         setTimeout(function(){ //required to give the Game-constructor time to "finish" the game object, it isn't available yet otherwise

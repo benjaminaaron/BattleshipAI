@@ -44,9 +44,7 @@ Human.prototype = {
         var ship = this.selectedShip;
         if(mousemoved && ship){
             ship.moveTo(xMouse, yMouse);
-            if(this.board.shipIsCompletelyOverField(ship))
-                 this.board.shipMovesOverField(ship);  
-            draw();        
+            this.board.shipIsMoving(ship);
         } 
     },
     mouseup: function(xMouse, yMouse){
@@ -70,7 +68,6 @@ Human.prototype = {
                 this.board.placeShip(ship);
             }
         this.selectedShip = null;
-        draw();
     },
     fireOnCoords: function(xMouse, yMouse){
         if(this.board.posIsOverField(xMouse, yMouse)){

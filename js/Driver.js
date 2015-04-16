@@ -67,7 +67,8 @@ function startGame(){
 
     viewModule.init(viewContainer, player0, player1);
 
-    game = new Game(player0, player1, shipTypes, viewModule, viewContainer);
+    game = new Game(player0, player1, shipTypes, viewModule);
+    game.start();
 }
 
 function createBot(){
@@ -100,7 +101,7 @@ function draw(){
 
 function drawGame(){
     //console.log('drawing');
-    game.draw();
+    viewModule.draw();
 }
 
 function info(){

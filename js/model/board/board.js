@@ -1,20 +1,7 @@
 
-var Board = function(id, container, player, shipTypes, rows, cols){
+var Board = function(id, player, shipTypes, rows, cols){
     this.id = id;
     this.player = player;
-
-    this.canvasWidthPx = 370;
-    this.canvasHeightPx = 300;
-
-    var canvas = $('<canvas>').attr({
-        'id': 'canvas_' + this.id,
-        'width': this.canvasWidthPx,
-        'height': this.canvasHeightPx
-    });
-    $(container).append(canvas);
-    this.canvas = $(canvas)[0];
-
-    this.installCanvasListener(this.canvas);
 
     this.rows = rows;
     this.cols = cols;
@@ -25,7 +12,7 @@ var Board = function(id, container, player, shipTypes, rows, cols){
     this.fieldTop = 60;
     this.fieldRight = this.fieldLeft + rows * this.cellSizePx;
     this.fieldBottom = this.fieldTop + cols * this.cellSizePx;    
-    this.field = new Field(rows, cols, this.canvas.getContext('2d'), this.fieldLeft, this.fieldTop, this.cellSizePx);
+    this.field = new Field(rows, cols, this.fieldLeft, this.fieldTop, this.cellSizePx);
 
     //add ships as defined in shipTypes
     this.ships = [];
@@ -43,77 +30,6 @@ var Board = function(id, container, player, shipTypes, rows, cols){
 }
 
 Board.prototype = {
-    draw: function(){
-        var ctx = this.canvas.getContext('2d');
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); 
-
-        // winner board effects
-        if(this.winnerBoard){
-            ctx.fillStyle = 'yellow';
-            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.width);
-        }
-
-        // field
-        this.field.draw();
-
-        // ships
-        if(this.showShips)
-            for(var i=0; i < this.ships.length; i++)
-                this.ships[i].draw(ctx);
-                
-        // hits
-        this.field.drawHits();
-
-        // destroyed
-        ctx.strokeStyle = 'black'; 
-        ctx.lineWidth = 2;
-        for(var i=0; i < this.ships.length; i++){
-            var ship = this.ships[i];
-            if(ship.destroyed){
-                ctx.rect(ship.x, ship.y, ship.w, ship.h);
-                ctx.stroke();
-            }
-        }
-
-        // looser board effect
-        if(this.looserBoard){
-            ctx.strokeStyle = 'red'; 
-            ctx.lineWidth = 5;
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.lineTo(ctx.canvas.width, ctx.canvas.height);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(0, ctx.canvas.height);
-            ctx.lineTo(ctx.canvas.width, 0);
-            ctx.stroke();
-        }
-
-        // name
-        ctx.fillStyle = 'navy';
-        ctx.font = '20px georgia'; 
-        var name = this.player.name;
-        var nameWidth = ctx.measureText(name).width;
-        ctx.fillText(name, this.fieldLeft, this.fieldTop - 30);
-        ctx.fillStyle = 'maroon';
-        ctx.font = '10px georgia'; 
-        ctx.fillText(this.player.type, this.fieldLeft + nameWidth + 10, this.fieldTop - 30);
-    },
-    installCanvasListener: function(canvas){
-        var self = this;
-        $(canvas).on('mousedown touchstart', function(e) {
-            e.preventDefault();
-            game.handleCanvasEvent(self, 0, e);
-        });
-        $(canvas).on('mousemove touchmove', function(e) {
-            e.preventDefault();
-            game.handleCanvasEvent(self, 1, e);     
-        });
-        $(canvas).on('mouseup touchend', function(e) {
-            e.preventDefault();
-            game.handleCanvasEvent(self, 2, e);
-        });
-    },
     shipIsCompletelyOverField: function(ship){
         return ship.x > this.fieldLeft && ship.x < this.fieldRight - ship.w && ship.y > this.fieldTop && ship.y < this.fieldBottom - ship.h;
     },
@@ -132,6 +48,16 @@ Board.prototype = {
                 return this.ships[i];
         return null;
     },
+    shipIsMoving: function(ship){
+
+        if(this.shipIsCompletelyOverField(ship))
+            this.shipMovesOverField(ship);  
+
+        game.updatedBoard();   
+
+        //game.newValidShipPosition(shipPos);
+
+    },
     shipMovesOverField: function(ship){
         var relXpos = ship.x - this.fieldLeft;
         var relYpos = ship.y - this.fieldTop;
@@ -142,14 +68,15 @@ Board.prototype = {
             for(var i=0; i < ship.size; i++)
                 cells.push(this.field.getCellByRowCol(row + (ship.orientation ? 0 : i), col + (ship.orientation ? i : 0)));
             this.field.updateValidShipPositionCells(cells, ship);
-        }
+        }    
     },
     placeShip: function(ship){
         var headCell = this.field.placeShipAtLastValidPosition();
         if(headCell){
             ship.x = this.fieldLeft + headCell.col * this.cellSizePx;
             ship.y = this.fieldTop + headCell.row * this.cellSizePx; 
-        }       
+        }
+        game.updatedBoard();
     },
     placeShipByCoords: function(ship, orientation, row, col){     
         if(ship.orientation != orientation)
@@ -163,7 +90,7 @@ Board.prototype = {
             ship.occupyingCells.push(cell); 
             this.field.neighbourBlast(cell, 1);
         }
-        draw();
+        game.updatedBoard();
     },
     revokeShipPlacement: function(ship){
         for(var i=0; i < ship.occupyingCells.length; i++){ // free the cells in case it was already placed before
@@ -195,6 +122,7 @@ Board.prototype = {
         }
         ship.flipOrientation();
         this.placeShipByCoords(ship, ship.orientation, validPositions[indexOfMinDist].row, validPositions[indexOfMinDist].col);
+        game.updatedBoard(this);
     },
     randomlyPlaceShips: function(){    
         this.field.clear();
@@ -206,6 +134,7 @@ Board.prototype = {
             var randomGridPos = validPositions[randomIndex];
             this.placeShipByCoords(ship, randomGridPos.orientation, randomGridPos.row, randomGridPos.col);
         }
+        game.updatedBoard();
     },
     getHorizontalValidShipPositions: function(ship){
         var validPositions = [];
@@ -234,9 +163,9 @@ Board.prototype = {
         var fireResult = this.field.getCellByRowCol(row, col).fire();
         if(fireResult.status == CellStatus.DESTROYED)
             this.destroyedShips ++;
-        if(this.destroyedShips == this.ships.length)
-            fireResult = new CellStatusMsg(CellStatus.ALLSHIPSDESTROYED); // TODO win case, catch here instead of letting player call iWon
-        draw();
+        if(this.destroyedShips == this.ships.length){
+            fireResult.allShipsDestroyed = true;
+        }
         return fireResult;
     }
 };
