@@ -1,16 +1,15 @@
 
 var Cell = function(row, col){
     AbstractCell.call(this, row, col);
-    this.id = row + '_' + col;
-
-    this.occupiedBy = null;
-    this.hoveredBy = null;
-    this.shipsInMyNeighbourhood = 0;
-    
+    //this.id = row + '_' + col;
+    this.occupiedBy = null; 
     this.fired = false;
-    this.fire = function(){
+}
+
+Cell.prototype = {
+    fire: function(){
         if(this.fired){
-            //return CellStatus.ALREADYSHOT;
+            return null; //shouldn't be happening because AbstractPlayer doesn't allow those shots to go out
         }
         else {
             this.fired = true;
@@ -20,8 +19,8 @@ var Cell = function(row, col){
             else
                 return new CellStatusMsg(CellStatus.FIRED);
         }
-    };
-    this.toString = function(){
-        return '(' + this.row + '/' + this.col + ') occupiedBy: [' + this.occupiedBy + '] all neighbour cells are free: ' + this.shipsInMyNeighbourhood;
-    };
+    },
+    toString: function(){
+        return '(' + this.row + '/' + this.col + ') occupiedBy: [' + this.occupiedBy;
+    }
 }

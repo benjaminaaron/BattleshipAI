@@ -58,14 +58,12 @@ function startGame(){
 
     var shipTypes = [new ShipType(5, 'aqua', 1), new ShipType(4, 'maroon', 1), new ShipType(3, 'lime', 1), new ShipType(2, 'orange', 2)];
 
-    var viewContainer = document.getElementById('viewContainer');
-
     if($('#gameviewRadioBtn').is(':checked'))
         viewModule = new GameView();
     if($('#statsviewRadioBtn').is(':checked'))
         viewModule = new StatsView();
 
-    viewModule.init(viewContainer, player0, player1);
+    viewModule.init(document.getElementById('viewContainer'), player0, player1);
 
     game = new Game(player0, player1, shipTypes, viewModule);
     game.start();

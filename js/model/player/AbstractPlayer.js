@@ -11,7 +11,6 @@ AbstractPlayer.prototype = {
         this.id = id;
         this.board = board;
         this.canvas = board.canvas;
-
         this.fieldMemory = new AbstractField(board.rows, board.cols); 
     },
     setOpponent: function(opponent){
@@ -19,13 +18,13 @@ AbstractPlayer.prototype = {
     },
     yourSetup: function(){
         this.myTurn = true;
-        $('#container_' + this.id).addClass('activeContainer');    
+        //$('#container_' + this.id).addClass('activeContainer');    
         console.log('>> i am setting up ships says ' + this.name);
     },
     finishedSetup: function(){
         this.myTurn = false;
         this.inPlayPhase = true;
-        $('#container_' + this.id).removeClass('activeContainer');    
+        //$('#container_' + this.id).removeClass('activeContainer');    
         console.log('<< i am done setting up ships says ' + this.name);        
         game.setupCompleted(this);
     },

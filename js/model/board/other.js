@@ -18,3 +18,9 @@ var ShipPos = function(orientation, row, col){
     this.row = row;
     this.col = col;
 }
+
+var ShipType = function(size, color, quantity){
+    this.size = size;
+    this.color = color;
+    this.quantity = quantity;
+}

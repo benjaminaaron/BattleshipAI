@@ -30,9 +30,9 @@ var Board = function(id, player, shipTypes, rows, cols){
 }
 
 Board.prototype = {
-    shipIsCompletelyOverField: function(ship){
+/*    shipIsCompletelyOverField: function(ship){
         return ship.x > this.fieldLeft && ship.x < this.fieldRight - ship.w && ship.y > this.fieldTop && ship.y < this.fieldBottom - ship.h;
-    },
+    },*/
     posIsOverField: function(x, y){
         return x > this.fieldLeft && x < this.fieldRight && y > this.fieldTop && y < this.fieldBottom;
     },
@@ -48,34 +48,28 @@ Board.prototype = {
                 return this.ships[i];
         return null;
     },
-    shipIsMoving: function(ship){
-
-        if(this.shipIsCompletelyOverField(ship))
-            this.shipMovesOverField(ship);  
-
-        game.updatedBoard();   
-
-        //game.newValidShipPosition(shipPos);
-
-    },
-    shipMovesOverField: function(ship){
+    shipIsMoving: function(ship, xMouse, yMouse){
+        ship.moveTo(xMouse, yMouse);
         var relXpos = ship.x - this.fieldLeft;
         var relYpos = ship.y - this.fieldTop;
         var row = Math.round(relYpos / this.cellSizePx);
         var col = Math.round(relXpos / this.cellSizePx);
-        if(this.field.allCellsFree(ship.size, ship.orientation, row, col)){
-            var cells = [];
-            for(var i=0; i < ship.size; i++)
-                cells.push(this.field.getCellByRowCol(row + (ship.orientation ? 0 : i), col + (ship.orientation ? i : 0)));
-            this.field.updateValidShipPositionCells(cells, ship);
-        }    
+
+        if(this.shipIsCompletelyOverField(ship))
+            if(this.field.allCellsFree(ship.size, ship.orientation, row, col)){
+                var cells = [];
+                for(var i=0; i < ship.size; i++)
+                    cells.push(this.field.getCellByRowCol(row + (ship.orientation ? 0 : i), col + (ship.orientation ? i : 0)));
+                this.field.lastValidShipPositionCells = cells;
+            } 
+
+        game.updatedBoard();  
+    },
+     shipIsCompletelyOverField: function(ship){
+        return ship.x > this.fieldLeft && ship.x < this.fieldRight - ship.w && ship.y > this.fieldTop && ship.y < this.fieldBottom - ship.h;
     },
     placeShip: function(ship){
-        var headCell = this.field.placeShipAtLastValidPosition();
-        if(headCell){
-            ship.x = this.fieldLeft + headCell.col * this.cellSizePx;
-            ship.y = this.fieldTop + headCell.row * this.cellSizePx; 
-        }
+        this.field.placeShipAtLastValidPosition(ship, this.fieldLeft, this.fieldTop, this.cellSizePx);
         game.updatedBoard();
     },
     placeShipByCoords: function(ship, orientation, row, col){     
@@ -88,28 +82,24 @@ Board.prototype = {
             var cell = this.field.getCellByRowCol(row + (orientation ? 0 : i), col + (orientation ? i : 0));
             cell.occupiedBy = ship;
             ship.occupyingCells.push(cell); 
-            this.field.neighbourBlast(cell, 1);
         }
         game.updatedBoard();
     },
     revokeShipPlacement: function(ship){
-        for(var i=0; i < ship.occupyingCells.length; i++){ // free the cells in case it was already placed before
-            var cell = ship.occupyingCells[i];
-            cell.occupiedBy = null;
-            this.field.neighbourBlast(cell, -1);
-        }
+        if(ship.occupyingCells.length > 0)
+            this.field.lastValidShipPositionCells = ship.occupyingCells; // making the previous placement position the lastValidShipPositionCells for the ship to flip back into the field if dragged outside
+        for(var i=0; i < ship.occupyingCells.length; i++) // free the cells in case it was already placed before
+            ship.occupyingCells[i].occupiedBy = null;
         ship.occupyingCells = [];  
     },
     flipShipsOrientation: function(ship){
-        // a "spiraling outwards" (to find closest valid pos) algorithm instead would be mathematically nicer and computationally less expensive                   
+        this.field.lastValidShipPositionCells = []; 
+        // TODO: a "spiraling outwards" (to find closest valid pos) algorithm instead would be mathematically nicer and computationally less expensive                   
         var prevMiddleX = ship.x + ship.w / 2;
         var prevMiddleY = ship.y + ship.h / 2;
-
         var validPositions = ship.orientation ? this.getVerticalValidShipPositions(ship) : this.getHorizontalValidShipPositions(ship);
-
         var minDist = Number.MAX_VALUE;
         var indexOfMinDist = -1;
-
         for(var i=0; i < validPositions.length; i++){
             var newMiddleX = this.fieldLeft + validPositions[i].col * this.cellSizePx + ship.h / 2;
             var newMiddleY = this.fieldTop + validPositions[i].row * this.cellSizePx + ship.w / 2;
@@ -128,8 +118,7 @@ Board.prototype = {
         this.field.clear();
         for(var i=0; i < this.ships.length; i++){
             var ship = this.ships[i];
-            var validPositions = this.getHorizontalValidShipPositions(ship);
-            validPositions = validPositions.concat(this.getVerticalValidShipPositions(ship));
+            var validPositions = Math.random() < 0.5 ? this.getHorizontalValidShipPositions(ship) : this.getVerticalValidShipPositions(ship);
             var randomIndex = Math.round(Math.random() * (validPositions.length - 1)); //if no valid positions available this goes negative and throws an error
             var randomGridPos = validPositions[randomIndex];
             this.placeShipByCoords(ship, randomGridPos.orientation, randomGridPos.row, randomGridPos.col);
@@ -154,10 +143,8 @@ Board.prototype = {
     },
     clear: function(){
         this.field.clear();
-        for(var i=0; i < this.ships.length; i++){
+        for(var i=0; i < this.ships.length; i++)
             this.ships[i].occupyingCells = [];
-            this.ships[i].hasntBeenPlacedYet = true;
-        }
     },
     fire: function(row, col){
         var fireResult = this.field.getCellByRowCol(row, col).fire();

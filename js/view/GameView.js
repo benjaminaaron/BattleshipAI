@@ -1,50 +1,38 @@
 
 var GameView = function(){
 	AbstractView.call(this);
-
 }
 
 GameView.prototype = {
 	__proto__: AbstractView.prototype,
 
 	init: function(viewContainer, player0, player1){
-		//AbstractView.prototype.init.apply(this, viewContainer, player0, player1); // call init in super TODO bug
+		AbstractView.prototype.init.call(this, viewContainer, player0, player1);
 
         this.viewContainer = viewContainer;
         this.player0 = player0;
+        //this.currentPlayer = player0;
         this.player1 = player1;
 
 	 	var canvasWidthPx = 370;
     	var canvasHeightPx = 300;
-
-		var container = $('<div>').attr({
-	    	'id': 'container_0',
-	        'class': 'container'
-	    });
-	    $(viewContainer).append(container);
 
     	var canvas = $('<canvas>').attr({
 	        'id': 'canvas_0',
 	        'width': canvasWidthPx,
 	        'height': canvasHeightPx
     	});
-    	$(container).append(canvas);
+    	$(viewContainer).append(canvas);
     	this.canvas0 = $(canvas)[0];
     	this.installCanvasListener(this.canvas0, 0);   
 
 	    if(player1){
-	        container = $('<div>').attr({
-	            'id': 'container_1',
-	            'class': 'container'
-	        });
-            $(viewContainer).append(container);
-
 		    canvas = $('<canvas>').attr({
 		        'id': 'canvas_1',
 		        'width': canvasWidthPx,
 		        'height': canvasHeightPx
 	    	});
-	    	$(container).append(canvas);
+	    	$(viewContainer).append(canvas);
 	    	this.canvas1 = $(canvas)[0];
 	    	this.installCanvasListener(this.canvas1, 1);   
    	 	}
@@ -75,12 +63,26 @@ GameView.prototype = {
         });
     },
     draw: function(){ // TODO only redraw changed board
-        this.drawBoard(this.canvas0.getContext('2d'), this.player0.board);
+        this.drawBoard(this.canvas0.getContext('2d'), this.player0.board, this.player0.myTurn);
         if(this.player1)
-            this.drawBoard(this.canvas1.getContext('2d'), this.player1.board);
+            this.drawBoard(this.canvas1.getContext('2d'), this.player1.board, this.player1.myTurn);
     },
-    drawBoard: function(ctx, board){
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); 
+    drawBoard: function(ctx, board, isActiveBoard){
+        var width = ctx.canvas.width;
+        var height = ctx.canvas.height;
+        ctx.clearRect(0, 0, width, height); 
+		
+		// marking active board with frame around it
+		if(isActiveBoard){
+			ctx.lineWidth = '12';
+			ctx.strokeStyle = 'orange';
+		} else {
+			ctx.lineWidth = '6';
+			ctx.strokeStyle = 'silver';
+		}
+		ctx.beginPath();
+		ctx.rect(0, 0, width, height);
+		ctx.stroke();
 
         // winner board effect
         if(board.winnerBoard){
@@ -90,6 +92,9 @@ GameView.prototype = {
 
         // field
         this.drawField(ctx, board);
+
+        //ship (=cellcluster) while dragging, if there is one
+        this.drawShadowShip(ctx, board);
 
         // ships
         if(board.showShips)
@@ -101,7 +106,7 @@ GameView.prototype = {
         // destroyed ships
         this.drawDestroyedShips(ctx, board.ships);
 
-        // looser board effect
+        // loser board effect
         if(board.looserBoard){
             ctx.strokeStyle = 'red'; 
             ctx.lineWidth = 5;
@@ -178,6 +183,26 @@ GameView.prototype = {
             ctx.fillRect(ship.x, ship.y, ship.w, ship.h);
         }
     }, 
+    drawShadowShip: function(ctx, board){
+    	var cellcluster = board.field.lastValidShipPositionCells;
+    	if(cellcluster.length > 0){
+	    	var cellSizePx = board.cellSizePx;
+	    	var fieldLeft = board.fieldLeft;
+	    	var fieldTop = board.fieldTop;
+
+	    	var head = cellcluster[0];
+	    	var headX = fieldLeft + head.col * cellSizePx;
+	        var headY = fieldTop + head.row * cellSizePx;
+
+	        var orientation = head.row == cellcluster[1].row; 
+	        var size = cellcluster.length;
+	        var w = orientation ? size * cellSizePx : cellSizePx;
+	        var h = orientation ? cellSizePx : size * cellSizePx;
+
+	       	ctx.fillStyle = 'silver';   
+            ctx.fillRect(headX, headY, w, h);
+    	}
+    },
     drawHits: function(ctx, board){
         var field = board.field;
         var fieldLeft = board.fieldLeft;
@@ -222,15 +247,3 @@ GameView.prototype = {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

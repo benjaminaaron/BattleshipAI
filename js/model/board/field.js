@@ -12,67 +12,37 @@ var Field = function(rows, cols){
 
 Field.prototype = {
     __proto__: AbstractField.prototype,
-    allCellsFree: function(shipSize, orientation, rowHead, colHead){       
+    allCellsFree: function(shipSize, orientation, rowHead, colHead){         
+        var cellcluster = [];
         for(var i=0; i < shipSize; i++){
             var cell = this.getCellByRowCol(rowHead + (orientation ? 0 : i), colHead + (orientation ? i : 0));
-            if(cell.occupiedBy || cell.shipsInMyNeighbourhood != 0)
+            if(cell.occupiedBy)
                 return false;
-        }
+            cellcluster.push(cell);
+        }    
+        var neighbourCells = this.getCellsAroundCellcluster(cellcluster);
+        for(var i=0; i < neighbourCells.length; i++)
+            if(neighbourCells[i].occupiedBy)
+                return false;
         return true; 
     },
-    clearShadowCells: function(){ // not very effective to run through all
-        for(var i=0; i < this.cells.length; i++)
-            this.cells[i].hoveredBy = null;
-    },
-    updateValidShipPositionCells: function(cells, ship){ //occupy false means hovering     
-        this.clearShadowCells();
-        for(var i=0; i < cells.length; i++)
-            cells[i].hoveredBy = ship;
-        this.lastValidShipPositionCells = cells;
-    },
-    placeShipAtLastValidPosition: function(){
-        if(this.lastValidShipPositionCells.length > 0){
-            var firstCell = this.lastValidShipPositionCells[0];
-            var ship = firstCell.hoveredBy;
+    placeShipAtLastValidPosition: function(ship, fieldLeft, fieldTop, cellSizePx){
+        var cells = this.lastValidShipPositionCells;
+        if(cells.length > 0){
+            for(var i=0; i < cells.length; i++)          
+                cells[i].occupiedBy = ship;
 
-            for(var i=0; i < this.lastValidShipPositionCells.length; i++){          
-                var cell = this.lastValidShipPositionCells[i];
-                cell.occupiedBy = ship;
-                this.neighbourBlast(cell, 1);
-            }
-            ship.occupyingCells = this.lastValidShipPositionCells;    
+            ship.occupyingCells = cells;    
             this.lastValidShipPositionCells = []; 
-            this.clearShadowCells();
-            return firstCell; //just need first field to place the ship correctly
+
+            var headCell = cells[0];
+            ship.x = fieldLeft + headCell.col * cellSizePx;
+            ship.y = fieldTop + headCell.row * cellSizePx;
         }
-        else
-            return null;  
-    },
-    neighbourBlast: function(cell, val){ // could surely be implemented better?
-        var N  = this.getCellByRowCol(cell.row - 1, cell.col    ); // north
-        var NE = this.getCellByRowCol(cell.row - 1, cell.col + 1); // north-east
-        var E  = this.getCellByRowCol(cell.row,     cell.col + 1); //...
-        var SE = this.getCellByRowCol(cell.row + 1, cell.col + 1); 
-        var S  = this.getCellByRowCol(cell.row + 1, cell.col    ); 
-        var SW = this.getCellByRowCol(cell.row + 1, cell.col - 1); 
-        var W  = this.getCellByRowCol(cell.row,     cell.col - 1); 
-        var NW = this.getCellByRowCol(cell.row - 1, cell.col - 1); 
-        if(N)   N.shipsInMyNeighbourhood    += val;
-        if(NE)  NE.shipsInMyNeighbourhood   += val;
-        if(E)   E.shipsInMyNeighbourhood    += val;
-        if(SE)  SE.shipsInMyNeighbourhood   += val;
-        if(S)   S.shipsInMyNeighbourhood    += val;
-        if(SW)  SW.shipsInMyNeighbourhood   += val;
-        if(W)   W.shipsInMyNeighbourhood    += val;
-        if(NW)  NW.shipsInMyNeighbourhood   += val;
     },
     clear: function(){
-        for(var i=0; i < this.cells.length; i++){
-            var cell = this.cells[i];
-            cell.occupiedBy = null;
-            cell.hoveredBy = null;
-            cell.shipsInMyNeighbourhood = 0;
-        }
+        for(var i=0; i < this.cells.length; i++)
+            this.cells[i].occupiedBy = null;
     },
     toString: function(){
         var str = '';

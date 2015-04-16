@@ -47,30 +47,39 @@ AbstractField.prototype = {
                 cells.push(this.cells[i]);
         return cells;
     },
-    setCellStatusesAroundShipToSpare: function(ship){
-        var firstCell = ship.occupyingCells[0];
+    getCellsAroundShip: function(ship){
+        return this.getCellsAroundCellcluster(ship.occupyingCells);
+    },
+    getCellsAroundCellcluster: function(cellcluster){
+        var head = cellcluster[0];
+        var size = cellcluster.length;
+        var orientation = head.row == cellcluster[1].row; //ehm, is that cool? why not...
         var neighbourCells = [];
-        if(ship.orientation){ 
+        if(orientation){ 
             //west
-            neighbourCells.push(this.getCellByRowCol(firstCell.row, firstCell.col - 1));
+            neighbourCells.push(this.getCellByRowCol(head.row, head.col - 1));
             //east
-            neighbourCells.push(this.getCellByRowCol(firstCell.row, firstCell.col + ship.size));
+            neighbourCells.push(this.getCellByRowCol(head.row, head.col + size));
             //north and south
-            for(var i=0; i < ship.size + 2; i++){
-                neighbourCells.push(this.getCellByRowCol(firstCell.row - 1, firstCell.col - 1 + i));
-                neighbourCells.push(this.getCellByRowCol(firstCell.row + 1, firstCell.col - 1 + i));
+            for(var i=0; i < size + 2; i++){
+                neighbourCells.push(this.getCellByRowCol(head.row - 1, head.col - 1 + i));
+                neighbourCells.push(this.getCellByRowCol(head.row + 1, head.col - 1 + i));
             }
         } else {
             //north
-            neighbourCells.push(this.getCellByRowCol(firstCell.row - 1, firstCell.col));
+            neighbourCells.push(this.getCellByRowCol(head.row - 1, head.col));
             //south
-            neighbourCells.push(this.getCellByRowCol(firstCell.row + ship.size, firstCell.col));
+            neighbourCells.push(this.getCellByRowCol(head.row + size, head.col));
             //east and west
-            for(var i=0; i < ship.size + 2; i++){
-                neighbourCells.push(this.getCellByRowCol(firstCell.row - 1 + i, firstCell.col - 1));
-                neighbourCells.push(this.getCellByRowCol(firstCell.row - 1 + i, firstCell.col + 1));
+            for(var i=0; i < size + 2; i++){
+                neighbourCells.push(this.getCellByRowCol(head.row - 1 + i, head.col - 1));
+                neighbourCells.push(this.getCellByRowCol(head.row - 1 + i, head.col + 1));
             }
         }
+        return neighbourCells;
+    },
+    setCellStatusesAroundShipToSpare: function(ship){
+        var neighbourCells = this.getCellsAroundShip(ship);
         for(var i=0; i < neighbourCells.length; i++){
             var cell = neighbourCells[i];
             if(cell)

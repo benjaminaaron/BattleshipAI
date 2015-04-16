@@ -6,7 +6,8 @@ var StatsView = function(){
 
 StatsView.prototype = {
 	__proto__: AbstractView.prototype,
-	doSomething: function(){
+	init: function(viewContainer, player0, player1){
+		AbstractView.prototype.init.call(this, viewContainer, player0, player1);
 
 	}
 }

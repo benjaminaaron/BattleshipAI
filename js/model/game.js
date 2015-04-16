@@ -43,9 +43,6 @@ Game.prototype = {
     updatedBoard: function(board){
         viewModule.draw();
     },
-    newValidShipPosition: function(board){
-        //viewModule.newValidShipPosition(); // TODO
-    },
     handleCanvasEvent: function(type, id, xMouse, yMouse){
         var player = this.currentPlayer;
         var eventOriginBoardOwner = id == 0 ? this.player0 : this.player1;
@@ -73,6 +70,10 @@ Game.prototype = {
             }
         }
     },
+    setCurrentPlayer: function(player){
+        this.currentPlayer = player;
+        //this.viewModule.currentPlayer = player;
+    },
     setupCompleted: function(caller){
         if(this.isSingleGame){
             $('#statusLabel').html('in <b>play phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
@@ -80,12 +81,12 @@ Game.prototype = {
             this.currentPlayer.yourTurn();
         } else {
             if(caller.id == 0){
-                this.currentPlayer = this.player1;
+                this.setCurrentPlayer(this.player1);
                 this.currentPlayer.yourSetup(); 
             } else {
                 this.inPlayPhase = true;
                 $('#statusLabel').html('in <b>play phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
-                this.currentPlayer = this.player0;
+                this.setCurrentPlayer(this.player0);
                 this.currentPlayer.yourTurn(); 
             }
         }
@@ -102,10 +103,10 @@ Game.prototype = {
                 this.currentPlayer.yourTurn();
             else {
                 if(caller.id == 0){
-                    this.currentPlayer = this.player1;
+                    this.setCurrentPlayer(this.player1);
                     this.currentPlayer.yourTurn();
                 } else {
-                    this.currentPlayer = this.player0;
+                    this.setCurrentPlayer(this.player0);
                     this.currentPlayer.yourTurn(); 
                 }
             }
