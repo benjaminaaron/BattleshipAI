@@ -74,7 +74,7 @@ GameView.prototype = {
 		
 		// marking active board with frame around it
 		if(isActiveBoard){
-			ctx.lineWidth = '12';
+			ctx.lineWidth = '10';
 			ctx.strokeStyle = 'orange';
 		} else {
 			ctx.lineWidth = '6';
