@@ -154,5 +154,10 @@ Board.prototype = {
             fireResult.allShipsDestroyed = true;
         }
         return fireResult;
+    },
+    calculateAllPossibleSetups: function(){
+
+        // TODO
+
     }
 };
