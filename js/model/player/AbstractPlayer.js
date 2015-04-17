@@ -46,7 +46,7 @@ AbstractPlayer.prototype = {
                 break;
             case CellStatus.DESTROYED:
                 console.log('destroyed');
-                this.fieldMemory.setCellStatusesAroundShipToSpare(resultMsg.destroyedShip);
+                this.fieldMemory.setCellStatusesAroundShipToSpare(resultMsg.destroyedShipCode);
                 //console.log(this.fieldMemory);
                 if(resultMsg.allShipsDestroyed){
                     console.log('all ships destroyed');

@@ -47,9 +47,6 @@ AbstractField.prototype = {
                 cells.push(this.cells[i]);
         return cells;
     },
-    getCellsAroundShip: function(ship){
-        return this.getCellsAroundCellcluster(ship.occupyingCells);
-    },
     getCellsAroundCellcluster: function(cellcluster){
         var head = cellcluster[0];
         var size = cellcluster.length;
@@ -78,8 +75,19 @@ AbstractField.prototype = {
         }
         return neighbourCells;
     },
-    setCellStatusesAroundShipToSpare: function(ship){
-        var neighbourCells = this.getCellsAroundShip(ship);
+    setCellStatusesAroundShipToSpare: function(shipCode){
+        var size = parseInt(shipCode.split('_')[0]);
+        var orientation = shipCode.split('_')[1] == 'h';
+        var headRow = parseInt(shipCode.split('_')[2].split('-')[0]);
+        var headCol = parseInt(shipCode.split('_')[2].split('-')[1]);
+        var deltaRow = orientation ? 0 : 1;
+        var deltaCol = orientation ? 1 : 0;
+
+        var cellcluster = [];
+        for(var i=0; i < size; i++)
+            cellcluster.push(this.getCellByRowCol(headRow + deltaRow * i, headCol + deltaCol * i));        
+
+        var neighbourCells = this.getCellsAroundCellcluster(cellcluster);
         for(var i=0; i < neighbourCells.length; i++){
             var cell = neighbourCells[i];
             if(cell)

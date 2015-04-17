@@ -64,7 +64,7 @@ Ship.prototype = {
         if(this.hits >= this.size){
             this.destroyed = true;
             var msg = new CellStatusMsg(CellStatus.DESTROYED);
-            msg.destroyedShip = this;
+            msg.destroyedShipCode = this.size + '_' + (this.orientation ? 'h_' : 'v_') + this.occupyingCells[0].row + '-' + this.occupyingCells[0].col;
             return msg;
         }
         return new CellStatusMsg(CellStatus.HIT);

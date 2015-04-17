@@ -9,7 +9,7 @@ var CellStatus = {
 
 var CellStatusMsg = function(status) {
     this.status = status;
-    this.destroyedShip; // if there is one
+    this.destroyedShipCode; // if there is one
     this.allShipsDestroyed = false;
 }
 
