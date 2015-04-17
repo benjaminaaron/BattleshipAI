@@ -62,7 +62,9 @@ GameView.prototype = {
             game.handleCanvasEvent(2, id, xMouse, yMouse);        
         });
     },
-    draw: function(){ // TODO only redraw changed board
+    handleUpdatedBoard: function(updateReport){ // TODO only redraw changed board
+        AbstractView.prototype.handleUpdatedBoard.call(this, updateReport);
+        // TODO do something with updateReport
         this.drawBoard(this.canvas0.getContext('2d'), this.player0.board, this.player0.myTurn);
         if(this.player1)
             this.drawBoard(this.canvas1.getContext('2d'), this.player1.board, this.player1.myTurn);

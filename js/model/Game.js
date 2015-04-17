@@ -31,17 +31,16 @@ var Game = function(player0, player1, shipTypes, viewModule){
     this.inPlayPhase = false;
     this.currentPlayer = player0;
     this.gameRunning = false;
-    viewModule.draw();
+    this.updatedBoard(UpdateReport.INIT);
 }
 
 Game.prototype = {
     start: function(){
         this.gameRunning = true;
         this.currentPlayer.yourSetup(); 
-        viewModule.draw();
     },
-    updatedBoard: function(board){
-        viewModule.draw();
+    updatedBoard: function(updateReport){
+        viewModule.handleUpdatedBoard(updateReport);
     },
     handleCanvasEvent: function(type, id, xMouse, yMouse){
         var player = this.currentPlayer;
@@ -90,7 +89,7 @@ Game.prototype = {
                 this.currentPlayer.yourTurn(); 
             }
         }
-        viewModule.draw();
+        this.updatedBoard(UpdateReport.ONESETUPCOMPLETED);
     },
     fire: function(caller, row, col){
         var targetBoard = caller.opponent.board;
@@ -111,7 +110,7 @@ Game.prototype = {
                 }
             }
         }
-        viewModule.draw();
+        this.updatedBoard(UpdateReport.ONETURNCOMPLETED);
     },
     iWon: function(caller, shotsFired){
         this.gameRunning = false;
@@ -129,7 +128,7 @@ Game.prototype = {
                     shots: shotsFired
                 });
             }
-            viewModule.draw();
+            self.updatedBoard(UpdateReport.GAMECOMPLETED);
         }, 10);   
     }
 }

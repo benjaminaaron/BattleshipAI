@@ -63,14 +63,14 @@ Board.prototype = {
                 this.field.lastValidShipPositionCells = cells;
             } 
 
-        game.updatedBoard();  
+        game.updatedBoard(UpdateReport.SHIPMOVED);  
     },
      shipIsCompletelyOverField: function(ship){
         return ship.x > this.fieldLeft && ship.x < this.fieldRight - ship.w && ship.y > this.fieldTop && ship.y < this.fieldBottom - ship.h;
     },
     placeShip: function(ship){
         this.field.placeShipAtLastValidPosition(ship, this.fieldLeft, this.fieldTop, this.cellSizePx);
-        game.updatedBoard();
+        game.updatedBoard(UpdateReport.SHIPWASMANUALLYPLACED);
     },
     placeShipByCoords: function(ship, orientation, row, col){     
         if(ship.orientation != orientation)
@@ -83,7 +83,6 @@ Board.prototype = {
             cell.occupiedBy = ship;
             ship.occupyingCells.push(cell); 
         }
-        game.updatedBoard();
     },
     revokeShipPlacement: function(ship){
         if(ship.occupyingCells.length > 0)
@@ -112,7 +111,7 @@ Board.prototype = {
         }
         ship.flipOrientation();
         this.placeShipByCoords(ship, ship.orientation, validPositions[indexOfMinDist].row, validPositions[indexOfMinDist].col);
-        game.updatedBoard(this);
+        game.updatedBoard(UpdateReport.SHIPFLIPPEDORIENTATION);
     },
     randomlyPlaceShips: function(){    
         this.field.clear();
@@ -123,7 +122,7 @@ Board.prototype = {
             var randomGridPos = validPositions[randomIndex];
             this.placeShipByCoords(ship, randomGridPos.orientation, randomGridPos.row, randomGridPos.col);
         }
-        game.updatedBoard();
+        game.updatedBoard(UpdateReport.SHIPSWERERANDOMLYPLACED);
     },
     getHorizontalValidShipPositions: function(ship){
         var validPositions = [];

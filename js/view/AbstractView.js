@@ -6,5 +6,8 @@ AbstractView.prototype = {
 		this.viewContainer = viewContainer;
 		this.player0 = player0;
 		this.player1 = player1;
+	},
+	handleUpdatedBoard: function(updateReport){
+		
 	}
 }
