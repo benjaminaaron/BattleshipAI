@@ -77,6 +77,7 @@ Game.prototype = {
         if(this.isSingleGame){
             $('#statusLabel').html('in <b>play phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
             this.inPlayPhase = true;
+            $('#readyBtn').hide();
             this.currentPlayer.yourTurn();
         } else {
             if(caller.id == 0){
@@ -84,6 +85,7 @@ Game.prototype = {
                 this.currentPlayer.yourSetup(); 
             } else {
                 this.inPlayPhase = true;
+                $('#readyBtn').hide();
                 $('#statusLabel').html('in <b>play phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
                 this.setCurrentPlayer(this.player0);
                 this.currentPlayer.yourTurn(); 
@@ -119,6 +121,8 @@ Game.prototype = {
             $('#statusLabel').html('<b>' + caller.name + ' won!</b>&nbsp;&nbsp;&nbsp;' + shotsFired + ' (' + game.totalShipCells + '-' + game.totalCells + ')&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'); 
             caller.board.winnerBoard = true;
             caller.opponent.board.looserBoard = true;  
+            caller.board.showShips = true;
+            
             if(!self.isSingleGame && firebase){
                 firebase.push({
                     timestamp: getFormattedDate(),

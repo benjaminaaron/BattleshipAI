@@ -14,6 +14,7 @@ $('.dialog').dialog({
 
 $('#statusLabel').html('game hasn\'t started yet&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 $('#resetBtn').hide();
+$('#readyBtn').hide();
 
 var firebase = new Firebase('https://torrid-inferno-2196.firebaseio.com');  
 var game, viewModule;
@@ -50,7 +51,7 @@ function startGame(){
     $('#startBtn').hide();
     $('#gameviewRadioBtn').hide();
     $('#statsviewRadioBtn').hide();
-
+    
     $('#resetBtn').show();
     $('#statusLabel').html('in <b>setup phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
     var gameControlsWidth = (player1 ? 2 : 1) * 370 + (player1 ? 4 : 0);

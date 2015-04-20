@@ -71,6 +71,7 @@ Board.prototype = {
     placeShip: function(ship){
         this.field.placeShipAtLastValidPosition(ship, this.fieldLeft, this.fieldTop, this.cellSizePx);
         game.updatedBoard(UpdateReport.SHIPWASMANUALLYPLACED);
+        console.log(ship);
     },
     placeShipByCoords: function(ship, orientation, row, col){     
         if(ship.orientation != orientation)

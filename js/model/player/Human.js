@@ -51,16 +51,23 @@ Human.prototype = {
                 if(this.board.posIsOverField(xMouse, yMouse))
                     this.board.randomlyPlaceShips();
                 else
-                    if(this.board.allShipsPlaced())
-                        this.finishedSetup();
-                    else
-                        alert('not all ships are placed yet');
+                    this.iAmDoneSettingUp();
+                       
         } else
             if(ship){
                 ship.movingStopped();
                 this.board.placeShip(ship);
             }
         this.selectedShip = null;
+        
+        if(!this.inPlayPhase && this.board.allShipsPlaced())
+            $('#readyBtn').show();
+    },
+    iAmDoneSettingUp: function() {
+        if(this.board.allShipsPlaced())
+            this.finishedSetup();
+        else
+            alert('not all ships placed yet');
     },
     fireOnCoords: function(xMouse, yMouse){
         if(this.board.posIsOverField(xMouse, yMouse)){

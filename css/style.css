@@ -1,3 +1,9 @@
+body {
+    background-color: #CCC;
+    /* background-image: url('http://www.farbensportlich.de/wp-content/uploads/2012/08/Battleship-Farbensport.jpg'); */
+    background-repeat: no-repeat;
+    background-position: left top;
+}
 
 #gameControls {
     width: 744px !important;
@@ -5,7 +11,8 @@
     border-style: solid;
     border-width: 2px;
     border-color: #CCC;  
-    background-color: #EEE;
+    background-color: #000;
+    
     margin: 0 0 10px 0;          
 }
 
@@ -16,8 +23,9 @@ input, select {
 #statusLabel {
     font-family: Georgia, sans-serif;
     font-size:  14px;
-    color: #666;
+    color: #aaccee;
     margin: 14px 0 0 0;
+    /*background-color: #FFF;*/
     float: right;
 }
 

@@ -102,6 +102,8 @@ GameView.prototype = {
         if(board.showShips)
             this.drawShips(ctx, board.ships);
                  
+        console.log(board, board.showShips);
+        
         // hits
         this.drawHits(ctx, board);
 
