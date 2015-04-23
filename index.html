@@ -28,7 +28,7 @@
             </div>
         </div>
         <div id='infoDialog' class='dialog' title='Info'></div>
-        <div id='highscoreDialog' class='dialog' title='Highscore'>can't fetch data</div>
+        <div id='highscoreDialog' class='dialog' title='Highscore'><b>Yeeeey, HAPPY BIRTHDAY STEPH!! :)</b></div>
 
         <!-- CSS vendors -->
         <link href="css/vendors/jquery-ui.min.css" rel="stylesheet"/>
@@ -60,8 +60,23 @@
         <script type="text/javascript" src="js/view/GameView.js"></script>
         <script type="text/javascript" src="js/view/StatsView.js"></script>
         
+        <script>
 
-        <script></script>
+            function getRandomHelloKittyImageURL(){
+                return "https://dl.dropboxusercontent.com/u/1331728/HelloKitty/" + (Math.round(Math.random() * 16) + 1) + ".jpg";
+            }
+
+            $(document).ready(function() {
+                $('body').css({
+                    'backgroundImage': 'url(' + getRandomHelloKittyImageURL() +')',
+                    'backgroundRepeat': 'repeat',
+                    'backgroundPosition': 'top center'
+                });
+
+                $('#highscoreDialog').dialog('open');
+            });
+
+        </script>
 
     </body> 
 </html>

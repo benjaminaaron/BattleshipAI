@@ -1,6 +1,6 @@
 body {
-    background-color: #CCC;
-    /* background-image: url('http://www.farbensportlich.de/wp-content/uploads/2012/08/Battleship-Farbensport.jpg'); */
+    background-color: #FEB2B2;
+    /*background-image: url('https://dl.dropboxusercontent.com/content_link/ep1eE4sdW3UoVLow3gDbQzFOudRJqRIocA4aN2ca1k6dsM1gfn763wf1Z2rBcbLa');*/
     background-repeat: no-repeat;
     background-position: left top;
 }
@@ -11,8 +11,7 @@ body {
     border-style: solid;
     border-width: 2px;
     border-color: #CCC;  
-    background-color: #000;
-    
+    background-color: #FEB2B2;
     margin: 0 0 10px 0;          
 }
 
@@ -23,7 +22,7 @@ input, select {
 #statusLabel {
     font-family: Georgia, sans-serif;
     font-size:  14px;
-    color: #aaccee;
+    color: #aa0000;
     margin: 14px 0 0 0;
     /*background-color: #FFF;*/
     float: right;
