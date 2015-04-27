@@ -143,6 +143,25 @@ function showHighscore(){
         console.log('fetching data from firebase...');
 
         firebase.once('value', function(dataSnapshot) {
+            
+            
+            console.log(dataSnapshot.val());
+            
+            
+            var entries = dataSnapshot.val();
+            for (var indexStr in entries) {
+                if (entries.hasOwnProperty(indexStr)) {
+                    var entry  = entries[indexStr];
+                    
+                    console.log(entry);
+
+                }
+            }
+            
+            
+            
+            
+ /*           
             var entries = dataSnapshot.val();
             for (var indexStr in entries) {
                 if (entries.hasOwnProperty(indexStr)) {
@@ -165,6 +184,11 @@ function showHighscore(){
                 td.append('' + highscoreEntries[i]);
             }
             popup.dialog('open');
+            
+            */
+            
+            
+            
         });
     }
 }

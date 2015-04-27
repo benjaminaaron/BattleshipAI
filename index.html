@@ -7,7 +7,8 @@
     </head> 
     <body>
 
-        <!-- <input type='button' value='debug' onclick='debug();'> -->
+        <input type='button' value='debug' onclick='debug();'>
+        
         <div id='viewContainer'>
             <div id='gameControls'>
                 <select id='gameOptions' style="width:135px">
@@ -28,7 +29,7 @@
             </div>
         </div>
         <div id='infoDialog' class='dialog' title='Info'></div>
-        <div id='highscoreDialog' class='dialog' title='Highscore'><b>Yeeeey, HAPPY BIRTHDAY STEPH!! :)</b></div>
+        <div id='highscoreDialog' class='dialog' title='Highscore'><b></b></div>
 
         <!-- CSS vendors -->
         <link href="css/vendors/jquery-ui.min.css" rel="stylesheet"/>
@@ -37,18 +38,19 @@
         <!-- JS vendors -->
         <script type="text/javascript" src="js/vendors/jquery-2.1.1.min.js"></script>
         <script type="text/javascript" src="js/vendors/jquery-ui.min.js"></script>
-        <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+        <script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
         <!-- JS own -->
-        <script type="text/javascript" src="js/Driver.js"></script> <!-- "MAIN" -->
-        <script type="text/javascript" src="js/model/player/AbstractPlayer.js"/></script>
-        <script type="text/javascript" src="js/model/player/Human.js"/></script>
-        <script type="text/javascript" src="js/model/player/AbstractBot.js"/></script>
-        <script type="text/javascript" src="js/model/player/bots/BotToolkit.js"/></script>
-        <script type="text/javascript" src="js/model/player/bots/RandomBot.js"/></script>
-        <script type="text/javascript" src="js/model/player/bots/RandomDestroyerBot.js"/></script>
-        <script type="text/javascript" src="js/model/player/bots/ZoningSquareDestroyerBot.js"/></script>
-        <script type="text/javascript" src="js/model/player/bots/ZoningRectDestroyerBot.js"/></script>
+        <script type="text/javascript" src="js/Driver.js"></script>
+        <script type="text/javascript" src="js/model/player/AbstractPlayer.js"></script>
+        <script type="text/javascript" src="js/model/player/Human.js"></script>
+        <script type="text/javascript" src="js/model/player/AbstractBot.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/BotToolkit.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/RandomBot.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/RandomDestroyerBot.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/ZoningSquareDestroyerBot.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/ZoningRectDestroyerBot.js"></script>
         <script type="text/javascript" src="js/model/Game.js"></script>
+        <script type="text/javascript" src="js/model/GameObserver.js"></script><!-- -->
         <script type="text/javascript" src="js/model/board/Board.js"></script>
         <script type="text/javascript" src="js/model/board/AbstractField.js"></script>
         <script type="text/javascript" src="js/model/board/Field.js"></script>
@@ -61,7 +63,13 @@
         <script type="text/javascript" src="js/view/StatsView.js"></script>
         
         <script>
+        
+        function debug(){
+        
+            
+        }
 
+/*
             function getRandomHelloKittyImageURL(){
                 return "https://dl.dropboxusercontent.com/u/1331728/HelloKitty/" + (Math.round(Math.random() * 16) + 1) + ".jpg";
             }
@@ -74,7 +82,7 @@
                 });
 
                 $('#highscoreDialog').dialog('open');
-            });
+            });*/
 
         </script>
 

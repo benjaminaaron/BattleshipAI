@@ -4,6 +4,7 @@ var Game = function(player0, player1, shipTypes, viewModule){
     this.rows = 10;
     this.cols = 10;
     this.boards = [];
+    
 
     this.totalCells = this.rows * this.cols;
     this.totalShipCells = 0; // counting them for winning stats
@@ -37,7 +38,7 @@ var Game = function(player0, player1, shipTypes, viewModule){
 Game.prototype = {
     start: function(){
         this.gameRunning = true;
-        this.currentPlayer.yourSetup(); 
+        this.currentPlayer.yourSetup();
     },
     updatedBoard: function(updateReport){
         viewModule.handleUpdatedBoard(updateReport);
@@ -122,8 +123,62 @@ Game.prototype = {
             caller.board.winnerBoard = true;
             caller.opponent.board.looserBoard = true;  
             caller.board.showShips = true;
+
+            var gameObserver = new GameObserver(caller);
+            gameObserver.storeData(caller);
             
-            if(!self.isSingleGame && firebase){
+            /*var winnerFieldMemoryCells = caller.fieldMemory.cells;
+            var looserFieldMemoryCells = caller.opponent.fieldMemory.cells;
+            var fieldMemories = [];
+            
+            var i;
+            var cell;
+            
+            for(i=0; i < winnerFieldMemoryCells.length; i++){
+                cell = winnerFieldMemoryCells[i];
+                
+                if(cell.status == CellStatus.UNTOUCHED || cell.status == CellStatus.SPARE)
+                    fieldMemories.push(0);
+                else
+                    fieldMemories.push(1);
+            }
+            
+            for(i=0; i < looserFieldMemoryCells.length; i++){
+                cell = looserFieldMemoryCells[i];
+                
+                if(cell.status != CellStatus.UNTOUCHED && cell.status != CellStatus.SPARE)
+                    fieldMemories[i] += 1;
+            }
+
+            firebase.once('value', function(dataSnapshot) {
+
+                var fieldMemoryStored;
+                var id;
+               
+                // TODO: loop is ugly. consider replacing it
+                var entries = dataSnapshot.val();
+                for (var indexStr in entries) {
+                   id = indexStr;
+                    if (entries.hasOwnProperty(indexStr)) {
+                       fieldMemoryStored  = entries[indexStr];
+                        
+                    }
+                }
+                for (var index in fieldMemoryStored.fieldMemories){
+                    fieldMemories[index] += fieldMemoryStored.fieldMemories[index];
+                    
+                }
+                
+                console.log(fieldMemories);
+                
+                var itemRef = new Firebase('https://torrid-inferno-2196.firebaseio.com/' + id);
+                itemRef.remove();
+                firebase.push({fieldMemories: fieldMemories});
+            });
+            */
+            
+            
+           /*if(!self.isSingleGame && firebase){
                 firebase.push({
                     timestamp: getFormattedDate(),
                     player0: self.player0.name,
@@ -131,7 +186,9 @@ Game.prototype = {
                     winner: caller.id,
                     shots: shotsFired
                 });
-            }
+            }*/
+            
+            
             self.updatedBoard(UpdateReport.GAMECOMPLETED);
         }, 10);   
     }
