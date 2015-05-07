@@ -1,5 +1,5 @@
 body {
-    background-color: #ccc;
+    background-color: #fff;
     /*background-image: url('https://dl.dropboxusercontent.com/content_link/ep1eE4sdW3UoVLow3gDbQzFOudRJqRIocA4aN2ca1k6dsM1gfn763wf1Z2rBcbLa');*/
     background-repeat: no-repeat;
     background-position: left top;
@@ -10,8 +10,8 @@ body {
     height: 40px !important;
     border-style: solid;
     border-width: 2px;
-    border-color: #CCC;  
-    background-color: #FEB2B2;
+    border-color: #ddd;  
+    background-color: #eee;
     margin: 0 0 10px 0;          
 }
 
@@ -22,7 +22,7 @@ input, select {
 #statusLabel {
     font-family: Georgia, sans-serif;
     font-size:  14px;
-    color: #aa0000;
+    color: #00f;
     margin: 14px 0 0 0;
     /*background-color: #FFF;*/
     float: right;

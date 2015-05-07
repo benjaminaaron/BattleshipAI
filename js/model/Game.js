@@ -124,9 +124,12 @@ Game.prototype = {
             caller.opponent.board.looserBoard = true;  
             caller.board.showShips = true;
 
+            /*
             var gameObserver = new GameObserver(caller);
             gameObserver.storeData(caller);
-            
+            */
+
+
             /*var winnerFieldMemoryCells = caller.fieldMemory.cells;
             var looserFieldMemoryCells = caller.opponent.fieldMemory.cells;
             var fieldMemories = [];

@@ -16,7 +16,7 @@ $('#statusLabel').html('game hasn\'t started yet&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n
 $('#resetBtn').hide();
 $('#readyBtn').hide();
 
-var firebase = new Firebase('https://torrid-inferno-2196.firebaseio.com');  
+//var firebase = new Firebase('https://torrid-inferno-2196.firebaseio.com');  
 var game, viewModule;
 
 function startGame(){
@@ -135,6 +135,10 @@ var HighscoreEntry = function(player0, player1, winnerIndex, shots, timestamp){
 }
 
 function showHighscore(){
+
+    alert('this function is currently disabled');
+
+    /*
     var popup = $('#highscoreDialog');  
     popup.dialog('open');
 
@@ -143,25 +147,17 @@ function showHighscore(){
         console.log('fetching data from firebase...');
 
         firebase.once('value', function(dataSnapshot) {
-            
-            
             console.log(dataSnapshot.val());
-            
-            
             var entries = dataSnapshot.val();
             for (var indexStr in entries) {
                 if (entries.hasOwnProperty(indexStr)) {
                     var entry  = entries[indexStr];
-                    
                     console.log(entry);
-
                 }
-            }
-            
-            
-            
-            
- /*           
+            }    
+
+            // - - -
+
             var entries = dataSnapshot.val();
             for (var indexStr in entries) {
                 if (entries.hasOwnProperty(indexStr)) {
@@ -185,12 +181,9 @@ function showHighscore(){
             }
             popup.dialog('open');
             
-            */
-            
-            
             
         });
-    }
+    }*/
 }
 
 // UTILITY FUNCTIONS
