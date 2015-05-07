@@ -11,7 +11,6 @@ GameView.prototype = {
 
         this.viewContainer = viewContainer;
         this.player0 = player0;
-        //this.currentPlayer = player0;
         this.player1 = player1;
 
 	 	var canvasWidthPx = 370;
@@ -26,16 +25,14 @@ GameView.prototype = {
     	this.canvas0 = $(canvas)[0];
     	this.installCanvasListener(this.canvas0, 0);   
 
-	    if(player1){
-		    canvas = $('<canvas>').attr({
-		        'id': 'canvas_1',
-		        'width': canvasWidthPx,
-		        'height': canvasHeightPx
-	    	});
-	    	$(viewContainer).append(canvas);
-	    	this.canvas1 = $(canvas)[0];
-	    	this.installCanvasListener(this.canvas1, 1);   
-   	 	}
+	    canvas = $('<canvas>').attr({
+	        'id': 'canvas_1',
+	        'width': canvasWidthPx,
+	        'height': canvasHeightPx
+    	});
+    	$(viewContainer).append(canvas);
+    	this.canvas1 = $(canvas)[0];
+    	this.installCanvasListener(this.canvas1, 1);   
 
 	},
 	installCanvasListener: function(canvas, id){
@@ -101,9 +98,7 @@ GameView.prototype = {
         // ships
         if(board.showShips)
             this.drawShips(ctx, board.ships);
-                 
-        console.log(board, board.showShips);
-        
+                         
         // hits
         this.drawHits(ctx, board);
 

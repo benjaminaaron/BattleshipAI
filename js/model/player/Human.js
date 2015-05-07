@@ -10,14 +10,6 @@ Human.prototype = {
 
     yourSetup: function(){
         AbstractPlayer.prototype.yourSetup.call(this); 
-        if(this.type == 'human' && this == this.opponent){ // case single human
-            this.board.randomlyPlaceShips();
-            this.board.showShips = false;
-            var self = this;
-            setTimeout(function(){
-                self.finishedSetup();
-            }, 10); 
-        } 
     },
     mousedown: function(xMouse, yMouse){    
         AbstractPlayer.prototype.mousedown.call(this, xMouse, yMouse);   

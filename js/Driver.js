@@ -38,13 +38,6 @@ function startGame(){
             player0 = new createBot();
             player1 = new createBot();
             break;
-        case 'b':
-            player0 = new createBot();  
-            break;
-        case 'h':
-            var name = prompt('Enter your name:', 'Max');
-            player0 = new Human(name);
-            break;
     }
 
     $('#gameOptions').hide();
@@ -61,8 +54,11 @@ function startGame(){
 
     if($('#gameviewRadioBtn').is(':checked'))
         viewModule = new GameView();
-    if($('#statsviewRadioBtn').is(':checked'))
-        viewModule = new StatsView();
+    if($('#statsviewRadioBtn').is(':checked')){
+        alert('statsView is not available yet, choosing gameView instead');
+        //viewModule = new StatsView();
+          viewModule = new GameView();
+    }
 
     viewModule.init(document.getElementById('viewContainer'), player0, player1);
 
@@ -111,7 +107,6 @@ function info(){
   '- click on your board outside of the field means you finished setting up ships<br><br>' +
   '<b>Play phase</b>:<br>' +
   '- just go ahead shooting around on the opponents field<br><br>' + 
-  'The single modes are there as benchmarks and for development and training of the AI.<br><br>' + 
   '<b>Build by</b>:<br>@stehrenberg<br>@chanton1392<br>@abstractCalculus<br>@benjaminaaron<br><br>' + 
   'More info at:<br>https://github.com/benjaminaaron/BattleshipAI';
     var popup = $('#infoDialog');
