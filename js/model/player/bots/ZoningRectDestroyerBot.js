@@ -12,6 +12,7 @@ ZoningRectDestroyerBot.prototype = {
     yourSetup: function(){
         AbstractBot.prototype.yourSetup.call(this); 
         this.board.randomlyPlaceShips();  	
+        viewModule.shipsWereRandomlyPlaced(this.ID);
     },
     yourTurn: function(){
         AbstractBot.prototype.yourTurn.call(this);
