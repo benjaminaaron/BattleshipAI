@@ -7,8 +7,8 @@ var AbstractPlayer = function(name){
 }
 
 AbstractPlayer.prototype = {
-    init: function(id, board){
-        this.id = id;
+    init: function(ID, board){
+        this.ID = ID;
         this.board = board;
         this.canvas = board.canvas;
         this.fieldMemory = new AbstractField(board.rows, board.cols); 
@@ -62,8 +62,5 @@ AbstractPlayer.prototype = {
         $('#container_' + this.id).removeClass('activeContainer');    
         console.log('<< my turn is over says ' + this.name);
         game.turnCompleted(this);
-    },
-    mousedown: function(xMouse, yMouse){},
-    mousemove: function(xMouse, yMouse){},
-    mouseup: function(xMouse, yMouse){}
+    }
 };

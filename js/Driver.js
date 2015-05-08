@@ -52,6 +52,8 @@ function startGame(){
 
     var shipTypes = [new ShipType(5, 'aqua', 1), new ShipType(4, 'maroon', 1), new ShipType(3, 'lime', 1), new ShipType(2, 'orange', 2)];
 
+    game = new Game(player0, player1, shipTypes, viewModule);
+
     if($('#gameviewRadioBtn').is(':checked'))
         viewModule = new GameView();
     if($('#statsviewRadioBtn').is(':checked')){
@@ -59,10 +61,8 @@ function startGame(){
         //viewModule = new StatsView();
           viewModule = new GameView();
     }
+    viewModule.init(document.getElementById('viewContainer'));
 
-    viewModule.init(document.getElementById('viewContainer'), player0, player1);
-
-    game = new Game(player0, player1, shipTypes, viewModule);
     game.start();
 }
 

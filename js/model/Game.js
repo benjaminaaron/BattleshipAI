@@ -3,7 +3,6 @@ var Game = function(player0, player1, shipTypes, viewModule){
     this.viewModule = viewModule;
     this.rows = 10;
     this.cols = 10;
-    this.boards = [];  
 
     this.totalCells = this.rows * this.cols;
     this.totalShipCells = 0; // counting them for winning stats
@@ -13,13 +12,11 @@ var Game = function(player0, player1, shipTypes, viewModule){
     // PLAYER 0
     var board = new Board(0, player0, shipTypes, this.rows, this.cols);
     player0.init(0, board);
-    this.boards.push(board);
     this.player0 = player0;
 
     // PLAYER 1
     board = new Board(1, player1, shipTypes, this.rows, this.cols);
     player1.init(1, board);
-    this.boards.push(board);
     this.player1 = player1;
 
     player0.setOpponent(player1);
@@ -28,7 +25,6 @@ var Game = function(player0, player1, shipTypes, viewModule){
     this.inPlayPhase = false;
     this.currentPlayer = player0;
     this.gameRunning = false;
-    this.updatedBoard(UpdateReport.INIT);
 }
 
 Game.prototype = {
@@ -39,9 +35,9 @@ Game.prototype = {
     updatedBoard: function(updateReport){
         viewModule.handleUpdatedBoard(updateReport);
     },
-    handleCanvasEvent: function(type, id, xMouse, yMouse){
+    handleCanvasEvent: function(type, ID, xMouse, yMouse){
         var player = this.currentPlayer;
-        var eventOriginBoardOwner = id == 0 ? this.player0 : this.player1;
+        var eventOriginBoardOwner = ID == 0 ? this.player0 : this.player1;
 
         var sendCanvasEventToPlayer;
         if(!this.inPlayPhase)
@@ -67,7 +63,7 @@ Game.prototype = {
         this.currentPlayer = player;
     },
     setupCompleted: function(caller){
-        if(caller.id == 0){
+        if(caller.ID == 0){
             this.setCurrentPlayer(this.player1);
             this.currentPlayer.yourSetup(); 
         } else {
@@ -86,7 +82,7 @@ Game.prototype = {
     },
     turnCompleted: function(caller){
         if(this.gameRunning){
-            if(caller.id == 0){
+            if(caller.ID == 0){
                 this.setCurrentPlayer(this.player1);
                 this.currentPlayer.yourTurn();
             } else {

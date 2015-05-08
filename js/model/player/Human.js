@@ -2,7 +2,7 @@
 var Human = function(name){
     AbstractPlayer.call(this, name);
     this.type = 'human';
-    this.selectedShip = null;
+    this.selectedShipWr = null;
 }
 
 Human.prototype = { 
@@ -12,45 +12,44 @@ Human.prototype = {
         AbstractPlayer.prototype.yourSetup.call(this); 
     },
     mousedown: function(xMouse, yMouse){    
-        AbstractPlayer.prototype.mousedown.call(this, xMouse, yMouse);   
         if(!this.inPlayPhase){
             this.xMousedown = xMouse;
             this.yMousedown = yMouse;
-            var ship = this.board.getSelectedShip(xMouse, yMouse);
-            if(ship){
-                this.board.revokeShipPlacement(ship);
-                this.selectedShip = ship;
+            var shipWr = viewModule.getSelectedShip(this.ID, xMouse, yMouse);
+            if(shipWr){
+                viewModule.revokeShipPlacement(shipWr);
+                this.selectedShipWr = shipWr;
             }
         }
         else
             this.fireOnCoords(xMouse, yMouse);
     },
     mousemove: function(xMouse, yMouse){
-        AbstractPlayer.prototype.mousemove.call(this, xMouse, yMouse); 
         var mousemoved = Math.abs(this.xMousedown - xMouse) > 2 || Math.abs(this.yMousedown - yMouse) > 2;
-        var ship = this.selectedShip;
-        if(mousemoved && ship)
-            this.board.shipIsMoving(ship, xMouse, yMouse);
+        var shipWr = this.selectedShipWr;
+        if(mousemoved && shipWr)
+            viewModule.shipIsMoving(shipWr, xMouse, yMouse);
     },
     mouseup: function(xMouse, yMouse){
-        AbstractPlayer.prototype.mouseup.call(this, xMouse, yMouse); 
         var isClick = Math.abs(this.xMousedown - xMouse) < 2 && Math.abs(this.yMousedown - yMouse) < 2;
-        var ship = this.selectedShip;
+        var shipWr = this.selectedShipWr;
         if(isClick){
-            if(ship)
-                this.board.flipShipsOrientation(ship);
-            else
-                if(this.board.posIsOverField(xMouse, yMouse))
+            if(shipWr){
+                viewModule.flipShipsOrientation(shipWr);
+            }
+            else 
+                if(viewModule.posIsOverField(xMouse, yMouse)){
                     this.board.randomlyPlaceShips();
+                    viewModule.shipsWereRandomlyPlaced(this.ID);
+                }
                 else
                     this.iAmDoneSettingUp();
                        
         } else
-            if(ship){
-                ship.movingStopped();
-                this.board.placeShip(ship);
+            if(shipWr){
+                viewModule.placeShip(shipWr);
             }
-        this.selectedShip = null;
+        this.selectedShipWr = null;
         
         if(!this.inPlayPhase && this.board.allShipsPlaced())
             $('#readyBtn').show();
@@ -62,15 +61,11 @@ Human.prototype = {
             alert('not all ships placed yet');
     },
     fireOnCoords: function(xMouse, yMouse){
-        if(this.board.posIsOverField(xMouse, yMouse)){
-            var relXpos = xMouse - this.board.fieldLeft;
-            var relYpos = yMouse - this.board.fieldTop;
-            var cellSizePx = this.board.cellSizePx;
-            var row = Math.abs(Math.round((relYpos - cellSizePx / 2) / cellSizePx));
-            var col = Math.abs(Math.round((relXpos - cellSizePx / 2) / cellSizePx));     
-            var cellStatus = this.fieldMemory.getCellStatus(row, col);
-            if(cellStatus == CellStatus.UNTOUCHED || cellStatus == CellStatus.SPARE) //second one is to allow dumbness :) meaning humans are allowed to shoot directly next to a destroyed ship
-                this.fire(row, col);
+        if(viewModule.posIsOverField(xMouse, yMouse)){
+            var cell = viewModule.getCellRCbyCoords(xMouse, yMouse);
+            var cellStatus = this.fieldMemory.getCellStatus(cell.row, cell.col);
+            if(cellStatus == CellStatus.UNTOUCHED || cellStatus == CellStatus.SPARE)
+                this.fire(cell.row, cell.col);
         }
     }
 }

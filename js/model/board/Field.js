@@ -26,20 +26,6 @@ Field.prototype = {
                 return false;
         return true; 
     },
-    placeShipAtLastValidPosition: function(ship, fieldLeft, fieldTop, cellSizePx){
-        var cells = this.lastValidShipPositionCells;
-        if(cells.length > 0){
-            for(var i=0; i < cells.length; i++)          
-                cells[i].occupiedBy = ship;
-
-            ship.occupyingCells = cells;    
-            this.lastValidShipPositionCells = []; 
-
-            var headCell = cells[0];
-            ship.x = fieldLeft + headCell.col * cellSizePx;
-            ship.y = fieldTop + headCell.row * cellSizePx;
-        }
-    },
     clear: function(){
         for(var i=0; i < this.cells.length; i++)
             this.cells[i].occupiedBy = null;
