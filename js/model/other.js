@@ -18,6 +18,12 @@ var UpdateReport = {
     GAMECOMPLETED: 7
 }
 
+var MouseEvent = {
+    MOUSEDOWN: 0,
+    MOUSEMOVE: 1,
+    MOUSEUP: 2
+}
+
 var CellStatusMsg = function(status) {
     this.status = status;
     this.destroyedShipCode; // if there is one

@@ -3,6 +3,7 @@ var Human = function(name){
     AbstractPlayer.call(this, name);
     this.type = 'human';
     this.selectedShipWr = null;
+    this.controller = new MouseController(this);
 }
 
 Human.prototype = { 
@@ -40,7 +41,7 @@ Human.prototype = {
             else 
                 if(viewModule.posIsOverField(xMouse, yMouse)){
                     this.board.randomlyPlaceShips();
-                    viewModule.shipsWereRandomlyPlaced(this.ID);
+                    game.updatedBoard(UpdateReport.SHIPSWERERANDOMLYPLACED);
                 }
                 else
                     this.iAmDoneSettingUp();

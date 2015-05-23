@@ -33,7 +33,7 @@ Game.prototype = {
         this.currentPlayer.yourSetup();
     },
     updatedBoard: function(updateReport){
-        viewModule.handleUpdatedBoard(updateReport);
+        viewModule.handleUpdatedBoard(updateReport, this.currentPlayer.ID);
     },
     handleCanvasEvent: function(type, ID, xMouse, yMouse){
         var player = this.currentPlayer;
@@ -47,13 +47,13 @@ Game.prototype = {
 
         if(sendCanvasEventToPlayer){
             switch(type){
-                case 0:
+                case MouseEvent.MOUSEDOWN:
                     player.mousedown(xMouse, yMouse);
                     break;
-                case 1: 
+                case MouseEvent.MOUSEMOVE: 
                     player.mousemove(xMouse, yMouse);
                     break;
-                case 2:
+                case MouseEvent.MOUSEUP:
                     player.mouseup(xMouse, yMouse);
                     break;
             }

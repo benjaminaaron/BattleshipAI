@@ -12,7 +12,7 @@ ZoningSquareDestroyerBot.prototype = {
     yourSetup: function(){
         AbstractBot.prototype.yourSetup.call(this); 
         this.board.randomlyPlaceShips();  	
-        viewModule.shipsWereRandomlyPlaced(this.ID);
+        game.updatedBoard(UpdateReport.SHIPSWERERANDOMLYPLACED);
     },
     yourTurn: function(){
         AbstractBot.prototype.yourTurn.call(this);

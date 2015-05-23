@@ -149,10 +149,6 @@ GameView.prototype = {
             shipWr.y = this.fieldTop + headCell.row * this.cellSizePx;
         }
     },
-    shipsWereRandomlyPlaced: function(playerID){
-        this.updateWrappedShips(playerID);
-        this.handleUpdatedBoard(UpdateReport.SHIPSWERERANDOMLYPLACED);
-    },
     updateWrappedShips: function(playerID){ //beacuse orientation might have changed during random setup     
         for(var i=0; i < this.shipsWrapped.length; i++)
             if(this.shipsWrapped[i].player.ID == playerID)
@@ -172,26 +168,42 @@ GameView.prototype = {
             var canvasElement = this.getBoundingClientRect();
             var xMouse = e.originalEvent.pageX - canvasElement.left;
             var yMouse = e.originalEvent.pageY - canvasElement.top;
-            game.handleCanvasEvent(0, id, xMouse, yMouse);
+            game.handleCanvasEvent(MouseEvent.MOUSEDOWN, id, xMouse, yMouse);
         });
         $(canvas).on('mousemove touchmove', function(e) {
             e.preventDefault();
             var canvasElement = this.getBoundingClientRect();
             var xMouse = e.originalEvent.pageX - canvasElement.left;
             var yMouse = e.originalEvent.pageY - canvasElement.top;
-            game.handleCanvasEvent(1, id, xMouse, yMouse);        
+            game.handleCanvasEvent(MouseEvent.MOUSEMOVE, id, xMouse, yMouse);        
         });
         $(canvas).on('mouseup touchend', function(e) {
             e.preventDefault();
             var canvasElement = this.getBoundingClientRect();
             var xMouse = e.originalEvent.pageX - canvasElement.left;
             var yMouse = e.originalEvent.pageY - canvasElement.top;
-            game.handleCanvasEvent(2, id, xMouse, yMouse);        
+            game.handleCanvasEvent(MouseEvent.MOUSEUP, id, xMouse, yMouse);        
         });
     },
-    handleUpdatedBoard: function(updateReport){ // TODO only redraw changed board
+    /*handleCanvasEvent: function(type, ID, xMouse, yMouse){
+        var player = game.currentPlayer;
+        var eventOriginBoardOwner = ID == 0 ? this.player0 : this.player1;
+
+        var sendCanvasEventToPlayer;
+        if(!this.inPlayPhase) // manages the control-switch btwn. setup- and play-phase
+            sendCanvasEventToPlayer = player == eventOriginBoardOwner;
+        else
+            sendCanvasEventToPlayer = player != eventOriginBoardOwner;
+
+        if(sendCanvasEventToPlayer)
+            player.controller.handleMouseEvent(type, xMouse, yMouse);
+    },*/
+    handleUpdatedBoard: function(updateReport, currentPlayerID){ // TODO only redraw changed board
         AbstractView.prototype.handleUpdatedBoard.call(this, updateReport);
         // TODO do something with updateReport
+
+        if(updateReport == UpdateReport.SHIPSWERERANDOMLYPLACED)
+            this.updateWrappedShips(currentPlayerID);
 
         this.drawBoard(this.canvas0.getContext('2d'), this.player0);
         this.drawBoard(this.canvas1.getContext('2d'), this.player1);
