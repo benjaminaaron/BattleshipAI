@@ -8,3 +8,22 @@ We deployed state of the art web technology, yet kept the architecture light and
 Client-side and server-side code are accessible on GitHub, where an extensive wiki can be found as well. 
 If you have no interest in computer science whatsoever, you are destined to be enticed by the captivating gaming experience. If you do however have an interest in web apps, AI and alike, you are highly likely to enjoy both playing the game as well as digging into its mechanics. 
 We developed this as part of the AI course with Prof. Franz Kurfess in the summer term 2015 at the University of Applied Sciences Munich.
+
+-----
+## Usage ##
+
+### Node.js ###
+
+install node_modules
+
+```
+> npm install
+```
+start a server at localhost:3000
+
+```
+> npm start
+```
+### Browser ###
+
+go to localhost:3000
