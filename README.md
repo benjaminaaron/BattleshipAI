@@ -16,12 +16,12 @@ We developed this as part of the AI course with Prof. Franz Kurfess in the summe
 
 install node_modules
 
-```
+```sh
 > npm install
 ```
 start a server at localhost:3000
 
-```
+```sh
 > npm start
 ```
 ### Browser ###
