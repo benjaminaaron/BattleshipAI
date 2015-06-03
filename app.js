@@ -19,15 +19,16 @@ http.listen(3000, function(){
 var player0;
 
 io.on('connection', function(socket){
-	console.log('user connected: ' + socket.id);
-
 	socket.emit('directmessage', 'welcome!');
 
-    socket.on('login', function(username){
-    	player0 = new Human(username, socket);
-    });
 
-	socket.on('disconnect', function(){
-		console.log('user disconnected: ' + socket.id);
-	});
+    socket.on('login', function(username){
+    	player0 = new Human(username);
+    	player0.init(socket);
+    	player0.doSetup(setupDoneCallbackFunc);
+    });
 });
+
+function setupDoneCallbackFunc(player){
+	console.log('TODO');
+}

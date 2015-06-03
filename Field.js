@@ -13,7 +13,7 @@ var Field = function(){
 
 Field.prototype = {
 	show: function(){
-		var str = '   0  1  2  3  4  5  6  7  8  9\n';
+		var str = '\n   0  1  2  3  4  5  6  7  8  9\n';
 		for(var r = 0; r < 10; r++){
 			str = str + r + ' ';
 			for(var c = 0; c < 10; c++)

@@ -22,14 +22,19 @@
                 var args = output.substring(cmd.length + 1, output.length); 
                 socket.emit(cmd, args);                    
             }
-            
+
         	socket.on('directmessage', function(msg){
+        		msg = replaceAll('\n', '<br>', msg);
  				term.write('server to you: ' + msg);
             });
 
         	socket.on('broadcast', function(msg){
  				term.write('server to all: ' + msg);
             });
+
+            function replaceAll(find, replace, str) {
+			  return str.replace(new RegExp(find, 'g'), replace);
+			}
 
 
         </script> 
