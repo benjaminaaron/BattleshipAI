@@ -3,7 +3,7 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var Human = require('./Human.js');
+var Human = require('./game/Human.js');
 
 
 app.use(express.static(__dirname + '/public'));
@@ -21,7 +21,6 @@ var player0;
 io.on('connection', function(socket){
 	socket.emit('directmessage', 'welcome!');
 
-
     socket.on('login', function(username){
     	player0 = new Human(username);
     	player0.init(socket);
@@ -30,5 +29,5 @@ io.on('connection', function(socket){
 });
 
 function setupDoneCallbackFunc(player){
-	console.log('TODO');
+	io.emit('broadcast', player.name + ' has finished setting up ships');
 }

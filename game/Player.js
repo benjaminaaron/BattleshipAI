@@ -16,20 +16,18 @@ Player.prototype = {
 		this.callbackFunc = callbackFunc;
 		this.getShipSetupInput();
 	},
-	getShipSetupInput: function(){
+	getShipSetupInput: function(){ // will be "overwritten" in Human and Bot
 	},
 	placeShip: function(shipID, orientation, row, col){
 		var placementOK = this.field.placeShip(this.ships[shipID], orientation, row, col);
-		if(placementOK){
+		if(placementOK){ // TODO make this logic more elegant?
 			this.shipsPlaced ++;
 			if(this.shipsPlaced == this.ships.length)
 				this.callbackFunc(this);
 			else
 				this.getShipSetupInput();
-		} else {
-			console.log('that was not a valid placement, try again');
+		} else 
 			this.getShipSetupInput();
-		}
 	}
 }
 

@@ -2,7 +2,6 @@ var CellType = require('./util.js').CellType;
 
 var Field = function(){
 	this.cells = [];
-
 	for(var r = 0; r < 10; r++){
 		var row = [];
 		for(var c = 0; c < 10; c++)
@@ -12,17 +11,18 @@ var Field = function(){
 }
 
 Field.prototype = {
-	show: function(){
-		var str = '\n   0  1  2  3  4  5  6  7  8  9\n';
+	show: function(newline, space){
+		var ts = space + space; //two spaces
+		var str = newline + space + ts + '0' + ts + '1' + ts + '2' + ts + '3' + ts + '4' + ts + '5' + ts + '6' + ts + '7' + ts + '8' + ts + '9' + newline; 
 		for(var r = 0; r < 10; r++){
-			str = str + r + ' ';
+			str = str + r + space;
 			for(var c = 0; c < 10; c++)
 				str = str + '[' + this.getCellChar(this.cells[r][c]) + ']';
-			str = str + '\n';
+			str = str + newline;
 		}
 		return str;
 	},
-	getCellChar: function(cellType){
+	getCellChar: function(cellType){ // TODO getter in enum (stephs idea)
 		switch(cellType){
 			case CellType.EMPTY:
 				return ' ';

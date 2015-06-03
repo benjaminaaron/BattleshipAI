@@ -1,7 +1,7 @@
 {
   "name": "BattleshipAI",
   "version": "2.0.0",
-  "description": "A battleship game (Schiffe versenken) with a learning AI in the making. As part of the AI course with Prof. Franz Kurfess in the summer term 2015 at hm.edu.\r See the wiki [here](https://github.com/benjaminaaron/BattleshipAI/wiki).",
+  "description": "A battleship game (Schiffe versenken) with a learning AI in the making. As part of the AI course with Prof. Franz Kurfess in the summer term 2015 at hm.edu. See the wiki here: https://github.com/benjaminaaron/BattleshipAI/wiki",
   "scripts": {
     "start": "node app.js"
   },
@@ -13,16 +13,15 @@
     "battleship",
     "ai"
   ],
-  "author": "",
+  "author": "stehrenberg, chanton1392, jpb11, benjaminaaron",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/benjaminaaron/BattleshipAI/issues"
   },
   "homepage": "https://github.com/benjaminaaron/BattleshipAI",
   "dependencies": {
-    "express": "^4.12.4",
+    "express": "*",
     "hello-world-classic": "*",
-    "prompt": "*",
-    "socket.io": "^1.3.5"
+    "socket.io": "*"
   }
 }

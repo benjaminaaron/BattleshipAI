@@ -1,21 +1,22 @@
 <!doctype html>
 <html>
     <head>
-        <title></title>
+        <title>BattleshipAI terminalview</title>
         <style></style>
         <link href='terminal.css' rel='stylesheet' type='text/css'/>
     </head>
     <body>
     	<div id='container'/>
 
-    	<script src='terminal.js'></script>
-    	<script type="text/javascript" src="socket.io-1.3.5.js"></script>
+    	<script type='text/javascript' src='terminal.js'></script>
+    	<script type='text/javascript' src='socket.io-1.3.5.js'></script>
+        
         <script>
 
         	var socket = io();  
 
         	var term = new Terminal(document.getElementById('container'));
-        	term.write('Welcome to BattleshipAI in the terminal!<br>Enter \'login username\' to register at the server.');
+        	term.write('<b>Welcome to BattleshipAI in the terminal!</b><br>Enter \'login username\' to register at the server.');
 
         	function handleOutput(output){
                 var cmd = output.split(' ')[0];
@@ -24,18 +25,12 @@
             }
 
         	socket.on('directmessage', function(msg){
-        		msg = replaceAll('\n', '<br>', msg);
- 				term.write('server to you: ' + msg);
+ 				term.write('<b>server to you:</b> ' + msg);
             });
 
         	socket.on('broadcast', function(msg){
- 				term.write('server to all: ' + msg);
+ 				term.write('<b>server to all:</b> ' + msg);
             });
-
-            function replaceAll(find, replace, str) {
-			  return str.replace(new RegExp(find, 'g'), replace);
-			}
-
 
         </script> 
     </body>
