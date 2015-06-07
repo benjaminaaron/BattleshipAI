@@ -4,6 +4,8 @@ var Human = function(name){ // local (serverbased) human
 	Player.call(this, name);
 }
 
+//Human.prototype = new Player(name); //alternative vererbungsstruktur
+
 Human.prototype = {
 	__proto__: Player.prototype,
 
@@ -26,9 +28,21 @@ Human.prototype = {
 			else
 				this.emit('directmessage', self.field.show('<br>', '&nbsp;'));
     	});
+    	socket.on('fire', function(args){ // installing listener
+			var pieces = args.split(' ');
+			var row = parseInt(pieces[0]);
+			var col = parseInt(pieces[1]);
+
+
+    	});
 	},
 	getShipSetupInput: function(){
 		this.socket.emit('directmessage', 'place shipID orientation row col');	
+	},
+	fire: function(){
+		this.socket.emit('directmessage', 'where do you want to shoot?');
+		
+
 	}
 }
 
