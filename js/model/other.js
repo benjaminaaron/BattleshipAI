@@ -4,7 +4,11 @@ var CellStatus = {
     FIRED : 1,
     HIT : 2,
     DESTROYED : 3,
-    SPARE: 4 // for neighbour cells of destroyed ships
+    SPARE: 4,   // for neighbour cells of ships
+                // TODO: change to WAVE
+    MINE: 5,
+    RADIATION: 6,    // indicates mine on adjacent cell
+    WAVE: 7
 }
 
 var UpdateReport = {

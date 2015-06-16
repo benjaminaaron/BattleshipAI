@@ -1,3 +1,9 @@
+/**
+* Refers to the game board that contains the field holding the specific cells A1, A2, ..., A10, ... J10.
+* Also contains ... what?
+* Provides methods on ship and cell manipulation.
+*/
+
 
 var Board = function(id, player, shipTypes, rows, cols){
     this.id = id;
@@ -48,6 +54,20 @@ Board.prototype = {
             cell.occupiedBy = ship;
             ship.occupyingCells.push(cell); 
         }
+    },
+    /** Adds waves to a cell. Used to mark cells vertically or horizontally adjacent to a ship. */
+    addWavesToFields: function(row, col, orientation) {
+        var rowAddition, colAddition
+        if(orientation) {         // true = horizontal, false = vertical
+            rowAddition = 0;
+            colAddition = 1;
+        }
+        else {
+            rowAddition = 1;
+            colAddition = 0;
+        }
+        this.field.getCellByRowCol(row + rowAddition, col + colAddition).status = CellStatus.WAVE;
+        var firstAdjacentCell = this.field.getCellByRowCol(row - rowAddition, col - colAddition).status = CellStatus.WAVE;
     },
     getHorizontalValidShipPositions: function(ship){
         var validPositions = [];

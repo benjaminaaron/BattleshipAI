@@ -18,7 +18,7 @@ AbstractField.prototype = {
         return this.cells[row * this.cols + col];
     },
     getCellStatus: function(row, col){
-    	return this.getCellByRowCol(row, col).status;
+        return this.getCellByRowCol(row, col).status;
     },
     cellIsExistingAndUntouched: function(row, col){
         var cell = this.getCellByRowCol(row, col);
@@ -29,16 +29,16 @@ AbstractField.prototype = {
         //console.log('cell ' + row + '/' + col + ' is being checked - is ' + returnVal);
     },
     setCellStatus: function(row, col, status){
-    	var cell = this.getCellByRowCol(row, col);    
-    	cell.status = status;
-    	this.lastTouchedCell = cell;
+        var cell = this.getCellByRowCol(row, col);
+        cell.status = status;
+        this.lastTouchedCell = cell;
     },
     countFiredCells: function(){
-    	var count = 0;
-    	for(var i=0; i < this.cells.length; i++)
-    		if(this.cells[i].status == CellStatus.HIT || this.cells[i].status == CellStatus.DESTROYED || this.cells[i].status == CellStatus.FIRED)
-    			count ++;
-    	return count;
+        var count = 0;
+        for(var i=0; i < this.cells.length; i++)
+            if(this.cells[i].status == CellStatus.HIT || this.cells[i].status == CellStatus.DESTROYED || this.cells[i].status == CellStatus.FIRED)
+                count ++;
+        return count;
     },
     getUntouchedCells: function(){
         var cells = [];
