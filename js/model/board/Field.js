@@ -1,4 +1,7 @@
 
+/**
+ * Represents a concrete field instance to be used as the player's own field.'
+ */
 var Field = function(rows, cols){
     AbstractField.call(this, rows, cols);
 

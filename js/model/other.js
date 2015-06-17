@@ -11,6 +11,9 @@ var CellStatus = {
     WAVE: 7
 }
 
+/** 
+* Important for GUI to decide whether the canvas needs to be redrawn. 
+*/
 var UpdateReport = {
     INIT: 0,
     SHIPMOVED: 1,

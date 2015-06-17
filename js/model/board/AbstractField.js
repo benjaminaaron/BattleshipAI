@@ -1,6 +1,7 @@
 
 /**
  * Holds the actual cells where shots are directed at and ships are placed on.
+ * Is used for storing data about the opponent's field.'
  * Provides methods for cell manipulation.
  */
 var AbstractField = function(rows, cols){
