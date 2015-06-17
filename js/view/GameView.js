@@ -390,4 +390,6 @@ GameView.prototype = {
             }
         }
     }
+    // TODO: drawWaves, drawMines, drawRadiation
+    // TODO: Placement for Mines like Ships
 }
