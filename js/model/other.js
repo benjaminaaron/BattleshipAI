@@ -8,7 +8,7 @@ var CellStatus = {
                 // TODO: change to WAVE
     MINE: 5,
     RADIATION: 6,    // indicates mine on adjacent cell
-    WAVE: 7
+    WAVE: 7         // for cells adjacent to ships
 };
 
 /** 
