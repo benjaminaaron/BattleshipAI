@@ -1,3 +1,6 @@
+/**
+ * Represents an abstract player instance (can be derived to a human or a bot player)..
+ */
 
 var AbstractPlayer = function(name){
     this.name = name;
@@ -46,7 +49,7 @@ AbstractPlayer.prototype = {
                 break;
             case CellStatus.DESTROYED:
                 console.log('destroyed');
-                this.fieldMemory.setCellStatusesAroundShipToSpare(resultMsg.destroyedShipCode);
+                this.fieldMemory.setCellStatusesAroundShipToWave(resultMsg.destroyedShipCode);
                 //console.log(this.fieldMemory);
                 if(resultMsg.allShipsDestroyed){
                     console.log('all ships destroyed');

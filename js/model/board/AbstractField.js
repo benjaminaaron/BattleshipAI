@@ -14,7 +14,7 @@ var AbstractField = function(rows, cols){
             this.cells.push(new AbstractCell(i, j));
 
     this.lastTouchedCell = null;
-}
+};
 
 AbstractField.prototype = {
 	getCellByRowCol: function(row, col){
@@ -38,6 +38,7 @@ AbstractField.prototype = {
         cell.status = status;
         this.lastTouchedCell = cell;
     },
+    // TODO geht einfacher, gesamtzahl Zellen - getUntouchedCells.size :)
     countFiredCells: function(){
         var count = 0;
         for(var i=0; i < this.cells.length; i++)
@@ -80,7 +81,7 @@ AbstractField.prototype = {
         }
         return neighbourCells;
     },
-    setCellStatusesAroundShipToSpare: function(shipCode){
+    setCellStatusesAroundShipToWave: function(shipCode){
         var size = parseInt(shipCode.split('_')[0]);
         var orientation = shipCode.split('_')[1] == 'h';
         var headRow = parseInt(shipCode.split('_')[2].split('-')[0]);
@@ -97,7 +98,7 @@ AbstractField.prototype = {
             var cell = neighbourCells[i];
             if(cell)
                 if(cell.status == CellStatus.UNTOUCHED)
-                    cell.status = CellStatus.SPARE;
+                    cell.status = CellStatus.WAVE;
         }
     }
-}
+};

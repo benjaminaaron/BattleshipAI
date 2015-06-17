@@ -19,31 +19,30 @@ var GameView = function(){
 }
 
 GameView.prototype = {
-	__proto__: AbstractView.prototype,
+    __proto__: AbstractView.prototype,
 
 	init: function(viewContainer){
 		AbstractView.prototype.init.call(this, viewContainer);
+        var canvasWidthPx = 370;
+        var canvasHeightPx = 300;
 
-	 	var canvasWidthPx = 370;
-    	var canvasHeightPx = 300;
+        var canvas = $('<canvas>').attr({
+            'id': 'canvas_0',
+            'width': canvasWidthPx,
+            'height': canvasHeightPx
+        });
+        $(viewContainer).append(canvas);
+        this.canvas0 = $(canvas)[0];
+        this.installCanvasListener(this.canvas0, 0);   
 
-    	var canvas = $('<canvas>').attr({
-	        'id': 'canvas_0',
-	        'width': canvasWidthPx,
-	        'height': canvasHeightPx
-    	});
-    	$(viewContainer).append(canvas);
-    	this.canvas0 = $(canvas)[0];
-    	this.installCanvasListener(this.canvas0, 0);   
-
-	    canvas = $('<canvas>').attr({
-	        'id': 'canvas_1',
-	        'width': canvasWidthPx,
-	        'height': canvasHeightPx
-    	});
-    	$(viewContainer).append(canvas);
-    	this.canvas1 = $(canvas)[0];
-    	this.installCanvasListener(this.canvas1, 1);
+        canvas = $('<canvas>').attr({
+            'id': 'canvas_1',
+            'width': canvasWidthPx,
+            'height': canvasHeightPx
+        });
+        $(viewContainer).append(canvas);
+        this.canvas1 = $(canvas)[0];
+        this.installCanvasListener(this.canvas1, 1);
 
         this.wrapAndInitShips(this.player0);
         this.wrapAndInitShips(this.player1);

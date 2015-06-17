@@ -1,7 +1,7 @@
 
 var CellStatus = {
     UNTOUCHED: 0,
-    FIRED : 1,
+    FIRED : 1,  // been fired at, but is a miss
     HIT : 2,
     DESTROYED : 3,
     SPARE: 4,   // for neighbour cells of ships
