@@ -1,4 +1,8 @@
 
+/**
+ * Holds the actual cells where shots are directed at and ships are placed on.
+ * Provides methods for cell manipulation.
+ */
 var AbstractField = function(rows, cols){
     this.rows = rows;
     this.cols = cols;

@@ -1,7 +1,7 @@
 /**
 * Refers to the game board that contains the field holding the specific cells A1, A2, ..., A10, ... J10.
-* Also contains ... what?
-* Provides methods on ship and cell manipulation.
+* Also contains the ships - those are not elements of the field, especially not in setup phase where they hover next to the field!)
+* Provides methods on ship manipulation.
 */
 
 
@@ -12,7 +12,7 @@ var Board = function(id, player, shipTypes, rows, cols){
     this.rows = rows;
     this.cols = cols;
 
-    // field  
+    // field
     this.field = new Field(rows, cols);
 
     //add ships as defined in shipTypes
@@ -31,15 +31,15 @@ var Board = function(id, player, shipTypes, rows, cols){
 
 Board.prototype = {
     allShipsPlaced: function(){
-        for(var i=0; i < this.ships.length; i++)
-            if(this.ships[i].occupyingCells.length == 0)
+        for(var shipIndex=0; shipIndex < this.ships.length; shipIndex++)
+            if(this.ships[shipIndex].occupyingCells.length == 0)
                 return false;
         return true;
     },
     randomlyPlaceShips: function(){    
         this.field.clear();
-        for(var i=0; i < this.ships.length; i++){
-            var ship = this.ships[i];
+        for(var shipIndex=0; shipIndex < this.ships.length; shipIndex++){
+            var ship = this.ships[shipIndex];
             var validPositions = Math.random() < 0.5 ? this.getHorizontalValidShipPositions(ship) : this.getVerticalValidShipPositions(ship);
             var randomIndex = Math.round(Math.random() * (validPositions.length - 1)); //if no valid positions available this goes negative and throws an error
             var randomGridPos = validPositions[randomIndex];
@@ -49,25 +49,14 @@ Board.prototype = {
     placeShipByCoords: function(ship, orientation, row, col){     
         ship.orientation = orientation;
         ship.occupyingCells = [];
-        for(var i=0; i < ship.size; i++){
-            var cell = this.field.getCellByRowCol(row + (orientation ? 0 : i), col + (orientation ? i : 0));
+        for(var shipPart=0; shipPart < ship.size; shipPart++){
+            var currentRow = row + (orientation ? 0 : shipPart);
+            var currentCol = col + (orientation ? shipPart : 0);
+            var cell = this.field.getCellByRowCol(currentRow, currentCol);
             cell.occupiedBy = ship;
             ship.occupyingCells.push(cell); 
         }
-    },
-    /** Adds waves to a cell. Used to mark cells vertically or horizontally adjacent to a ship. */
-    addWavesToFields: function(row, col, orientation) {
-        var rowAddition, colAddition
-        if(orientation) {         // true = horizontal, false = vertical
-            rowAddition = 0;
-            colAddition = 1;
-        }
-        else {
-            rowAddition = 1;
-            colAddition = 0;
-        }
-        this.field.getCellByRowCol(row + rowAddition, col + colAddition).status = CellStatus.WAVE;
-        var firstAdjacentCell = this.field.getCellByRowCol(row - rowAddition, col - colAddition).status = CellStatus.WAVE;
+        //this.field.addWavesToFields(row, col, orientation);
     },
     getHorizontalValidShipPositions: function(ship){
         var validPositions = [];
