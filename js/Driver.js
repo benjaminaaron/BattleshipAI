@@ -50,8 +50,7 @@ function startGame(){
     var gameControlsWidth = (player1 ? 2 : 1) * 370 + (player1 ? 4 : 0);
     $('#gameControls').css('cssText', 'width: ' + gameControlsWidth + 'px !important');
 
-    // new ShipType(1, 'black', 4), >>> Problem bei AbstractField,js:59
-    var shipTypes = [new ShipType(5, 'aqua', 1), new ShipType(4, 'maroon', 1), new ShipType(3, 'lime', 1), new ShipType(2, 'orange', 2)];
+    var shipTypes = [new ShipType(1, 'black', 1), new ShipType(5, 'aqua', 1), new ShipType(4, 'maroon', 1), new ShipType(3, 'lime', 1), new ShipType(2, 'orange', 2)];
 
     game = new Game(player0, player1, shipTypes, viewModule);
 

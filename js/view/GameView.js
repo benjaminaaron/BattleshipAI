@@ -340,7 +340,9 @@ GameView.prototype = {
 	    	var headX = this.fieldLeft + head.col * cellSizePx;
 	        var headY = this.fieldTop + head.row * cellSizePx;
 
-	        var orientation = head.row == cellcluster[1].row; 
+            var orientation = true;
+            if(cellcluster.length > 1)
+	           var orientation = head.row == cellcluster[1].row; 
 	        var size = cellcluster.length;
 	        var w = orientation ? size * cellSizePx : cellSizePx;
 	        var h = orientation ? cellSizePx : size * cellSizePx;

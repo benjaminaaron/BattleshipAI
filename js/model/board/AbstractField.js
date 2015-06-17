@@ -56,7 +56,10 @@ AbstractField.prototype = {
     getCellsAroundCellcluster: function(cellcluster){
         var head = cellcluster[0];
         var size = cellcluster.length;
-        var orientation = head.row == cellcluster[1].row; //ehm, is that cool? why not...
+    
+        var orientation = true;
+        if(size > 1) 
+            orientation = head.row == cellcluster[1].row; //ehm, is that cool? why not... NOT!
         var neighbourCells = [];
         if(orientation){ 
             //west
