@@ -63,25 +63,28 @@
         <script type="text/javascript" src="js/view/ShipWrapper.js"></script>
         <script type="text/javascript" src="js/view/GameView.js"></script>
         <script type="text/javascript" src="js/view/StatsView.js"></script>
+        <!-- reasoner -->
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Reasoner.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Graph.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Node.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Edge.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/GraphmlExporter.js"></script>
         
         <script>
         
-        function debug(){}
-/*
-            function getRandomHelloKittyImageURL(){
-                return "https://dl.dropboxusercontent.com/u/1331728/HelloKitty/" + (Math.round(Math.random() * 16) + 1) + ".jpg";
+            function debug(){}
+
+            function testReasoner(){
+                var reasoner = new Reasoner();
+                var graph = reasoner.graph;
+
+                graph.generate();
+                graph.show();
+                graph.export();
             }
 
-            $(document).ready(function() {
-                $('body').css({
-                    'backgroundImage': 'url(' + getRandomHelloKittyImageURL() +')',
-                    'backgroundRepeat': 'repeat',
-                    'backgroundPosition': 'top center'
-                });
+            testReasoner();
 
-                $('#highscoreDialog').dialog('open');
-            });
-*/
         </script>
 
     </body> 
