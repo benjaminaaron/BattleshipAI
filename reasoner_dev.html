@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head> 
+        <title>Battleship AI reasoner dev</title> 
+        <style></style> 
+    </head> 
+    <body>
+
+        <input type='button' value='debug' onclick='debug();'>
+        
+        <!-- JS vendors -->
+        <script type="text/javascript" src="js/vendors/jquery-2.1.1.min.js"></script>
+        <!-- JS own -->
+        <!-- reasoner -->
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Reasoner.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Graph.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Node.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Edge.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/GraphmlExporter.js"></script>
+        
+        <script>
+
+            function debug(){
+                
+            }
+        
+            function testReasoner(){
+                var reasoner = new Reasoner();
+                var graph = reasoner.graph;
+
+                graph.generate();
+                graph.show();
+                graph.export();
+            }
+
+            testReasoner();
+
+        </script>
+
+    </body> 
+</html>
