@@ -35,6 +35,12 @@ Game.prototype = {
     updatedBoard: function(updateReport){
         viewModule.handleUpdatedBoard(updateReport, this.currentPlayer.ID);
     },
+    
+    /**
+     * gets called by the canvas listeners installed during the installCanvasListener-method in GameView (TODO, that's not a proper separation of view & logic!)
+     * @param type MouseEvent mousedown, -up or -move
+     * @param ID of the board = ID of the board-owning player
+     */
     handleCanvasEvent: function(type, ID, xMouse, yMouse){
         var player = this.currentPlayer;
         var eventOriginBoardOwner = ID == 0 ? this.player0 : this.player1;
@@ -62,6 +68,11 @@ Game.prototype = {
     setCurrentPlayer: function(player){
         this.currentPlayer = player;
     },
+    
+    /**
+     * gets called by finishedSetup in AbstractPlayer, which gets called by iAmDoneSettingUp in Human or after the random setup from AbstractBot in yourSetup
+     * @param caller is the person who is saying that they completed their setup
+     */
     setupCompleted: function(caller){
         if(caller.ID == 0){
             this.setCurrentPlayer(this.player1);
