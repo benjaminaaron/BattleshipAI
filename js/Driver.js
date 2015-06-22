@@ -1,53 +1,28 @@
+/**
+* The driver module provides controlling logic for the whole application. 
+*/
 
-$('.dialog').dialog({
-    width: 850,
-    autoOpen: false,
-    show: {
-        effect: 'fade',
-        duration: 400
-    },
-    hide: {
-        effect: 'fade',
-        duration: 400
-    }
-}); 
 
 $('#statusLabel').html('game hasn\'t started yet&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 $('#resetBtn').hide();
 $('#readyBtn').hide();
 
-//var firebase = new Firebase('https://torrid-inferno-2196.firebaseio.com');  
 var game, viewModule;
 
+/**
+* Callback-Method that handles the overall logic required for starting the game.
+* Is called from index.html as soon as user clicks the "start game" button inside the game control bar.
+*/
 function startGame(){
-    var player0 = player1 = null;
 
-    switch($('#gameOptions').val()){
-        case 'hb':
-            var name = prompt('Enter your name:', 'Max');
-            player0 = new Human(name);
-            var player1 = createBot();       
-            break;          
-        case 'hh': 
-            var name = prompt('Enter the name of Player 1:', 'Max');
-            player0 = new Human(name);
-            name = prompt('Enter the name of Player 2:', 'Erika');
-            player1 = new Human(name);  
-            break;
-        case 'bb':
-            player0 = new createBot();
-            player1 = new createBot();
-            break;
-    }
+    initializePlayers();
+    handleButtonDisplay();
+    showStatusInfo('in <b>setup phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 
-    $('#gameOptions').hide();
-    $('#startBtn').hide();
-    $('#gameviewRadioBtn').hide();
-    $('#statsviewRadioBtn').hide();
-    
-    $('#resetBtn').show();
-    $('#statusLabel').html('in <b>setup phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
-    var gameControlsWidth = (player1 ? 2 : 1) * 370 + (player1 ? 4 : 0);
+    // setting px width for tool bar "gameControls"
+    // TODO in index.html hardgecodet machen!
+    var gameControlsWidth = 744;
+
     $('#gameControls').css('cssText', 'width: ' + gameControlsWidth + 'px !important');
 
     var shipTypes = [new ShipType(1, 'black', 1), new ShipType(5, 'aqua', 1), new ShipType(4, 'maroon', 1), new ShipType(3, 'lime', 1), new ShipType(2, 'orange', 2)];
@@ -58,7 +33,6 @@ function startGame(){
         viewModule = new GameView();
     if($('#statsviewRadioBtn').is(':checked')){
         alert('statsView is not available yet, choosing gameView instead');
-        //viewModule = new StatsView();
           viewModule = new GameView();
     }
     viewModule.init(document.getElementById('viewContainer'));
@@ -66,9 +40,48 @@ function startGame(){
     game.start();
 }
 
+/**
+* Initializes Player objects as human players or bots, depending on input from the browser.
+*/
+function initializePlayers() {
+
+    var player0 = player1 = null;
+    var name;
+
+    switch($('#gameOptions').val()){                            // DOM object containing a drop down menu where you can choose the playing mode
+        case 'hb':
+            name = prompt('Enter your name:', 'Max');
+            player0 = new Human(name);
+            player1 = createBot();       
+            break;          
+        case 'hh': 
+            name = prompt('Enter the name of Player 1:', 'Max');
+            player0 = new Human(name);
+            name = prompt('Enter the name of Player 2:', 'Erika');
+            player1 = new Human(name);  
+            break;
+        case 'bb':
+            player0 = new createBot();
+            player1 = new createBot();
+            break;
+    }
+}
+
+
+
 function createBot(){
-    var type = prompt('Choose the type of bot\n\nr      RandomBot\nrd    RandomDestroyerBot\nzsd  ZoningSquareDestroyerBot\nzrd  ZoningRectDestroyerBot\n', 'r');           
+
     var bot = false;
+    var type = prompt('
+        Choose the type of bot\n\nr
+        RandomBot\nrd
+        RandomDestroyerBot\nzsd
+        ZoningSquareDestroyerBot\nzrd
+        ZoningRectDestroyerBot\n
+        ', 
+        'r'                     // default text displayed inside prompt
+        );
+
     switch(type){
         case 'r':
             bot = new RandomBot('random bot');
@@ -83,141 +96,63 @@ function createBot(){
             bot = new ZoningRectDestroyerBot('zoning rect destroyer bot');
             break;
     }
+
     if(!bot){
         alert('invalid input or that type of bot isn\'t implemented yet, random bot is chosen instead');
-        bot = new RandomBot('random bot');  
-    } 
+        bot = new RandomBot('random bot');
+    }
+
     return bot; 
 }
 
-function draw(){
-    window.requestAnimationFrame(drawGame);
+/**
+* Hides all buttons that are not neccessary for game play phase.
+* Displays an additional reset button.
+*/
+function handleButtonDisplay() {
+
+    $('#gameOptions').hide();
+    $('#startBtn').hide();
+    $('#gameviewRadioBtn').hide();
+    $('#statsviewRadioBtn').hide();
+    $('#resetBtn').show();
 }
 
-function drawGame(){
-    //console.log('drawing');
-    viewModule.draw();
+/**
+* Displays the appropriate text within the status info field inside the game's toolbar.
+*/
+function showStatusInfo(statusMsg) {
+    $('#statusLabel').html(statusMsg);
 }
 
+/**
+* CB function that shows an alert box with information on how to use the battleship application.
+* Gets called as soon as user clicks the "info" button inside the game control bar.
+*/
 function info(){
-    var str = '<b>Setup phase</b>:<br>' +
-  '- drag ships to place them<br>' + 
-  '- click on a ship will flip its orientation<br>' +
-  '- click on the field will randomly place all ships<br>' +
-  '- click on your board outside of the field means you finished setting up ships<br><br>' +
-  '<b>Play phase</b>:<br>' +
-  '- just go ahead shooting around on the opponents field<br><br>' + 
-  '<b>Build by</b>:<br>@stehrenberg<br>@chanton1392<br>@abstractCalculus<br>@benjaminaaron<br><br>' + 
-  'More info at:<br>https://github.com/benjaminaaron/BattleshipAI';
-    var popup = $('#infoDialog');
-    popup.dialog('option', 'title', 'Info');
-    popup.html('');  
-    popup.append(str);
-    popup.dialog('open'); 
+    var str = 'Setup phase:\n' +
+  '- drag ships to place them\n' + 
+  '- click on a ship will flip its orientation\n' +
+  '- click on the field will randomly place all ships\n' +
+  '- click on your board outside of the field means you finished setting up ships\n\n' +
+  'Play phase:\n' +
+  '- just go ahead shooting around on the opponents field\n\n' + 
+  'Build by:\n@stehrenberg\n@chanton1392\n@abstractCalculus\n@benjaminaaron\n\n' + 
+  'More info at:\nhttps://github.com/benjaminaaron/BattleshipAI';
+  alert(str);
 }
 
-var HighscoreEntry = function(player0, player1, winnerIndex, shots, timestamp){
-    this.player0 = player0;
-    this.player1 = player1;
-    this.winner = winnerIndex == 0 ? player0 : player1;
-    this.looser = winnerIndex == 0 ? player1 : player0;
-    this.shots = shots;
-    this.timestamp = timestamp;
-    this.toString = function(){
-        var str = this.timestamp + '&nbsp;&nbsp;&nbsp;&nbsp;<b>' + this.winner + '</b> won against <b>'  + this.looser + '</b> with <b>' + shots + '</b> shots';
-        return str;
-    }
-}
-
-function showHighscore(){
-
-    alert('this function is currently disabled');
-
-    /*
-    var popup = $('#highscoreDialog');  
-    popup.dialog('open');
-
-    if(firebase){
-        var highscoreEntries = [];
-        console.log('fetching data from firebase...');
-
-        firebase.once('value', function(dataSnapshot) {
-            console.log(dataSnapshot.val());
-            var entries = dataSnapshot.val();
-            for (var indexStr in entries) {
-                if (entries.hasOwnProperty(indexStr)) {
-                    var entry  = entries[indexStr];
-                    console.log(entry);
-                }
-            }    
-
-            // - - -
-
-            var entries = dataSnapshot.val();
-            for (var indexStr in entries) {
-                if (entries.hasOwnProperty(indexStr)) {
-                    var entry  = entries[indexStr];
-                    var newHighscoreEntry = new HighscoreEntry(entry.player0, entry.player1, entry.winner, entry.shots, entry.timestamp);
-                    highscoreEntries.push(newHighscoreEntry);
-                }
-            }
-            // TODO sort highscoreEntries
-            popup.children().remove();
-            popup.html(''); 
-            var table = $('<table>');
-            popup.append(table);
-            var tr, td;
-            for(var i=0; i < highscoreEntries.length; i++){
-                tr = $('<tr>');
-                table.append(tr);
-                td = $('<td>');
-                tr.append(td);
-                td.append('' + highscoreEntries[i]);
-            }
-            popup.dialog('open');
-            
-            
-        });
-    }*/
-}
-
-// UTILITY FUNCTIONS
-
+/**
+* CB function that performs a simple page reload as application reset.
+* Gets called as soon as the user clicks on the game control's "reset" button.
+*/
 function reset(){
     location.reload();
 }
 
-function ensure2Digits(content){
-    var str = '' + content;
-    if(str.length == 1)
-        str = '0' + str;
-    return str;
-}
-
-function getFormattedDate() {
-    var date = new Date();
-    var day = date.getDate();
-    var month = (date.getMonth() + 1);
-    var year = date.getFullYear();
-    var hour = date.getHours();
-    var minute = date.getMinutes();
-    var second = date.getSeconds();           
-    return ensure2Digits(day) + '.' + ensure2Digits(month) + '.' + ensure2Digits(year) + ' ' + ensure2Digits(hour) + ':' + ensure2Digits(minute) + ':' + ensure2Digits(second);
-}
-
-/*          
-function debug(){      
-    console.log(game.boards[0].ships);
-}      
-
-$('body').on('keydown', function(e){ 
-    if(e.shiftKey && game.activeBoard)  
-        if(game.currentPlayer)
-if(game.currentPlayer.type == 'human')
-    game.currentPlayer.flipShipsOrientation(false);
-    if(e.keyCode == 82) // r
-        if(game.currentPlayer)
-if(game.currentPlayer.type == 'human')
-    game.currentPlayer.btnCallback('random');
-});
+/** 
+* Gets a canvas element from the window object and performs the draw call that is provided by the view layer of our application.
 */
+function draw(){
+    window.requestAnimationFrame(viewModule.draw());
+}

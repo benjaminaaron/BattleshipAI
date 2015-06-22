@@ -110,25 +110,7 @@ Game.prototype = {
             $('#statusLabel').html('<b>' + caller.name + ' won!</b>&nbsp;&nbsp;&nbsp;' + shotsFired + ' (' + game.totalShipCells + '-' + game.totalCells + ')&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'); 
             caller.board.winnerBoard = true;
             caller.opponent.board.looserBoard = true;  
-            caller.board.showShips = true;
-
-            /*
-            var gameObserver = new GameObserver(caller);
-            gameObserver.storeData(caller);
-            */
-            
-            // push highscore entry to firebase
-
-           /*if(!self.isSingleGame && firebase){
-                firebase.push({
-                    timestamp: getFormattedDate(),
-                    player0: self.player0.name,
-                    player1: self.player1.name,
-                    winner: caller.id,
-                    shots: shotsFired
-                });
-            }*/
-                  
+            caller.board.showShips = true;                  
             self.updatedBoard(UpdateReport.GAMECOMPLETED);
         }, 10);   
     }
