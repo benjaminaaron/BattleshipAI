@@ -10,7 +10,8 @@ $('#readyBtn').hide();
 var game, viewModule;
 
 /**
-* Handles the overall logic required for starting the game.
+* Callback-Method that handles the overall logic required for starting the game.
+* Is called from index.html as soon as user clicks the "start game" button inside the game control bar.
 */
 function startGame(){
 
@@ -19,8 +20,9 @@ function startGame(){
     showStatusInfo('in <b>setup phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 
     // setting px width for tool bar "gameControls"
+    // TODO in index.html hardgecodet machen!
     var gameControlsWidth = 744;
-    
+
     $('#gameControls').css('cssText', 'width: ' + gameControlsWidth + 'px !important');
 
     var shipTypes = [new ShipType(1, 'black', 1), new ShipType(5, 'aqua', 1), new ShipType(4, 'maroon', 1), new ShipType(3, 'lime', 1), new ShipType(2, 'orange', 2)];
@@ -65,24 +67,7 @@ function initializePlayers() {
     }
 }
 
-/**
-* Displays only the buttons neccessary for the game initialization phase.
-*/
-function handleButtonDisplay() {
 
-    $('#gameOptions').hide();
-    $('#startBtn').hide();
-    $('#gameviewRadioBtn').hide();
-    $('#statsviewRadioBtn').hide();
-    $('#resetBtn').show();
-}
-
-/**
-* Displays the appropriate text within the status info field inside the game's toolbar.
-*/
-function showStatusInfo(statusMsg) {
-    $('#statusLabel').html(statusMsg);
-}
 
 function createBot(){
 
@@ -121,7 +106,28 @@ function createBot(){
 }
 
 /**
-* Shows an alert box with information on how to use the battleship application.
+* Hides all buttons that are not neccessary for game play phase.
+* Displays an additional reset button.
+*/
+function handleButtonDisplay() {
+
+    $('#gameOptions').hide();
+    $('#startBtn').hide();
+    $('#gameviewRadioBtn').hide();
+    $('#statsviewRadioBtn').hide();
+    $('#resetBtn').show();
+}
+
+/**
+* Displays the appropriate text within the status info field inside the game's toolbar.
+*/
+function showStatusInfo(statusMsg) {
+    $('#statusLabel').html(statusMsg);
+}
+
+/**
+* CB function that shows an alert box with information on how to use the battleship application.
+* Gets called as soon as user clicks the "info" button inside the game control bar.
 */
 function info(){
     var str = 'Setup phase:\n' +
@@ -136,19 +142,17 @@ function info(){
   alert(str);
 }
 
-/** 
-* Gets a canvas element from the window object and performs the draw call that is provided by the View layer of our application.
-*/
-function draw(){
-    window.requestAnimationFrame(viewModule.draw());
-}
-
-
-////////////////////////////// UTILITY FUNCTIONS //////////////////////////////
-
 /**
-* Performs a simple page reload
+* CB function that performs a simple page reload as application reset.
+* Gets called as soon as the user clicks on the game control's "reset" button.
 */
 function reset(){
     location.reload();
+}
+
+/** 
+* Gets a canvas element from the window object and performs the draw call that is provided by the view layer of our application.
+*/
+function draw(){
+    window.requestAnimationFrame(viewModule.draw());
 }
