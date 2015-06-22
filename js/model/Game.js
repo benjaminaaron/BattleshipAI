@@ -100,11 +100,6 @@ Game.prototype = {
             caller.board.winnerBoard = true;
             caller.opponent.board.looserBoard = true;  
             caller.board.showShips = true;
-
-            /*
-            var gameObserver = new GameObserver(caller);
-            gameObserver.storeData(caller);
-            */
             
             // push highscore entry to firebase
 
