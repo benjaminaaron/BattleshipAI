@@ -1,9 +1,8 @@
 var GraphmlExporter = function(nodes, edges){
 	this.nodes = nodes;
 	this.edges = edges;
-
 	this.doExport();
-}
+};
 
 GraphmlExporter.prototype = {
 	doExport: function(){
@@ -14,22 +13,22 @@ GraphmlExporter.prototype = {
         	+ "\t<key for=\"edge\" id=\"d10\" yfiles.type=\"edgegraphics\"/>"
         	+ "<graph>";
         for(i in this.nodes){
-        	var node = this.nodes[i];
-        	content += this.getNodeCode(node.ID, node.ID, '#FFCC00');
+          	var node = this.nodes[i];
+           	content += this.getNodeCode(node.ID, node.getLabel(), '#FFCC00');
         }
         for(i in this.edges){
-        	var edge = this.edges[i];
-        	content += this.getEdgeCode(i, edge.parent.ID, edge.child.ID, '');
+          	var edge = this.edges[i];
+           	content += this.getEdgeCode(i, edge.parent.ID, edge.child.ID, edge.getLabel());
         }
         content += "</graph>\n</graphml>";
-		download('graph_' + this.nodes.length + '.graphml', content);
+        download('graph_' + this.nodes.length + '.graphml', content);
 	},
 	getNodeCode: function(ID, label, color){
 		return "<node id=" + '"' + ID + '"' + ">" +
                 "<data key=\"d5\"><![CDATA[Node ID: " + ID + "]]></data>" +
                 "<data key=\"d6\">" +
-                "<y:ShapeNode><y:Fill color=\"" + color + "\" transparent=\"false\"/>" +
-                "<y:BorderStyle color=\"#FF0000\" type=\"line\" width=\"1.0\"/>" +
+                "<y:ShapeNode><y:Fill hasColor=\"false\" transparent=\"false\"/>" +
+                "<y:BorderStyle hasColor=\"false\" type=\"line\" width=\"1.0\"/>" +
                 "<y:NodeLabel textColor=\"#000000\">" + label + "</y:NodeLabel>" +
                 "<y:Shape type=\"ellipse\"/></y:ShapeNode></data></node>";
 	},
@@ -42,19 +41,4 @@ GraphmlExporter.prototype = {
                 "<y:EdgeLabel>" + edgelabel + "</y:EdgeLabel>" +
                 "</y:BezierEdge></data></edge>";
 	}
-}
-
-
-function download(filename, text) {
-    var pom = document.createElement('a');
-    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    pom.setAttribute('download', filename);
-    if (document.createEvent) {
-        var event = document.createEvent('MouseEvents');
-        event.initEvent('click', true, true);
-        pom.dispatchEvent(event);
-    }
-    else {
-        pom.click();
-    }
-}
+};
