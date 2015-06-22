@@ -1,24 +1,17 @@
+/**
+* The driver module provides controlling logic for the whole application. 
+*/
 
-$('.dialog').dialog({
-    width: 850,
-    autoOpen: false,
-    show: {
-        effect: 'fade',
-        duration: 400
-    },
-    hide: {
-        effect: 'fade',
-        duration: 400
-    }
-}); 
 
 $('#statusLabel').html('game hasn\'t started yet&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 $('#resetBtn').hide();
 $('#readyBtn').hide();
 
-//var firebase = new Firebase('https://torrid-inferno-2196.firebaseio.com');  
 var game, viewModule;
 
+/**
+* Handles the overall logic required for starting the game.
+*/
 function startGame(){
     var player0 = player1 = null;
 
@@ -58,7 +51,6 @@ function startGame(){
         viewModule = new GameView();
     if($('#statsviewRadioBtn').is(':checked')){
         alert('statsView is not available yet, choosing gameView instead');
-        //viewModule = new StatsView();
           viewModule = new GameView();
     }
     viewModule.init(document.getElementById('viewContainer'));
@@ -66,6 +58,9 @@ function startGame(){
     game.start();
 }
 
+/**
+* Initializes the bot object/s.
+*/
 function createBot(){
     var type = prompt('Choose the type of bot\n\nr      RandomBot\nrd    RandomDestroyerBot\nzsd  ZoningSquareDestroyerBot\nzrd  ZoningRectDestroyerBot\n', 'r');           
     var bot = false;
@@ -90,13 +85,11 @@ function createBot(){
     return bot; 
 }
 
+/** 
+* Gets a canvas element from the window object and performs the draw call that is provided by the View layer of our application.
+*/
 function draw(){
-    window.requestAnimationFrame(drawGame);
-}
-
-function drawGame(){
-    //console.log('drawing');
-    viewModule.draw();
+    window.requestAnimationFrame(viewModule.draw());
 }
 
 function info(){
@@ -109,76 +102,7 @@ function info(){
   '- just go ahead shooting around on the opponents field<br><br>' + 
   '<b>Build by</b>:<br>@stehrenberg<br>@chanton1392<br>@abstractCalculus<br>@benjaminaaron<br><br>' + 
   'More info at:<br>https://github.com/benjaminaaron/BattleshipAI';
-    var popup = $('#infoDialog');
-    popup.dialog('option', 'title', 'Info');
-    popup.html('');  
-    popup.append(str);
-    popup.dialog('open'); 
-}
-
-var HighscoreEntry = function(player0, player1, winnerIndex, shots, timestamp){
-    this.player0 = player0;
-    this.player1 = player1;
-    this.winner = winnerIndex == 0 ? player0 : player1;
-    this.looser = winnerIndex == 0 ? player1 : player0;
-    this.shots = shots;
-    this.timestamp = timestamp;
-    this.toString = function(){
-        var str = this.timestamp + '&nbsp;&nbsp;&nbsp;&nbsp;<b>' + this.winner + '</b> won against <b>'  + this.looser + '</b> with <b>' + shots + '</b> shots';
-        return str;
-    }
-}
-
-function showHighscore(){
-
-    alert('this function is currently disabled');
-
-    /*
-    var popup = $('#highscoreDialog');  
-    popup.dialog('open');
-
-    if(firebase){
-        var highscoreEntries = [];
-        console.log('fetching data from firebase...');
-
-        firebase.once('value', function(dataSnapshot) {
-            console.log(dataSnapshot.val());
-            var entries = dataSnapshot.val();
-            for (var indexStr in entries) {
-                if (entries.hasOwnProperty(indexStr)) {
-                    var entry  = entries[indexStr];
-                    console.log(entry);
-                }
-            }    
-
-            // - - -
-
-            var entries = dataSnapshot.val();
-            for (var indexStr in entries) {
-                if (entries.hasOwnProperty(indexStr)) {
-                    var entry  = entries[indexStr];
-                    var newHighscoreEntry = new HighscoreEntry(entry.player0, entry.player1, entry.winner, entry.shots, entry.timestamp);
-                    highscoreEntries.push(newHighscoreEntry);
-                }
-            }
-            // TODO sort highscoreEntries
-            popup.children().remove();
-            popup.html(''); 
-            var table = $('<table>');
-            popup.append(table);
-            var tr, td;
-            for(var i=0; i < highscoreEntries.length; i++){
-                tr = $('<tr>');
-                table.append(tr);
-                td = $('<td>');
-                tr.append(td);
-                td.append('' + highscoreEntries[i]);
-            }
-            popup.dialog('open');
-            
-            
-        });
-    }*/
+  alert(str);
 }
 
 // UTILITY FUNCTIONS
@@ -204,20 +128,3 @@ function getFormattedDate() {
     var second = date.getSeconds();           
     return ensure2Digits(day) + '.' + ensure2Digits(month) + '.' + ensure2Digits(year) + ' ' + ensure2Digits(hour) + ':' + ensure2Digits(minute) + ':' + ensure2Digits(second);
 }
-
-/*          
-function debug(){      
-    console.log(game.boards[0].ships);
-}      
-
-$('body').on('keydown', function(e){ 
-    if(e.shiftKey && game.activeBoard)  
-        if(game.currentPlayer)
-if(game.currentPlayer.type == 'human')
-    game.currentPlayer.flipShipsOrientation(false);
-    if(e.keyCode == 82) // r
-        if(game.currentPlayer)
-if(game.currentPlayer.type == 'human')
-    game.currentPlayer.btnCallback('random');
-});
-*/
