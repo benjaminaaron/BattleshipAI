@@ -12,6 +12,7 @@ Human.prototype = {
     yourSetup: function(){
         AbstractPlayer.prototype.yourSetup.call(this); 
     },
+    
     mousedown: function(xMouse, yMouse){    
         if(!this.inPlayPhase){
             this.xMousedown = xMouse;
@@ -25,12 +26,14 @@ Human.prototype = {
         else
             this.fireOnCoords(xMouse, yMouse);
     },
+
     mousemove: function(xMouse, yMouse){
         var mousemoved = Math.abs(this.xMousedown - xMouse) > 2 || Math.abs(this.yMousedown - yMouse) > 2;
         var shipWr = this.selectedShipWr;
         if(mousemoved && shipWr)
             viewModule.shipIsMoving(shipWr, xMouse, yMouse);
     },
+
     mouseup: function(xMouse, yMouse){
         var isClick = Math.abs(this.xMousedown - xMouse) < 2 && Math.abs(this.yMousedown - yMouse) < 2;
         var shipWr = this.selectedShipWr;
@@ -55,12 +58,14 @@ Human.prototype = {
         if(!this.inPlayPhase && this.board.allShipsPlaced())
             $('#readyBtn').show();
     },
+
     iAmDoneSettingUp: function() {
         if(this.board.allShipsPlaced())
             this.finishedSetup();
         else
             alert('not all ships placed yet');
     },
+
     fireOnCoords: function(xMouse, yMouse){
         if(viewModule.posIsOverField(xMouse, yMouse)){
             var cell = viewModule.getCellRCbyCoords(xMouse, yMouse);

@@ -8,7 +8,8 @@ AbstractBot.prototype = {
     __proto__: AbstractPlayer.prototype,
 
     yourSetup: function(){
-        AbstractPlayer.prototype.yourSetup.call(this); 
+        // equals call to super-funct from java and makes it possible to explicitly state the method's context.
+        AbstractPlayer.prototype.yourSetup.call(this);
 
         if(this.type == 'bot' && this.opponent.type == 'human')// case human vs. bot
             this.board.showShips = false;
@@ -18,9 +19,11 @@ AbstractBot.prototype = {
             self.finishedSetup();
         }, 10);        
     },
+    
     yourTurn: function(){
         AbstractPlayer.prototype.yourTurn.call(this); 
     },
+
     randomFire: function(){
         var untouchedCells = this.fieldMemory.getUntouchedCells();
         var randomCell = untouchedCells[Math.random() * (untouchedCells.length - 1)];

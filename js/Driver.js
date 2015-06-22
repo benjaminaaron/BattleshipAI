@@ -2,12 +2,32 @@
 * The driver module provides controlling logic for the whole application. 
 */
 
-
-$('#statusLabel').html('game hasn\'t started yet&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
-$('#resetBtn').hide();
-$('#readyBtn').hide();
-
 var game, viewModule;
+
+/** 
+* Renders the game control bar within the browser window.
+* Displays the appropriate buttons and status msg for init phase.
+* Called upon creation of the driver script.
+*/
+function initializeGameControl() {
+    registerButtonHandlers();
+    showStatusInfo('game hasn\'t started yet&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+    $('#resetBtn').hide();
+    $('#readyBtn').hide();
+}
+
+/**
+* bla
+*/
+function registerButtonHandlers() {
+    $('#startBtn').on('click', startGame);
+    $('#resetBtn').on('click', reset);
+    $('#infoBtn').on('click', info);
+    $('#readyBtn').on('click', function() { 
+        console.log(game.currentPlayer);
+        game.currentPlayer.iAmDoneSettingUp()
+    });    // iAmDoneSettingUp does not exist at this point!
+}
 
 /**
 * Callback-Method that handles the overall logic required for starting the game.
@@ -15,19 +35,23 @@ var game, viewModule;
 */
 function startGame(){
 
-    initializePlayers();
+    var players = initializePlayers();
     handleButtonDisplay();
     showStatusInfo('in <b>setup phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 
-    // setting px width for tool bar "gameControls"
+    // setting css for tool bar "gameControls"
     // TODO in index.html hardgecodet machen!
-    var gameControlsWidth = 744;
+    $('#gameControls').css('cssText', 'width: ' + 744 + 'px !important');
 
-    $('#gameControls').css('cssText', 'width: ' + gameControlsWidth + 'px !important');
+    var shipTypes = [
+        new ShipType(1, 'black', 1), 
+        new ShipType(5, 'aqua', 1), 
+        new ShipType(4, 'maroon', 1), 
+        new ShipType(3, 'lime', 1), 
+        new ShipType(2, 'orange', 2)
+    ];
 
-    var shipTypes = [new ShipType(1, 'black', 1), new ShipType(5, 'aqua', 1), new ShipType(4, 'maroon', 1), new ShipType(3, 'lime', 1), new ShipType(2, 'orange', 2)];
-
-    game = new Game(player0, player1, shipTypes, viewModule);
+    game = new Game(players, shipTypes, viewModule);
 
     if($('#gameviewRadioBtn').is(':checked'))
         viewModule = new GameView();
@@ -45,41 +69,42 @@ function startGame(){
 */
 function initializePlayers() {
 
-    var player0 = player1 = null;
+    var players = [];
+    players[0] = null;
+    players[1] = null;
     var name;
 
     switch($('#gameOptions').val()){                            // DOM object containing a drop down menu where you can choose the playing mode
         case 'hb':
             name = prompt('Enter your name:', 'Max');
-            player0 = new Human(name);
-            player1 = createBot();       
+            players[0] = new Human(name);
+            players[1] = createBot();       
             break;          
         case 'hh': 
             name = prompt('Enter the name of Player 1:', 'Max');
-            player0 = new Human(name);
+            players[0] = new Human(name);
             name = prompt('Enter the name of Player 2:', 'Erika');
-            player1 = new Human(name);  
+            players[1] = new Human(name);  
             break;
         case 'bb':
-            player0 = new createBot();
-            player1 = new createBot();
+            players[0] = new createBot();
+            players[1] = new createBot();
             break;
     }
+
+    return players;
 }
-
-
 
 function createBot(){
 
     var bot = false;
-    var type = prompt('
-        Choose the type of bot\n\nr
-        RandomBot\nrd
-        RandomDestroyerBot\nzsd
-        ZoningSquareDestroyerBot\nzrd
-        ZoningRectDestroyerBot\n
-        ', 
-        'r'                     // default text displayed inside prompt
+    var type = prompt(
+        'Choose the type of bot\n\nr'
+        + 'RandomBot\nrd'
+        + 'RandomDestroyerBot\nzsd'
+        + 'ZoningSquareDestroyerBot\nzrd'
+        + 'ZoningRectDestroyerBot\n', 
+        'r'                                         // default text displayed inside prompt
         );
 
     switch(type){
@@ -98,7 +123,7 @@ function createBot(){
     }
 
     if(!bot){
-        alert('invalid input or that type of bot isn\'t implemented yet, random bot is chosen instead');
+        alert('invalid input or that type of bot is not implemented yet, random bot is chosen instead');
         bot = new RandomBot('random bot');
     }
 
@@ -156,3 +181,8 @@ function reset(){
 function draw(){
     window.requestAnimationFrame(viewModule.draw());
 }
+
+///////////////////////////////////////////////////
+
+initializeGameControl();
+
