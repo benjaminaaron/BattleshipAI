@@ -1,4 +1,8 @@
-
+/**
+ * Handles drawing/displaying the GUI for gameplay.
+ * @param viewContainer DOM element - simple <div>
+ * @constructor
+ */
 var GameView = function(viewContainer){
 	this.viewContainer = viewContainer;
     this.player0 = game.player0;
@@ -7,7 +11,7 @@ var GameView = function(viewContainer){
     this.rows = 10;
     this.cols = 10;
 
-    // field 
+    // initialize field
     this.cellSizePx = 20;
     this.fieldLeft = 30;
     this.fieldTop = 60;
@@ -23,25 +27,16 @@ var GameView = function(viewContainer){
 GameView.prototype = {
 
 	init: function(viewContainer){
+
         var canvasWidthPx = 370;
         var canvasHeightPx = 300;
 
-        var canvas = $('<canvas>').attr({
-            'id': 'canvas_0',
-            'width': canvasWidthPx,
-            'height': canvasHeightPx
-        });
-        $(viewContainer).append(canvas);
-        this.canvas0 = $(canvas)[0];
-        this.installCanvasListener(this.canvas0, 0);   
+        // canvas for drawing player's own gamefield
+        this.canvas0 = this.initializeCanvas(0, canvasWidthPx, canvasHeightPx);
+        this.installCanvasListener(this.canvas0, 0);
 
-        canvas = $('<canvas>').attr({
-            'id': 'canvas_1',
-            'width': canvasWidthPx,
-            'height': canvasHeightPx
-        });
-        $(viewContainer).append(canvas);
-        this.canvas1 = $(canvas)[0];
+        // canvas for drawing the opponent's gamefield
+        this.canvas1 = this.initializeCanvas(1, canvasWidthPx, canvasHeightPx);
         this.installCanvasListener(this.canvas1, 1);
 
         this.wrapAndInitShips(this.player0);
@@ -49,10 +44,41 @@ GameView.prototype = {
 
         this.handleUpdatedBoard(UpdateReport.INIT);
 	},
+
+    /**
+     * Draws the canvas required for a gamefield. The game needs to separate gamefields.
+     * @param canvasID  0, if canvas belongs to player's own gamefield.
+     *                  1, if canvas represents opponent's gamefield.
+     * @param canvasWidthPx The required width of the canvas.
+     * @param canvasHeightPx The required height of the canvas.
+     * @returns The pure canvas element. If we returned the canvas obj itself, we would get a lot of jQuery BS.
+     */
+    initializeCanvas: function(canvasID, canvasWidthPx, canvasHeightPx){
+
+        var canvas = $('<canvas>').attr({
+            'id': 'canvas_' + canvasID,
+            'width': canvasWidthPx,
+            'height': canvasHeightPx
+        });
+
+        $(viewContainer).append(canvas);
+        this.canvas1 =
+            this.installCanvasListener(this.canvas1, 1);
+
+        // strip the canvas obj of its jQuery wrapper stuff
+        return $(canvas)[0];
+    },
+
+    /**
+     *
+     * @param player
+     */
     wrapAndInitShips: function(player){
+
         var ships = player.board.ships;
-        for(var i=0; i < ships.length; i++){
-            var shipWr = new ShipWrapper(player, ships[i], i, this.cellSizePx, this.fieldLeft, this.fieldRight, this.fieldTop);     
+
+        for(var shipNo = 0; shipNo < ships.length; shipNo++){
+            var shipWr = new ShipWrapper(player, ships[shipNo], shipNo, this.cellSizePx, this.fieldLeft, this.fieldRight, this.fieldTop);
             this.shipsWrapped.push(shipWr);
         }
     },
