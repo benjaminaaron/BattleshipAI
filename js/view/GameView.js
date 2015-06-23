@@ -62,8 +62,6 @@ GameView.prototype = {
         });
 
         $(viewContainer).append(canvas);
-        this.canvas1 =
-            this.installCanvasListener(this.canvas1, 1);
 
         // strip the canvas obj of its jQuery wrapper stuff
         return $(canvas)[0];
@@ -78,10 +76,11 @@ GameView.prototype = {
         var ships = player.board.ships;
 
         for(var shipNo = 0; shipNo < ships.length; shipNo++){
-            var shipWr = new ShipWrapper(player, ships[shipNo], shipNo, this.cellSizePx, this.fieldLeft, this.fieldRight, this.fieldTop);
-            this.shipsWrapped.push(shipWr);
+            var shipWrapper = new ShipWrapper(player, ships[shipNo], shipNo, this.cellSizePx, this.fieldLeft, this.fieldRight, this.fieldTop);
+            this.shipsWrapped.push(shipWrapper);
         }
     },
+    
     getSelectedShip: function(callerID, x, y){
         for(var i=0; i < this.shipsWrapped.length; i++){
             var shipWr = this.shipsWrapped[i];

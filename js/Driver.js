@@ -17,8 +17,9 @@ function initializeGameControl() {
 }
 
 /**
-* bla
-*/
+ * Register EventHandlers on gamecontrol's buttons to start/reset the game, give info/help
+ * or finish set up.
+ */
 function registerButtonHandlers() {
     $('#startBtn').on('click', startGame);
     $('#resetBtn').on('click', reset);
@@ -36,9 +37,7 @@ function registerButtonHandlers() {
 function startGame(){
 
     var players = initializePlayers();
-
     handleButtonDisplay();
-    
     showStatusInfo('in <b>setup phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 
     var shipTypes = [
@@ -50,7 +49,6 @@ function startGame(){
     ];
 
     game = new Game(players, shipTypes, viewModule);
-
     viewModule = new GameView();
     viewModule.init(document.getElementById('viewContainer'));
 
@@ -71,17 +69,17 @@ function initializePlayers() {
         case 'hb':
             name = prompt('Enter your name:', 'Max');
             players[0] = new Human(name);
-            players[1] = createBot();       
-            break;          
-        case 'hh': 
+            players[1] = createBot();
+            break;
+        case 'hh':
             name = prompt('Enter the name of Player 1:', 'Max');
             players[0] = new Human(name);
             name = prompt('Enter the name of Player 2:', 'Erika');
-            players[1] = new Human(name);  
+            players[1] = new Human(name);
             break;
         case 'bb':
-            players[0] = new createBot();
-            players[1] = new createBot();
+            players[0] = createBot();
+            players[1] = createBot();
             break;
     }
 
@@ -124,7 +122,7 @@ function createBot(){
 }
 
 /**
-* Hides all buttons that are not neccessary for game play phase.
+* Hides all buttons that are not necessary for game play phase.
 * Displays an additional reset button.
 */
 function handleButtonDisplay() {
