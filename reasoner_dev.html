@@ -13,7 +13,6 @@
         <script type="text/javascript" src="js/model/player/bots/reasoner/Reasoner.js"></script>
         <script type="text/javascript" src="js/model/player/bots/reasoner/Graph.js"></script>
         <script type="text/javascript" src="js/model/player/bots/reasoner/Node.js"></script>
-        <script type="text/javascript" src="js/model/player/bots/reasoner/Edge.js"></script>
         <script type="text/javascript" src="js/model/player/bots/reasoner/GraphmlExporter.js"></script>
 
         <script type="text/javascript" src="js/model/player/bots/reasoner/temp/Field.js"></script>
@@ -23,20 +22,18 @@
             testReasoner();
 
             function testReasoner(){
-                var shipTypes = [new ShipType(2, 'orange', 1), new ShipType(3, 'lime', 1)];
-                var testfield = new Field(3, 4);
-                testfield.cells[0][2] = CellType.WAVE;
-                testfield.cells[2][0] = CellType.WAVE;
-
-                /*testfield.cells[0][3] = CellType.SHIP;
-                testfield.cells[1][3] = CellType.SHIP;
-                testfield.cells[2][3] = CellType.SHIP;*/
+                var shipTypes = [new ShipType(3, 'orange', 1), new ShipType(2, 'lime', 1)];
+                var testfield = new Field(3, 5);
+                testfield.cells[0][2] = Cell.WAVE;
+                testfield.cells[2][0] = Cell.WAVE;
+                testfield.cells[1][2] = Cell.HIT;
 
                 var reasoner = new Reasoner(shipTypes);
                 reasoner.loadField(testfield);
+                //reasoner.generateScenarios();
 
                 //reasoner.graph.show();
-                //reasoner.graph.export();
+                reasoner.graph.export();
             }
 
         </script>

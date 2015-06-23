@@ -1,23 +1,34 @@
-var Graph = function(rootfield, ships){
-	this.rows = rootfield.rows;
-	this.cols = rootfield.cols;
+var Graph = function(inputfield, ships){
+	this.rows = inputfield.rows;
+	this.cols = inputfield.cols;
 
-	this.rootnode = new Node(0, rootfield);
+	this.rootnode = new Node(0, inputfield, false);
 	this.rootnode.parent = null;
 	this.rootnode.level = 0;
 
 	this.ships = ships;
 
 	this.nodes = [this.rootnode];
+
+	this.wavesPos = inputfield.getWavesPos();
+	this.hitPos = inputfield.getHitsPos();
+
+	console.log('' + this.rootnode);
+	console.log('');
 };
 
 Graph.prototype = {
+
 	generate: function(){
 		var parentNodes = [this.rootnode];
 
+		var nodesToDelete = [];
+
 		while(this.ships.length > 0){
 			var shipsize = this.ships.splice(0, 1)[0];
-			//console.log('looking at ship: ' + shipsize);
+			var onLeaflevel = this.ships.length == 0;
+
+			console.log('looking at ship: ' + shipsize);
 			var collectNextLevel = [];
 
 			for(i in parentNodes){
@@ -29,26 +40,48 @@ Graph.prototype = {
 					var validPos = validpositions[j];
 					var childField = parentField.copy();
 					childField.place(validPos);
-					var childNode = new Node(this.nodes.length, childField);
-					//console.log('' + childNode);
-					childNode.setParent(parentNode);
-					this.nodes.push(childNode);
+
+					var createChild = true;
+					if(onLeaflevel)
+						if(!childField.allSatisfied(this.wavesPos, this.hitPos))
+							createChild = false;
+
+					if(createChild){
+						var childNode = new Node(this.nodes.length, childField, onLeaflevel);
+						console.log('' + childNode);
+						childNode.setParent(parentNode);
+						this.nodes.push(childNode);
+					}
 				}
 				collectNextLevel = collectNextLevel.concat(parentNode.children);
+				
+				if(!parentNode.hasChildren())
+					nodesToDelete.push(parentNode);
 			}
 			parentNodes = collectNextLevel;
 		}
 
-		// TODO first prune-stage: checkWaveValidity()
-
+		// PRUNING: delete all nodes that are not leaves and have no children
+		for(i in nodesToDelete)
+			this.deleteNode(nodesToDelete[i]);
 	},
+
+	deleteNode: function(node){
+		var index = $.inArray(node, this.nodes);
+		var delnode = this.nodes.splice(index, 1)[0];
+		if(delnode.parent != null)
+			delnode.parent.removeChild(delnode);
+	},
+
 	show: function(){
 		console.log('nodes:');
 		console.log(this.nodes);
 		console.log('edges:');
 		console.log(this.edges);
 	},
+
 	export: function(){
 		new GraphmlExporter(this.nodes, this.edges);
 	}
+
 };

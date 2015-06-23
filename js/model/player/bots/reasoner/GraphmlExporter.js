@@ -4,6 +4,7 @@ var GraphmlExporter = function(nodes){
 };
 
 GraphmlExporter.prototype = {
+
 	doExport: function(){
 		var content = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:y=\"http://www.yworks.com/xml/graphml\" xmlns:yed=\"http://www.yworks.com/xml/yed/3\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd\">"
         	+ "\t<key attr.name=\"description\" attr.type=\"string\" for=\"node\" id=\"d5\"/>"
@@ -23,6 +24,7 @@ GraphmlExporter.prototype = {
         content += "</graph>\n</graphml>";
         download('graph_' + this.nodes.length + '.graphml', content);
 	},
+
 	getNodeCode: function(ID, label, color){
 		return "<node id=" + '"' + ID + '"' + ">" +
                 "<data key=\"d5\"><![CDATA[Node ID: " + ID + "]]></data>" +
@@ -32,6 +34,7 @@ GraphmlExporter.prototype = {
                 "<y:NodeLabel fontFamily=\"Courier New\" textColor=\"#000000\">" + label + "</y:NodeLabel>" +
                 "<y:Shape type=\"ellipse\"/></y:ShapeNode></data></node>";
 	},
+
 	getEdgeCode: function(ID, parentID, childID, edgelabel){
 		return 	"<edge id=" + '"' + ID + '"' + " source=" + '"' + parentID + '"' + " target=" + '"' + childID + '"' + ">" +
                 "<data key=\"d9\"><![CDATA[Edge ID: " + ID + "]]></data>" +
@@ -41,4 +44,5 @@ GraphmlExporter.prototype = {
                 "<y:EdgeLabel>" + edgelabel + "</y:EdgeLabel>" +
                 "</y:BezierEdge></data></edge>";
 	}
+    
 };

@@ -43,28 +43,28 @@ function ShipPos(orientation, size, row, col){
     this.col = col;
 };
 
-var CellType = { // TODO: separate CellType "sensed" and "is"?
+var Cell = {
     UNTOUCHED: 0,
-    SHIP: 1,
-    FIRED : 2,
-    HIT : 3,
-    DESTROYED : 4,
-    WAVE: 5,
-};
+    FIRED: 1,
+    WAVE: 2,
+    HIT: 3,
+    DESTROYED: 4, // how to implement that??
+    SHIP: 5 // only for internal use, it won't come as inputfield with that
+}
 
-function cellTypeToChar(cellType){
-    switch(cellType){
-        case CellType.UNTOUCHED:
+function CellToChar(cell){
+    switch(cell){
+        case Cell.UNTOUCHED:
             return ' ';
-        case CellType.FIRED:
+        case Cell.FIRED:
             return '.';
-        case CellType.HIT:
+        case Cell.HIT:
             return 'x';
-        case CellType.DESTROYED:
+        case Cell.DESTROYED:
             return 'X';   
-        case CellType.WAVE:
+        case Cell.WAVE:
             return '~';
-        case CellType.SHIP:
+        case Cell.SHIP:
             return '-';
         default: 
             return 'err';

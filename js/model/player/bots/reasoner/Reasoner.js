@@ -8,8 +8,24 @@ var Reasoner = function(shipTypes){ //extends AbstractStragety?
 };
 
 Reasoner.prototype = {
-	loadField: function(field){
-		this.graph = new Graph(field, this.ships);
+
+	loadField: function(inputfield){
+		this.inputfield = inputfield;
+		this.graph = new Graph(inputfield, this.ships);
 		this.graph.generate();
+	},
+
+	generateScenarios: function(){
+		var shootableCells = this.inputfield.getShootablePositions();
+
+		//TODO loop through shootable cells
+
+		var hypoFirePos = shootableCells[0];
+
+		// TODO loop through fire-result-options
+
+		var hypoFireResult = Cell.FIRED;   //FIRED, WAVE, HIT, DESTROYED
+		
 	}
+	
 };
