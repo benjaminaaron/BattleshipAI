@@ -1,4 +1,14 @@
-
+/**
+ * Provides additional information on a ship object to make it drawable.
+ * @param player
+ * @param ship
+ * @param posNumb
+ * @param cellSizePx
+ * @param fieldLeft
+ * @param fieldRight
+ * @param fieldTop
+ * @constructor
+ */
 var ShipWrapper = function(player, ship, posNumb, cellSizePx, fieldLeft, fieldRight, fieldTop){ 
     this.player = player;
     this.ship = ship;
