@@ -4,19 +4,19 @@
  * Is used for storing data about the opponent's field.'
  * Provides methods for cell manipulation.
  */
-var AbstractField = function(rows, cols){
+var FieldMemory = function(rows, cols){
     this.rows = rows;
     this.cols = cols;
 
     this.cells = [];
     for(var i = 0; i < rows; i++)
         for(var j = 0; j < cols; j++)
-            this.cells.push(new AbstractCell(i, j));
+            this.cells.push(new CellMemory(i, j));
 
     this.lastTouchedCell = null;
 };
 
-AbstractField.prototype = {
+FieldMemory.prototype = {
 	getCellByRowCol: function(row, col){
         if(row > this.rows - 1 || row < 0 || col > this.cols - 1 || col < 0)
             return false;

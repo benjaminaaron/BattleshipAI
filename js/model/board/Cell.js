@@ -1,6 +1,6 @@
 
 var Cell = function(row, col){
-    AbstractCell.call(this, row, col);
+    CellMemory.call(this, row, col);
     //this.id = row + '_' + col;
     this.occupiedBy = null; 
     this.fired = false;

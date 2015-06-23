@@ -3,18 +3,18 @@
  * Represents a concrete field instance to be used as the player's own field.'
  */
 var Field = function(rows, cols){
-    AbstractField.call(this, rows, cols);
+    FieldMemory.call(this, rows, cols);
 
     this.cells = [];
     for(var i = 0; i < rows; i++)
         for(var j = 0; j < cols; j++)
-            this.cells.push(new Cell(i, j)); //solve better with AbstractField/Cell
+            this.cells.push(new Cell(i, j)); //solve better with FieldMemory/Cell
 
     this.lastValidShipPositionCells = [];
 }
 
 Field.prototype = {
-    __proto__: AbstractField.prototype,
+    __proto__: FieldMemory.prototype,
     allCellsFree: function(shipSize, orientation, rowHead, colHead){         
         var cellcluster = [];
         for(var i=0; i < shipSize; i++){
