@@ -29,7 +29,7 @@ GraphmlExporter.prototype = {
                 "<data key=\"d6\">" +
                 "<y:ShapeNode><y:Fill hasColor=\"false\" transparent=\"false\"/>" +
                 "<y:BorderStyle hasColor=\"false\" type=\"line\" width=\"1.0\"/>" +
-                "<y:NodeLabel textColor=\"#000000\">" + label + "</y:NodeLabel>" +
+                "<y:NodeLabel fontFamily=\"Courier New\" textColor=\"#000000\">" + label + "</y:NodeLabel>" +
                 "<y:Shape type=\"ellipse\"/></y:ShapeNode></data></node>";
 	},
 	getEdgeCode: function(ID, parentID, childID, edgelabel){

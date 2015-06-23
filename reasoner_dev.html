@@ -23,7 +23,7 @@
             testReasoner();
 
             function testReasoner(){
-                var shipTypes = [new ShipType(3, 'lime', 1), new ShipType(2, 'orange', 1)];
+                var shipTypes = [new ShipType(2, 'orange', 1), new ShipType(3, 'lime', 1)];
                 var testfield = new Field(3, 4);
                 testfield.cells[0][2] = CellType.WAVE;
                 testfield.cells[2][0] = CellType.WAVE;
@@ -34,6 +34,7 @@
 
                 var reasoner = new Reasoner(shipTypes);
                 reasoner.loadField(testfield);
+
                 //reasoner.graph.show();
                 reasoner.graph.export();
             }

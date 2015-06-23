@@ -2,27 +2,29 @@ var Graph = function(rootfield, ships){
 	this.rows = rootfield.rows;
 	this.cols = rootfield.cols;
 
-	this.root = new Node(0, rootfield);
-	this.root.parent = null;
-	this.root.level = 0;
+	this.rootnode = new Node(0, rootfield);
+	this.rootnode.parent = null;
+	this.rootnode.level = 0;
 
 	this.ships = ships;
 
-	this.nodes = [this.root];
+	this.nodes = [this.rootnode];
 	this.edges = [];
 };
 
 Graph.prototype = {
 	generate: function(){
-		var parentNodes = [this.root];
+
+		var parentNodes = [this.rootnode];
 
 		while(this.ships.length > 0){
-			var shipsize = this.ships.splice(0, 1);
+			var shipsize = this.ships.splice(0, 1)[0];
 
 			var collectNextLevel = [];
 
 			for(i in parentNodes){
 				var parentNode = parentNodes[i];
+
 				var parentField = parentNode.field;
 				var validpositions = parentField.getValidPositions(shipsize);
 				
