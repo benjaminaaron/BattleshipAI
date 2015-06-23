@@ -3,7 +3,6 @@ var Human = function(name){
     AbstractPlayer.call(this, name);
     this.type = 'human';
     this.selectedShipWr = null;
-    this.controller = new MouseController(this);
 }
 
 Human.prototype = { 
