@@ -14,7 +14,7 @@ AbstractPlayer.prototype = {
         this.ID = ID;
         this.board = board;
         this.canvas = board.canvas;
-        this.fieldMemory = new AbstractField(board.rows, board.cols); 
+        this.fieldMemory = new FieldMemory(board.rows, board.cols);
     },
 
     setOpponent: function(opponent){

@@ -2,7 +2,7 @@
 var AbstractBot = function(name){
     AbstractPlayer.call(this, name);
     this.type = 'bot';
-}
+    }
 
 AbstractBot.prototype = {
     __proto__: AbstractPlayer.prototype,
