@@ -89,6 +89,7 @@ GameView.prototype = {
         }
         return null;
     },
+
     revokeShipPlacement: function(shipWr){
         var ship = shipWr.ship;
         if(ship.occupyingCells.length > 0){
@@ -99,9 +100,11 @@ GameView.prototype = {
             ship.occupyingCells[i].occupiedBy = null;
         ship.occupyingCells = [];  
     },
+
     shipIsCompletelyOverField: function(shipWr){
         return shipWr.x > this.fieldLeft && shipWr.x < this.fieldRight - shipWr.w && shipWr.y > this.fieldTop && shipWr.y < this.fieldBottom - shipWr.h;
     },
+
     shipIsMoving: function(shipWr, xMouse, yMouse){
         shipWr.moveTo(xMouse, yMouse);
         
@@ -123,6 +126,7 @@ GameView.prototype = {
         }
         this.handleUpdatedBoard(UpdateReport.SHIPMOVED);  
     },
+
     flipShipsOrientation: function(shipWr){
         var ship = shipWr.ship;
         var board = shipWr.player.board;
@@ -149,14 +153,17 @@ GameView.prototype = {
         shipWr.update();
         this.handleUpdatedBoard(UpdateReport.SHIPFLIPPEDORIENTATION);
     },
+
     posIsOverField: function(x, y){
         return x > this.fieldLeft && x < this.fieldRight && y > this.fieldTop && y < this.fieldBottom;
     },
+
     placeShip: function(shipWr){
         shipWr.movingStopped();
         this.placeShipAtLastValidPosition(shipWr);
         this.handleUpdatedBoard(UpdateReport.SHIPWASMANUALLYPLACED);
     },
+
     placeShipAtLastValidPosition: function(shipWr){
         var ship = shipWr.ship;
         var cells = this.lastValidShipPositionCells;
@@ -173,18 +180,21 @@ GameView.prototype = {
             shipWr.y = this.fieldTop + headCell.row * this.cellSizePx;
         }
     },
+
     updateWrappedShips: function(playerID){ //beacuse orientation might have changed during random setup     
         for(var i=0; i < this.shipsWrapped.length; i++)
             if(this.shipsWrapped[i].player.ID == playerID)
                 this.shipsWrapped[i].update();
     },
+
     getCellRCbyCoords: function(xMouse, yMouse){
         var relXpos = xMouse - this.fieldLeft;
         var relYpos = yMouse - this.fieldTop;
         var row = Math.abs(Math.round((relYpos - this.cellSizePx / 2) / this.cellSizePx));
         var col = Math.abs(Math.round((relXpos - this.cellSizePx / 2) / this.cellSizePx));     
-        return new AbstractCell(row, col);
+        return new CellMemory(row, col);
     },
+
 	installCanvasListener: function(canvas, id){
         var self = this;
         $(canvas).on('mousedown touchstart', function(e) {
@@ -209,6 +219,7 @@ GameView.prototype = {
             game.handleCanvasEvent(MouseEvent.MOUSEUP, id, xMouse, yMouse);        
         });
     },
+
     /*handleCanvasEvent: function(type, ID, xMouse, yMouse){
         var player = game.currentPlayer;
         var eventOriginBoardOwner = ID == 0 ? this.player0 : this.player1;
@@ -222,6 +233,7 @@ GameView.prototype = {
         if(sendCanvasEventToPlayer)
             player.controller.handleMouseEvent(type, xMouse, yMouse);
     },*/
+
     handleUpdatedBoard: function(updateReport, currentPlayerID){ // TODO only redraw changed board
         // TODO do something with updateReport
 
@@ -231,6 +243,7 @@ GameView.prototype = {
         this.drawBoard(this.canvas0.getContext('2d'), this.player0);
         this.drawBoard(this.canvas1.getContext('2d'), this.player1);
     },
+
     drawBoard: function(ctx, player){
         var width = ctx.canvas.width;
         var height = ctx.canvas.height;
@@ -298,6 +311,7 @@ GameView.prototype = {
         ctx.font = '10px georgia'; 
         ctx.fillText(board.player.type, this.fieldLeft + nameWidth + 10, this.fieldTop - 30);
     },
+
     drawField: function(ctx, board){
         var field = board.field;
         var fieldLeft = this.fieldLeft;
@@ -346,6 +360,7 @@ GameView.prototype = {
         }
 
     },
+
     drawShips: function(ctx, playerID){
         for(var i=0; i < this.shipsWrapped.length; i++){
             var shipWr = this.shipsWrapped[i];
@@ -354,7 +369,8 @@ GameView.prototype = {
                 ctx.fillRect(shipWr.x, shipWr.y, shipWr.w, shipWr.h);                
             }
         }
-    }, 
+    },
+
     drawShadowShip: function(ctx){
     	var cellcluster = this.lastValidShipPositionCells;
     	if(cellcluster.length > 0){
@@ -375,6 +391,7 @@ GameView.prototype = {
             ctx.fillRect(headX, headY, w, h);
     	}
     },
+
     drawHits: function(ctx, board){
         var field = board.field;
         var cellSizePx = this.cellSizePx;
@@ -405,6 +422,7 @@ GameView.prototype = {
                 }
         }
     },
+
     drawDestroyedShips: function(ctx, playerID){
         ctx.strokeStyle = 'black'; 
         ctx.lineWidth = 2;
