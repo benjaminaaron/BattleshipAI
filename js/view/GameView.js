@@ -1,6 +1,8 @@
 
-var GameView = function(){
-	AbstractView.call(this);
+var GameView = function(viewContainer){
+	this.viewContainer = viewContainer;
+    this.player0 = game.player0;
+    this.player1 = game.player1;
 
     this.rows = 10;
     this.cols = 10;
@@ -19,10 +21,8 @@ var GameView = function(){
 }
 
 GameView.prototype = {
-    __proto__: AbstractView.prototype,
 
 	init: function(viewContainer){
-		AbstractView.prototype.init.call(this, viewContainer);
         var canvasWidthPx = 370;
         var canvasHeightPx = 300;
 
@@ -198,7 +198,6 @@ GameView.prototype = {
             player.controller.handleMouseEvent(type, xMouse, yMouse);
     },*/
     handleUpdatedBoard: function(updateReport, currentPlayerID){ // TODO only redraw changed board
-        AbstractView.prototype.handleUpdatedBoard.call(this, updateReport);
         // TODO do something with updateReport
 
         if(updateReport == UpdateReport.SHIPSWERERANDOMLYPLACED)

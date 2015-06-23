@@ -36,12 +36,10 @@ function registerButtonHandlers() {
 function startGame(){
 
     var players = initializePlayers();
-    handleButtonDisplay();
-    showStatusInfo('in <b>setup phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 
-    // setting css for tool bar "gameControls"
-    // TODO in index.html hardgecodet machen!
-    $('#gameControls').css('cssText', 'width: ' + 744 + 'px !important');
+    handleButtonDisplay();
+    
+    showStatusInfo('in <b>setup phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 
     var shipTypes = [
         new ShipType(1, 'black', 1), 
@@ -53,12 +51,7 @@ function startGame(){
 
     game = new Game(players, shipTypes, viewModule);
 
-    if($('#gameviewRadioBtn').is(':checked'))
-        viewModule = new GameView();
-    if($('#statsviewRadioBtn').is(':checked')){
-        alert('statsView is not available yet, choosing gameView instead');
-          viewModule = new GameView();
-    }
+    viewModule = new GameView();
     viewModule.init(document.getElementById('viewContainer'));
 
     game.start();
@@ -135,7 +128,6 @@ function createBot(){
 * Displays an additional reset button.
 */
 function handleButtonDisplay() {
-
     $('#gameOptions').hide();
     $('#startBtn').hide();
     $('#gameviewRadioBtn').hide();
@@ -185,4 +177,3 @@ function draw(){
 ///////////////////////////////////////////////////
 
 initializeGameControl();
-

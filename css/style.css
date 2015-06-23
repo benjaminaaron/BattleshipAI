@@ -1,6 +1,5 @@
 body {
     background-color: #fff;
-    /*background-image: url('https://dl.dropboxusercontent.com/content_link/ep1eE4sdW3UoVLow3gDbQzFOudRJqRIocA4aN2ca1k6dsM1gfn763wf1Z2rBcbLa');*/
     background-repeat: no-repeat;
     background-position: left top;
 }
@@ -24,7 +23,6 @@ input, select {
     font-size:  14px;
     color: #00f;
     margin: 14px 0 0 0;
-    /*background-color: #FFF;*/
     float: right;
 }
 
@@ -35,13 +33,6 @@ input, select {
     border-width: 2px;
     border-color: #CCC;
 }
-
-/*
-.activeContainer {
-    border-width: 2px;
-    border-color: #FF7F00;  
-}
-*/
 
 canvas {
     float: left;
