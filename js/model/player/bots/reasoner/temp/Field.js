@@ -29,11 +29,11 @@ Field.prototype = {
                 copy.cells[r][c] = this.cells[r][c];
         return copy;
     },
-    place: function(size, pos){
-        var isHoriz = pos.orientation ? 1 : 0;
-        var isVert = pos.orientation ? 0 : 1;
-        for(var i = 0; i < size; i ++)
-            this.cells[pos.row + isVert * i][pos.col + isHoriz * i] = CellType.SHIP;
+    place: function(shipPos){
+        var isHoriz = shipPos.orientation ? 1 : 0;
+        var isVert = shipPos.orientation ? 0 : 1;
+        for(var i = 0; i < shipPos.size; i ++)
+            this.cells[shipPos.row + isVert * i][shipPos.col + isHoriz * i] = CellType.SHIP;
     },
     getValidPositions: function(size){
         var validPositions = [];
@@ -42,13 +42,13 @@ Field.prototype = {
         for(var r = 0; r < this.rows; r ++)
             for(var c = 0; c <= this.cols - size; c ++)
                 if(this.isValidHorizPosition(r, c, size))
-                    validPositions.push(new pos(true, r, c));
+                    validPositions.push(new ShipPos(true, size, r, c));
 
         // vertical
         for(var r = 0; r <= this.rows - size; r ++)
             for(var c = 0; c < this.cols; c ++)
                 if(this.isValidVertPosition(r, c, size))
-                    validPositions.push(new pos(false, r, c));
+                    validPositions.push(new ShipPos(false, size, r, c));
 
         return validPositions;
     },
@@ -82,6 +82,32 @@ Field.prototype = {
         if(row >= 0 && row < this.rows && col >= 0 && col < this.cols)
             return true;
         return false;
+    },
+    /**
+    * Gives true or false whether or not all waves have at least one ship next to them.
+    */
+    checkWaveValidity: function(){
+        var waves = [];
+        for(var r = 0; r < this.rows; r ++)
+            for(var c = 0; c < this.cols; c ++)
+                if(this.cells[r][c] == CellType.WAVE)
+                    waves.push(new Pos(r, c));
+
+        var allWavesHaveShipAroundIt = true;
+        for(i in waves)
+            if(!this.hasShipAroundIt(waves[i]))
+                allWavesHaveShipAroundIt = false;
+        return allWavesHaveShipAroundIt;
+    },
+    hasShipAroundIt: function(pos){
+        var hasShipAroundIt = false;
+        for(var c = pos.col - 1; c < pos.col + 2; c ++)
+            for(var r = pos.row - 1; r < pos.row + 2; r ++)
+                if(this.validCoords(r, c))
+                    if(!(r == pos.row && c == pos.col))
+                        if(this.cells[r][c] == CellType.SHIP)
+                            hasShipAroundIt = true;
+        return hasShipAroundIt;
     }
 };
 

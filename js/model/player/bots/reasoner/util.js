@@ -28,11 +28,20 @@ function download(filename, text) {
 
 // - - - - - - - - TEMP: integrates later with existing code - - - - - - - -
 
-function pos(orientation, row, col){
-    this.orientation = orientation;
+function Pos(row, col){
     this.row = row;
     this.col = col;
-}
+    this.toString = function(){
+        return row  + '/' + col;
+    }
+};
+
+function ShipPos(orientation, size, row, col){
+    this.orientation = orientation;
+    this.size = size;
+    this.row = row;
+    this.col = col;
+};
 
 var CellType = { // TODO: separate CellType "sensed" and "is"?
     UNTOUCHED: 0,
