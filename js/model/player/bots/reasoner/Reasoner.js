@@ -13,9 +13,10 @@ Reasoner.prototype = {
 		this.inputfield = inputfield;
 
 		var destroyedShips = inputfield.getDestroyedShips();
+		console.log(destroyedShips);
 
 
-		//this.graph = new Graph(inputfield, this.ships);
+		this.graph = new Graph(inputfield, this.ships, destroyedShips);
 		//this.graph.generate();
 	},
 

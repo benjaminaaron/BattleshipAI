@@ -26,9 +26,13 @@
                 var testfield = new Field(3, 5);
                 testfield.cells[0][2] = Cell.WAVE;
                 testfield.cells[2][0] = Cell.WAVE;
+
                 testfield.cells[0][3] = Cell.DESTROYED;
                 testfield.cells[0][4] = Cell.DESTROYED;
 
+                testfield.cells[0][1] = Cell.DESTROYED;
+                testfield.cells[1][1] = Cell.DESTROYED;
+                testfield.cells[2][1] = Cell.DESTROYED;
 
                 var reasoner = new Reasoner(shipTypes);
                 reasoner.loadField(testfield);

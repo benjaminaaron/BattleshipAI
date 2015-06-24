@@ -1,4 +1,4 @@
-var Graph = function(inputfield, ships){
+var Graph = function(inputfield, ships, destroyedShips){
 	this.rows = inputfield.rows;
 	this.cols = inputfield.cols;
 
@@ -7,6 +7,7 @@ var Graph = function(inputfield, ships){
 	this.rootnode.level = 0;
 
 	this.ships = ships;
+	this.destroyedShips = destroyedShips;
 
 	this.nodes = [this.rootnode];
 

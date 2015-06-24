@@ -153,19 +153,48 @@ Field.prototype = {
     },
 
     getShootablePositions: function(){
-        var shootablePositions = [];
-         for(var r = 0; r < this.rows; r ++)
-            for(var c = 0; c < this.cols; c ++)
-                if(this.cells[r][c] == Cell.UNTOUCHED)
-                    shootablePositions.push(new Pos(r, c));
-        return shootablePositions;
+        this.getObjPositions(Cell.UNTOUCHED);
+    },
+
+    getDestroyedShips: function(){
+        var destroyedCellsPos = this.getObjPositions(Cell.DESTROYED);
+
+        var ships = []; // will be arrays of cells finding each other, within an array
+
+        while(destroyedCellsPos.length > 0){
+            var dCellPos = destroyedCellsPos.splice(0, 1)[0];
+            var fitsToExisting = false;
+            for(i in ships){
+                var ship = ships[i];
+                for(j in ship)
+                    if(this.areTouching(dCellPos, ship[j])){
+                        ship.push(dCellPos);
+                        fitsToExisting = true;
+                    }
+            }
+            if(!fitsToExisting)
+                ships.push([dCellPos]);
+        }
+
+        var destroyedShips = [];
+        for(i in ships){
+            var ship = ships[i];
+            var headrow = ship[0].row; // because of the way getObjPositions runs through the field, no sorting is required before using [0] as headrow/headcol
+            var headcol = ship[0].col;
+            var size = ship.length;
+            var orientation = ship[0].row == ship[1].row
+            destroyedShips.push(new ShipPos(orientation, size, headrow, headcol));
+        }
+
+        return destroyedShips;
+    },
+
+    areTouching: function(pos1, pos2){
+        var rowDiff = Math.abs(pos1.row - pos2.row);
+        var colDiff = Math.abs(pos1.col - pos2.col);
+        if(rowDiff + colDiff == 1 || (rowDiff == 1 && colDiff == 1))
+            return true;
+        return false;
     }
 
 };
-
-
-
-
-
-
-
