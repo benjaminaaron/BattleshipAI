@@ -11,8 +11,12 @@ Reasoner.prototype = {
 
 	loadField: function(inputfield){
 		this.inputfield = inputfield;
-		this.graph = new Graph(inputfield, this.ships);
-		this.graph.generate();
+
+		var destroyedShips = inputfield.getDestroyedShips();
+
+
+		//this.graph = new Graph(inputfield, this.ships);
+		//this.graph.generate();
 	},
 
 	generateScenarios: function(){

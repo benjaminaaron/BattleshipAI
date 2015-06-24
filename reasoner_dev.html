@@ -26,14 +26,16 @@
                 var testfield = new Field(3, 5);
                 testfield.cells[0][2] = Cell.WAVE;
                 testfield.cells[2][0] = Cell.WAVE;
-                testfield.cells[1][2] = Cell.HIT;
+                testfield.cells[0][3] = Cell.DESTROYED;
+                testfield.cells[0][4] = Cell.DESTROYED;
+
 
                 var reasoner = new Reasoner(shipTypes);
                 reasoner.loadField(testfield);
                 //reasoner.generateScenarios();
 
                 //reasoner.graph.show();
-                reasoner.graph.export();
+                //reasoner.graph.export();
             }
 
         </script>

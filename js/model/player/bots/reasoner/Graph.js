@@ -22,7 +22,7 @@ Graph.prototype = {
 	generate: function(){
 		var parentNodes = [this.rootnode];
 
-		var nodesToDelete = [];
+		var flaggedForDeletion = [];
 
 		while(this.ships.length > 0){
 			var shipsize = this.ships.splice(0, 1)[0];
@@ -56,14 +56,14 @@ Graph.prototype = {
 				collectNextLevel = collectNextLevel.concat(parentNode.children);
 				
 				if(!parentNode.hasChildren())
-					nodesToDelete.push(parentNode);
+					flaggedForDeletion.push(parentNode);
 			}
 			parentNodes = collectNextLevel;
 		}
 
 		// PRUNING: delete all nodes that are not leaves and have no children
-		for(i in nodesToDelete)
-			this.deleteNode(nodesToDelete[i]);
+		for(i in flaggedForDeletion)
+			this.deleteNode(flaggedForDeletion[i]);
 	},
 
 	deleteNode: function(node){
