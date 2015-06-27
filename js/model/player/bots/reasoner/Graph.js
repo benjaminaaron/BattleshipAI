@@ -1,4 +1,4 @@
-var Graph = function(inputfield, ships, destroyedShips){
+var Graph = function(inputfield, ships){
 	this.rows = inputfield.rows;
 	this.cols = inputfield.cols;
 
@@ -7,14 +7,15 @@ var Graph = function(inputfield, ships, destroyedShips){
 	this.rootnode.level = 0;
 
 	this.ships = ships;
-	this.destroyedShips = destroyedShips;
+	this.leafLevel = ships.length;
 
 	this.nodes = [this.rootnode];
 
 	this.wavesPos = inputfield.getWavesPos();
-	this.hitPos = inputfield.getHitsPos();
+	this.hitsPos = inputfield.getHitsPos();
+	this.radiationsPos = inputfield.getRadiationsPos();
 
-	console.log('' + this.rootnode);
+	console.log('' + this.rootnode.toString('\n'));
 	console.log('');
 };
 
@@ -23,8 +24,6 @@ Graph.prototype = {
 	generate: function(){
 		var parentNodes = [this.rootnode];
 
-		var flaggedForDeletion = [];
-
 		while(this.ships.length > 0){
 			var shipsize = this.ships.splice(0, 1)[0];
 			var onLeaflevel = this.ships.length == 0;
@@ -32,39 +31,54 @@ Graph.prototype = {
 			console.log('looking at ship: ' + shipsize);
 			var collectNextLevel = [];
 
-			for(i in parentNodes){
+			for(var i in parentNodes){
 				var parentNode = parentNodes[i];
 				var parentField = parentNode.field;
 				var validpositions = parentField.getValidPositions(shipsize);
-				
-				for(j in validpositions){
+
+				for(var j in validpositions){
 					var validPos = validpositions[j];
 					var childField = parentField.copy();
 					childField.place(validPos);
 
 					var createChild = true;
 					if(onLeaflevel)
-						if(!childField.allSatisfied(this.wavesPos, this.hitPos))
+						if(!childField.allSatisfied(this.wavesPos, this.hitsPos, this.radiationsPos))
 							createChild = false;
 
 					if(createChild){
 						var childNode = new Node(this.nodes.length, childField, onLeaflevel);
-						console.log('' + childNode);
+						console.log('' + childNode.toString('\n'));
 						childNode.setParent(parentNode);
 						this.nodes.push(childNode);
 					}
 				}
 				collectNextLevel = collectNextLevel.concat(parentNode.children);
-				
-				if(!parentNode.hasChildren())
-					flaggedForDeletion.push(parentNode);
 			}
 			parentNodes = collectNextLevel;
 		}
 
-		// PRUNING: delete all nodes that are not leaves and have no children
-		for(i in flaggedForDeletion)
-			this.deleteNode(flaggedForDeletion[i]);
+		// PRUNING: delete all flagged nodes that are not leaves and have no children
+	
+		for(var level = this.leafLevel - 1; level > 0; level --){
+			var levelnodes = this.getNodesAtLevel(level);
+			var flaggedForDeletion = [];
+			for(var i in levelnodes){
+				var node = levelnodes[i];
+				if(!node.isLeaf && !node.hasChildren())
+					flaggedForDeletion.push(node);	
+			}
+			for(var i in flaggedForDeletion)
+				this.deleteNode(flaggedForDeletion[i]);
+		}
+	},
+
+	getNodesAtLevel: function(level){
+		var nodes = [];
+		for(var i in this.nodes)
+			if(this.nodes[i].level == level)
+				nodes.push(this.nodes[i]);
+		return nodes;
 	},
 
 	deleteNode: function(node){
@@ -74,15 +88,14 @@ Graph.prototype = {
 			delnode.parent.removeChild(delnode);
 	},
 
-	show: function(){
-		console.log('nodes:');
-		console.log(this.nodes);
-		console.log('edges:');
-		console.log(this.edges);
+	show: function(newlineChar){
+		for(var i in this.nodes)
+			if(this.nodes[i].isLeaf)
+				document.write(this.nodes[i].toString(newlineChar) + newlineChar);
 	},
 
 	export: function(){
-		new GraphmlExporter(this.nodes, this.edges);
+		new GraphmlExporter(this.nodes);
 	}
 
 };

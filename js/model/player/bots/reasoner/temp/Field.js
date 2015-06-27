@@ -14,15 +14,17 @@ var Field = function(rows, cols){
 
 Field.prototype = {
 
-    toString: function(){
+    toString: function(newlineChar){
         var str = '';
         for(var r = 0; r < this.rows; r ++){
             for(var c = 0; c < this.cols; c ++)
                 str += '[' + CellToChar(this.cells[r][c]) + ']';
-            str += '\n';
+            str += newlineChar;
         }
         return str;
     },
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     copy: function(){
         var copy = new Field(this.rows, this.cols);
@@ -32,12 +34,28 @@ Field.prototype = {
         return copy;
     },
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - -
+
     place: function(shipPos){
-        var isHoriz = shipPos.orientation ? 1 : 0;
-        var isVert = shipPos.orientation ? 0 : 1;
-        for(var i = 0; i < shipPos.size; i ++)
-            this.cells[shipPos.row + isVert * i][shipPos.col + isHoriz * i] = Cell.SHIP;
+        if(shipPos.size == 1) // mine
+            this.cells[shipPos.row][shipPos.col] = Cell.POSSIBLEMINE;
+        else{
+            var isHoriz = shipPos.orientation ? 1 : 0;
+            var isVert = shipPos.orientation ? 0 : 1;
+            for(var i = 0; i < shipPos.size; i ++)
+                this.cells[shipPos.row + isVert * i][shipPos.col + isHoriz * i] = Cell.POSSIBLESHIP;
+        }
     },
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    validCoords: function(row, col){
+        if(row >= 0 && row < this.rows && col >= 0 && col < this.cols)
+            return true;
+        return false;
+    },
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     getValidPositions: function(size){
         var validPositions = [];
@@ -46,25 +64,29 @@ Field.prototype = {
             for(var c = 0; c <= this.cols - size; c ++)
                 if(this.isValidHorizPosition(r, c, size))
                     validPositions.push(new ShipPos(true, size, r, c));
-        // vertical
-        for(var r = 0; r <= this.rows - size; r ++)
-            for(var c = 0; c < this.cols; c ++)
-                if(this.isValidVertPosition(r, c, size))
-                    validPositions.push(new ShipPos(false, size, r, c));
+        
+        if(size != 1){ // size 1 is a mine
+            // vertical
+            for(var r = 0; r <= this.rows - size; r ++)
+                for(var c = 0; c < this.cols; c ++)
+                    if(this.isValidVertPosition(r, c, size))
+                        validPositions.push(new ShipPos(false, size, r, c));
+        }
+
         return validPositions;
     },
 
     isValidHorizPosition: function(row, col, size){
         // core
         for(var c = col; c < col + size; c ++)
-            if(!this.validForShipCore(this.cells[row][c]))
+            if(!this.validForCore(this.cells[row][c], size == 1))
                 return false;
         // frame
         for(var r = row - 1; r < row + 2; r ++)
             for(var c = col - 1; c < col + size + 1; c ++)
                 if(r != row || c == col - 1 || c == col + size)
                     if(this.validCoords(r, c))
-                        if(!this.validForShipFrame(this.cells[r][c]))
+                        if(!this.validForFrame(this.cells[r][c]))
                             return false;
         return true;
     },
@@ -72,64 +94,86 @@ Field.prototype = {
     isValidVertPosition: function(row, col, size){
         // core
         for(var r = row; r < row + size; r ++)
-            if(!this.validForShipCore(this.cells[r][col]))
+            if(!this.validForCore(this.cells[r][col], size == 1))
                 return false;
         // frame
         for(var c = col - 1; c < col + 2; c ++)
             for(var r = row - 1; r < row + size + 1; r ++)
                 if(c != col || r == row - 1 || r == row + size)
                     if(this.validCoords(r, c))
-                        if(!this.validForShipFrame(this.cells[r][c]))
+                        if(!this.validForFrame(this.cells[r][c]))
                             return false;
         return true;
     },
 
-    validForShipCore: function(cell){
-        if(cell == Cell.UNTOUCHED || cell == Cell.HIT)
+    validForCore: function(cell, isMine){
+        if(cell == Cell.UNTOUCHED || (!isMine && cell == Cell.HIT))
             return true;
         return false;
     },
 
-    validForShipFrame: function(cell){
-        if(cell == Cell.UNTOUCHED || cell == Cell.WAVE)
+    validForFrame: function(cell){
+        if(cell == Cell.UNTOUCHED || cell == Cell.WAVE || cell == Cell.RADIATION || cell == Cell.WAVE_RADIATION)
             return true;
         return false;
     },
 
-    validCoords: function(row, col){
-        if(row >= 0 && row < this.rows && col >= 0 && col < this.cols)
-            return true;
-        return false;
-    },
+// - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    allSatisfied: function(wavesPos, hitsPos){
-        return this.allWavesSatisfied(wavesPos) && this.allHitsSatisfied(hitsPos);
+    allSatisfied: function(wavesPos, hitsPos, radiationsPos){
+        return this.allWavesSatisfied(wavesPos) && this.allHitsSatisfied(hitsPos) && this.allRadiationsSatisfied(radiationsPos);
     },
 
     allHitsSatisfied: function(hitsPos){
-        for(i in hitsPos)
-            if(this.cells[hitsPos[i].row][hitsPos[i].col] != Cell.SHIP)
+        for(var i in hitsPos)
+            if(this.cells[hitsPos[i].row][hitsPos[i].col] != Cell.POSSIBLESHIP)
                 return false;
         return true;
     },
 
-    /**
-    * Gives true or false whether or not all waves have at least one ship next to them.
-    */
     allWavesSatisfied: function(wavesPos){
         var allWavesSatisfied = true;
-        for(i in wavesPos)
-            if(!this.hasShipAroundIt(wavesPos[i]))
+        for(var i in wavesPos)
+            if(!this.hasRequiredCelltypeAroundIt(wavesPos[i], [Cell.POSSIBLESHIP, Cell.DESTROYED]))
                 allWavesSatisfied = false;
         return allWavesSatisfied;
     },
 
-    getWavesPos: function(){ // only called on inputfield
-        return this.getObjPositions(Cell.WAVE);
+    allRadiationsSatisfied: function(radiationsPos){
+        var allRadiationsSatisfied = true;
+        for(var i in radiationsPos)
+            if(!this.hasRequiredCelltypeAroundIt(radiationsPos[i], [Cell.POSSIBLEMINE, Cell.MINE]))
+                allRadiationsSatisfied = false;
+        return allRadiationsSatisfied;
+    },
+
+    hasRequiredCelltypeAroundIt: function(pos, requiredCelltype){
+        var hasIt = false;
+        for(var c = pos.col - 1; c < pos.col + 2; c ++)
+            for(var r = pos.row - 1; r < pos.row + 2; r ++)
+                if(this.validCoords(r, c))
+                    if(!(r == pos.row && c == pos.col))
+                        if(requiredCelltype.indexOf(this.cells[r][c]) != -1)
+                            hasIt = true;
+        return hasIt;
+    },
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    getWavesPos: function(){
+        return this.getObjPositions(Cell.WAVE).concat(this.getObjPositions(Cell.WAVE_RADIATION));
     },
 
     getHitsPos: function(){
         return this.getObjPositions(Cell.HIT);
+    },
+
+    getRadiationsPos: function(){
+        return this.getObjPositions(Cell.RADIATION).concat(this.getObjPositions(Cell.WAVE_RADIATION));
+    },
+
+    getShootablePositions: function(){
+        this.getObjPositions(Cell.UNTOUCHED);
     },
 
     getObjPositions: function(cell){
@@ -141,20 +185,7 @@ Field.prototype = {
         return objPositions;
     },
 
-    hasShipAroundIt: function(pos){
-        var hasShipAroundIt = false;
-        for(var c = pos.col - 1; c < pos.col + 2; c ++)
-            for(var r = pos.row - 1; r < pos.row + 2; r ++)
-                if(this.validCoords(r, c))
-                    if(!(r == pos.row && c == pos.col))
-                        if(this.cells[r][c] == Cell.SHIP)
-                            hasShipAroundIt = true;
-        return hasShipAroundIt;
-    },
-
-    getShootablePositions: function(){
-        this.getObjPositions(Cell.UNTOUCHED);
-    },
+// - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     getDestroyedShips: function(){
         var destroyedCellsPos = this.getObjPositions(Cell.DESTROYED);
@@ -164,10 +195,10 @@ Field.prototype = {
         while(destroyedCellsPos.length > 0){
             var dCellPos = destroyedCellsPos.splice(0, 1)[0];
             var fitsToExisting = false;
-            for(i in ships){
+            for(var i in ships){
                 var ship = ships[i];
-                for(j in ship)
-                    if(this.areTouching(dCellPos, ship[j])){
+                for(var j in ship)
+                    if(this.positionsAreTouching(dCellPos, ship[j])){
                         ship.push(dCellPos);
                         fitsToExisting = true;
                     }
@@ -177,7 +208,7 @@ Field.prototype = {
         }
 
         var destroyedShips = [];
-        for(i in ships){
+        for(var i in ships){
             var ship = ships[i];
             var headrow = ship[0].row; // because of the way getObjPositions runs through the field, no sorting is required before using [0] as headrow/headcol
             var headcol = ship[0].col;
@@ -189,12 +220,18 @@ Field.prototype = {
         return destroyedShips;
     },
 
-    areTouching: function(pos1, pos2){
+    positionsAreTouching: function(pos1, pos2){
         var rowDiff = Math.abs(pos1.row - pos2.row);
         var colDiff = Math.abs(pos1.col - pos2.col);
         if(rowDiff + colDiff == 1 || (rowDiff == 1 && colDiff == 1))
             return true;
         return false;
+    },
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    getMinesCount: function(){
+        return this.getObjPositions(Cell.MINE).length;
     }
 
 };
