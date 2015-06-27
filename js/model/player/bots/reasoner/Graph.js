@@ -45,20 +45,25 @@ Graph.prototype = {
 					if(onLeaflevel)
 						if(!childField.allSatisfied(this.wavesPos, this.hitsPos, this.radiationsPos))
 							createChild = false;
+					
+					if(createChild && this.hasIdenticalTwin(this.getNodesAtLevel(parentNode.level + 1), childField))
+						createChild = false;
 
 					if(createChild){
 						var childNode = new Node(this.nodes.length, childField, onLeaflevel);
 						console.log('' + childNode.toString('\n'));
 						childNode.setParent(parentNode);
+						parentNode.addChild(childNode);
 						this.nodes.push(childNode);
 					}
 				}
+
 				collectNextLevel = collectNextLevel.concat(parentNode.children);
 			}
 			parentNodes = collectNextLevel;
 		}
 
-		// PRUNING: delete all flagged nodes that are not leaves and have no children
+		// PRUNING: delete all nodes that are not leaves and have no children
 	
 		for(var level = this.leafLevel - 1; level > 0; level --){
 			var levelnodes = this.getNodesAtLevel(level);
@@ -71,6 +76,14 @@ Graph.prototype = {
 			for(var i in flaggedForDeletion)
 				this.deleteNode(flaggedForDeletion[i]);
 		}
+	},
+
+	hasIdenticalTwin: function(siblingnodes, newsiblingfield){
+		for(var i in siblingnodes){
+			if(newsiblingfield.isIdenticalTo(siblingnodes[i].field))
+				return true;
+		}
+		return false;
 	},
 
 	getNodesAtLevel: function(level){

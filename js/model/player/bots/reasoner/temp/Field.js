@@ -34,6 +34,14 @@ Field.prototype = {
         return copy;
     },
 
+    isIdenticalTo: function(otherfield){
+        for(var r = 0; r < this.rows; r ++)
+            for(var c = 0; c < this.cols; c ++)
+                if(this.cells[r][c] != otherfield.cells[r][c])
+                    return false;
+        return true;
+    },
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     place: function(shipPos){

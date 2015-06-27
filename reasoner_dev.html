@@ -29,20 +29,17 @@
 
             function testReasoner(){
 
-                /* dieses Test-Inputfeld wird von Zeile 43 bis 54 erzeugt
-
+                /*
                 [ ][=][=][=][ ][.]
                 [#][ ][~][ ][ ][ ]
                 [ ][ ][ ][ ][ ][x]
                 [*][ ][ ][ ][~][ ]
 
                 ships: 3,2,2,1
-
                 */
-
+                
                 var shipTypes = [new ShipType(1, 'black', 1), new ShipType(3, 'orange', 1), new ShipType(2, 'lime', 2)];
                 var testfield = new Field(4, 6);
-
                 testfield.cells[0][1] = Cell.DESTROYED;
                 testfield.cells[0][2] = Cell.DESTROYED;
                 testfield.cells[0][3] = Cell.DESTROYED;
@@ -52,7 +49,11 @@
                 testfield.cells[2][5] = Cell.HIT;
                 testfield.cells[3][0] = Cell.RADIATION;
                 testfield.cells[3][4] = Cell.WAVE;
+                
 
+                //var shipTypes = [new ShipType(2, 'orange', 2)];
+                //var testfield = new Field(2, 3);
+                
 
                 var reasoner = new Reasoner(shipTypes);
 

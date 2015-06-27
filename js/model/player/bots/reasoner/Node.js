@@ -11,8 +11,11 @@ Node.prototype = {
 
 	setParent: function(parent){
 		this.parent = parent;
-		parent.children.push(this);
 		this.level = parent.level + 1;
+	},
+
+	addChild: function(child){
+		this.children.push(child);
 	},
 
 	removeChild: function(child){
