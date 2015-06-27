@@ -4,14 +4,19 @@ var Ship = function(id, size, color, orientation){
     this.size = size;
     this.color = color;
     this.orientation = orientation; //true is horizontal, false is vertical
-
     this.occupyingCells = [];
+    this.isMine = false;
 
     this.hits = 0;
     this.destroyed = false;
 }
 
 Ship.prototype = {
+
+    isMine: function() {
+        return this.isMine;
+    },
+
     fire: function(){ // does it need to know which cells are hit? don't think so
         this.hits ++;
         if(this.hits >= this.size){
@@ -22,6 +27,7 @@ Ship.prototype = {
         }
         return new CellStatusMsg(CellStatus.HIT);
     },
+
     toString: function(){
         return 'ship: ' + this.id + ' size: ' + this.size + ' color:' + this.color;
     }

@@ -61,7 +61,6 @@ AbstractPlayer.prototype = {
             case CellStatus.DESTROYED:
                 console.log('destroyed');
                 this.fieldMemory.setCellStatusesAroundShipToWave(resultMsg.destroyedShipCode);
-                //console.log(this.fieldMemory);
                 if(resultMsg.allShipsDestroyed){
                     console.log('all ships destroyed');
                     game.iWon(this, this.fieldMemory.countFiredCells() + 1); 
