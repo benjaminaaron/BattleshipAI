@@ -5,7 +5,7 @@ var Ship = function(id, size, color, orientation){
     this.color = color;
     this.orientation = orientation; //true is horizontal, false is vertical
     this.occupyingCells = [];
-    this.isMine = false;
+    this.isMine = size == 1;
 
     this.hits = 0;
     this.destroyed = false;
@@ -17,15 +17,25 @@ Ship.prototype = {
         return this.isMine;
     },
 
-    fire: function(){ // does it need to know which cells are hit? don't think so
-        this.hits ++;
-        if(this.hits >= this.size){
-            this.destroyed = true;
-            var msg = new CellStatusMsg(CellStatus.DESTROYED);
-            msg.destroyedShipCode = this.size + '_' + (this.orientation ? 'h_' : 'v_') + this.occupyingCells[0].row + '-' + this.occupyingCells[0].col;
-            return msg;
+    fire: function(){
+        var msg;
+
+        if(this.isMine)
+            msg = new CellStatusMsg(CellStatus.MINE)
+
+        else {
+            this.hits++;
+
+            if(this.hits >= this.size){
+                this.destroyed = true;
+                msg = new CellStatusMsg(CellStatus.DESTROYED);
+                msg.destroyedShipCode = this.size + '_' + (this.orientation ? 'h_' : 'v_') + this.occupyingCells[0].row + '-' + this.occupyingCells[0].col;
+            }
+            else
+                msg = new CellStatusMsg(CellStatus.HIT);
         }
-        return new CellStatusMsg(CellStatus.HIT);
+
+        return msg;
     },
 
     toString: function(){

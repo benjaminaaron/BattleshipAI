@@ -20,7 +20,8 @@ Mine.prototype = {
     __proto__: Ship.prototype,
 
     fire: function(){
-        Ship.prototype.fire.call(this);
+        console.log("hit a mine!");
+        Ship.prototype.fire.call(this); // maybe the super call is what's causing the trouble?!
 
         return new CellStatusMsg(CellStatus.MINE);
     },

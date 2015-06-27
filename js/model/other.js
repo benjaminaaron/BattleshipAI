@@ -4,11 +4,11 @@ var CellStatus = {
     FIRED : 1,  // been fired at, but is a miss
     HIT : 2,
     DESTROYED : 3,
-    SPARE: 4,   // for neighbour cells of ships
+    SPARE: 4,   // for neighbour cells of elements
                 // TODO: change to WAVE
     MINE: 5,
     RADIATION: 6,    // indicates mine on adjacent cell
-    WAVE: 7         // for cells adjacent to ships
+    WAVE: 7         // for cells adjacent to elements
 };
 
 /** 
@@ -34,6 +34,7 @@ var MouseEvent = {
 
 var CellStatusMsg = function(status) {
     this.status = status;
+    console.log("Fired cell's status is: " + status);
     this.destroyedShipCode; // if there is one
     this.allShipsDestroyed = false;
 };

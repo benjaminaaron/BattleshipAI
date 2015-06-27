@@ -32,6 +32,7 @@ var Game = function(players, shipTypes, viewModule){
 }
 
 Game.prototype = {
+
     start: function(){
         this.gameRunning = true;
         this.currentPlayer.yourSetup();
@@ -54,7 +55,7 @@ Game.prototype = {
 
         // In playphase, canvas events are shots on the other player's board so the event needs to be directed
         // to the other player's board.
-        // If not in playphase, canvas events are e.g. the placing of the ships and thus happen on the player's own board.
+        // If not in playphase, canvas events are e.g. the placing of the elements and thus happen on the player's own board.
         if(this.inPlayPhase)
             sendCanvasEventToPlayer = this.currentPlayer != eventOriginBoardOwner;
         else
@@ -107,6 +108,12 @@ Game.prototype = {
     fire: function(caller, row, col){
         var targetBoard = caller.opponent.board;
         var fireResult = targetBoard.fire(row, col);
+
+        if (fireResult.status == CellStatus.MINE) {
+            caller.board.fire(row, col);
+            console.log("Hit Mine, cell " + row + "/" + col + " of own field was shot!");
+        }
+
         return fireResult;
     },
 
@@ -129,7 +136,7 @@ Game.prototype = {
         setTimeout(function(){
             $('#statusLabel').html('<b>' + caller.name + ' won!</b>&nbsp;&nbsp;&nbsp;' + shotsFired + ' (' + game.totalShipCells + '-' + game.totalCells + ')&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'); 
             caller.board.winnerBoard = true;
-            caller.opponent.board.looserBoard = true;  
+            caller.opponent.board.loserBoard = true;
             caller.board.showShips = true;                  
             self.updatedBoard(UpdateReport.GAMECOMPLETED);
         }, 10);   

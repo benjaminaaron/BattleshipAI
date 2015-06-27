@@ -55,10 +55,10 @@ GameControlController.prototype = {
      */
     info: function(){
         var str = 'Setup phase:\n' +
-            '- drag ships to place them\n' +
+            '- drag elements to place them\n' +
             '- click on a ship will flip its orientation\n' +
-            '- click on the field will randomly place all ships\n' +
-            '- click on your board outside of the field means you finished setting up ships\n\n' +
+            '- click on the field will randomly place all elements\n' +
+            '- click on your board outside of the field means you finished setting up elements\n\n' +
             'Play phase:\n' +
             '- just go ahead shooting around on the opponents field\n\n' +
             'Build by:\n@stehrenberg\n@chanton1392\n@abstractCalculus\n@benjaminaaron\n\n' +

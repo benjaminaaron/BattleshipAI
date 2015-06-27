@@ -24,7 +24,7 @@ AbstractPlayer.prototype = {
     yourSetup: function(){
         this.myTurn = true;
         //$('#container_' + this.id).addClass('activeContainer');    
-        console.log('>> i am setting up ships says ' + this.name);
+        console.log('>> i am setting up elements says ' + this.name);
     },
 
     finishedSetup: function(){
@@ -32,7 +32,7 @@ AbstractPlayer.prototype = {
         // TODO warum wechseln wir in die playPhase, nur weil einmal finishedSetup aufgerufen wurde?
         // bezieht sich das nur auf den "player zustand?"
         this.inPlayPhase = true;
-        console.log('<< i am done setting up ships says ' + this.name);
+        console.log('<< i am done setting up elements says ' + this.name);
         game.setupCompleted(this);
     },
 
@@ -62,7 +62,7 @@ AbstractPlayer.prototype = {
                 console.log('destroyed');
                 this.fieldMemory.setCellStatusesAroundShipToWave(resultMsg.destroyedShipCode);
                 if(resultMsg.allShipsDestroyed){
-                    console.log('all ships destroyed');
+                    console.log('all elements destroyed');
                     game.iWon(this, this.fieldMemory.countFiredCells() + 1); 
                 }
                 break;

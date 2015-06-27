@@ -73,7 +73,7 @@ GameView.prototype = {
      */
     wrapAndInitShips: function(player){
 
-        var ships = player.board.ships;
+        var ships = player.board.elements;
 
         for(var shipNo = 0; shipNo < ships.length; shipNo++){
             var shipWrapper = new ShipWrapper(player, ships[shipNo], shipNo, this.cellSizePx, this.fieldLeft, this.fieldRight, this.fieldTop);
@@ -135,7 +135,7 @@ GameView.prototype = {
         // TODO: a "spiraling outwards" (to find closest valid pos) algorithm instead would be mathematically nicer and computationally less expensive                   
         var prevMiddleX = shipWr.x + shipWr.w / 2;
         var prevMiddleY = shipWr.y + shipWr.h / 2;
-        var validPositions = ship.orientation ? board.getVerticalValidShipPositions(ship) : board.getHorizontalValidShipPositions(ship);
+        var validPositions = ship.orientation ? board.getVerticalValidElementPositions(ship) : board.getHorizontalValidElementPositions(ship);
         var minDist = Number.MAX_VALUE;
         var indexOfMinDist = -1;
         for(var i=0; i < validPositions.length; i++){
@@ -149,7 +149,7 @@ GameView.prototype = {
             }
         }
         shipWr.flipOrientation();
-        shipWr.player.board.placeShipByCoords(shipWr.ship, ship.orientation, validPositions[indexOfMinDist].row, validPositions[indexOfMinDist].col);
+        shipWr.player.board.placeElementByCoords(shipWr.ship, ship.orientation, validPositions[indexOfMinDist].row, validPositions[indexOfMinDist].col);
         shipWr.update();
         this.handleUpdatedBoard(UpdateReport.SHIPFLIPPEDORIENTATION);
     },
@@ -277,18 +277,18 @@ GameView.prototype = {
             if(player.ID == this.lastValidShipPositionCellsOwner.ID)
                 this.drawShadowShip(ctx);
 
-        // ships
+        // elements
         if(board.showShips)
             this.drawShips(ctx, player.ID);
                          
         // hits
         this.drawHits(ctx, board);
 
-        // destroyed ships
+        // destroyed elements
         this.drawDestroyedShips(ctx, player.ID);
 
         // loser board effect
-        if(board.looserBoard){
+        if(board.loserBoard){
             ctx.strokeStyle = 'red'; 
             ctx.lineWidth = 5;
             ctx.beginPath();

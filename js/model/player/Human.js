@@ -54,15 +54,15 @@ Human.prototype = {
             }
         this.selectedShipWr = null;
         
-        if(!this.inPlayPhase && this.board.allShipsPlaced())
+        if(!this.inPlayPhase && this.board.allElementsPlaced())
             $('#readyBtn').show();
     },
 
     iAmDoneSettingUp: function() {
-        if(this.board.allShipsPlaced())
+        if(this.board.allElementsPlaced())
             this.finishedSetup();
         else
-            alert('not all ships placed yet');
+            alert('not all elements placed yet');
     },
 
     fireOnCoords: function(xMouse, yMouse){
