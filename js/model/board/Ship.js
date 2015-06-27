@@ -20,8 +20,9 @@ Ship.prototype = {
     fire: function(){
         var msg;
 
-        if(this.isMine)
-            msg = new CellStatusMsg(CellStatus.MINE)
+        if(this.isMine) {
+            msg = new CellStatusMsg(CellStatus.MINE);
+        }
 
         else {
             this.hits++;
