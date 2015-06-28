@@ -55,9 +55,9 @@
                 var testfield = new Field(3, 4);
                 testfield.cells[0][0] = Cell.WAVE;
                 testfield.cells[0][1] = Cell.HIT;
-                //testfield.cells[1][1] = Cell.HIT;
+                testfield.cells[0][2] = Cell.HIT;
 
-                testfield.cells[0][3] = Cell.HIT;
+                //testfield.cells[0][3] = Cell.HIT;
 
                 var reasoner = new Reasoner(shipTypes);
                 reasoner.loadField(testfield);

@@ -73,7 +73,7 @@ Field.prototype = {
                 if(this.isValidHorizPosition(r, c, size))
                     validPositions.push(new ShipPos(true, size, r, c));
 
-        if(size != 1){ // size 1 is a mine
+        if(size != 1){ // size 1 is a mine, enough to collect valid positions once
             // vertical
             for(var r = 0; r <= this.rows - size; r ++)
                 for(var c = 0; c < this.cols; c ++)
@@ -86,9 +86,16 @@ Field.prototype = {
 
     isValidHorizPosition: function(row, col, size){
         // core
-        for(var c = col; c < col + size; c ++)
+        var hitcounter = 0;
+        for(var c = col; c < col + size; c ++){
             if(!this.validForCore(this.cells[row][c], size == 1))
                 return false;
+            if(this.cells[row][c] == Cell.HIT)
+                hitcounter ++;
+        }
+        if(hitcounter == size)
+            return false;
+
         // frame
         for(var r = row - 1; r < row + 2; r ++)
             for(var c = col - 1; c < col + size + 1; c ++)
@@ -101,9 +108,16 @@ Field.prototype = {
 
     isValidVertPosition: function(row, col, size){
         // core
-        for(var r = row; r < row + size; r ++)
+        var hitcounter = 0;
+        for(var r = row; r < row + size; r ++){
             if(!this.validForCore(this.cells[r][col], size == 1))
                 return false;
+            if(this.cells[r][col] == Cell.HIT)
+                hitcounter ++;
+        }
+        if(hitcounter == size)
+            return false;
+
         // frame
         for(var c = col - 1; c < col + 2; c ++)
             for(var r = row - 1; r < row + size + 1; r ++)
@@ -167,9 +181,23 @@ Field.prototype = {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    /**
-    *   Used by generateScenarios in Reasoner
-    */
+
+// APPROACH 1
+
+/*
+    isValid: function(allShips){
+        var dShips = this.getDestroyedShips();
+        for(var i in dShips)
+            if(dShips[i].size == 1)
+                return false;
+        // ... TODO
+        return true;
+    },
+*/
+
+// APPROACH 2
+
+/*
     getNeighbourhood: function(pos){
         var neighbourhood = [];
         for(var c = pos.col - 1; c < pos.col + 2; c ++)
@@ -256,7 +284,7 @@ Field.prototype = {
         // north
         //while()
     },
-
+*/
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -313,7 +341,7 @@ Field.prototype = {
             var headrow = ship[0].row; // because of the way getObjPositions runs through the field, no sorting is required before using [0] as headrow/headcol
             var headcol = ship[0].col;
             var size = ship.length;
-            var orientation = ship[0].row == ship[1].row
+            var orientation = size == 1 ? null : ship[0].row == ship[1].row
             destroyedShips.push(new ShipPos(orientation, size, headrow, headcol));
         }
 

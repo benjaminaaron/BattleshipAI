@@ -23,7 +23,7 @@ Graph.prototype = {
 	generate: function(){
 		var parentNodes = [this.rootnode];
 
-		while(this.ships.length > 0){
+		while(this.ships.length > 0){ //TODO recursive instead of top to bottom? checking for sibling-duplicates seems easier though this way
 			var shipsize = this.ships.splice(0, 1)[0];
 			var onLeaflevel = this.ships.length == 0;
 
@@ -78,14 +78,13 @@ Graph.prototype = {
 	},
 
 	hasIdenticalTwin: function(siblingnodes, newsiblingfield){
-		for(var i in siblingnodes){
+		for(var i in siblingnodes)
 			if(newsiblingfield.isIdenticalTo(siblingnodes[i].field))
 				return true;
-		}
 		return false;
 	},
 
-	getNodesAtLevel: function(level){
+	getNodesAtLevel: function(level){ //TODO for performance store them in an array of level-arrays while generating instead of going through all every time
 		var nodes = [];
 		for(var i in this.nodes)
 			if(this.nodes[i].level == level)
