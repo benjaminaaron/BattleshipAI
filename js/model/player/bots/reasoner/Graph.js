@@ -15,8 +15,7 @@ var Graph = function(inputfield, ships){
 	this.hitsPos = inputfield.getHitsPos();
 	this.radiationsPos = inputfield.getRadiationsPos();
 
-	console.log('' + this.rootnode.toString('\n'));
-	console.log('');
+	//console.log('' + this.rootnode.toString('\n'));
 };
 
 Graph.prototype = {
@@ -28,7 +27,7 @@ Graph.prototype = {
 			var shipsize = this.ships.splice(0, 1)[0];
 			var onLeaflevel = this.ships.length == 0;
 
-			console.log('looking at ship: ' + shipsize);
+			//console.log('looking at ship: ' + shipsize);
 			var collectNextLevel = [];
 
 			for(var i in parentNodes){
@@ -45,13 +44,13 @@ Graph.prototype = {
 					if(onLeaflevel)
 						if(!childField.allSatisfied(this.wavesPos, this.hitsPos, this.radiationsPos))
 							createChild = false;
-					
+
 					if(createChild && this.hasIdenticalTwin(this.getNodesAtLevel(parentNode.level + 1), childField))
 						createChild = false;
 
 					if(createChild){
 						var childNode = new Node(this.nodes.length, childField, onLeaflevel);
-						console.log('' + childNode.toString('\n'));
+						//console.log('' + childNode.toString('\n'));
 						childNode.setParent(parentNode);
 						parentNode.addChild(childNode);
 						this.nodes.push(childNode);
@@ -64,14 +63,14 @@ Graph.prototype = {
 		}
 
 		// PRUNING: delete all nodes that are not leaves and have no children
-	
+
 		for(var level = this.leafLevel - 1; level > 0; level --){
 			var levelnodes = this.getNodesAtLevel(level);
 			var flaggedForDeletion = [];
 			for(var i in levelnodes){
 				var node = levelnodes[i];
 				if(!node.isLeaf && !node.hasChildren())
-					flaggedForDeletion.push(node);	
+					flaggedForDeletion.push(node);
 			}
 			for(var i in flaggedForDeletion)
 				this.deleteNode(flaggedForDeletion[i]);
@@ -101,10 +100,10 @@ Graph.prototype = {
 			delnode.parent.removeChild(delnode);
 	},
 
-	show: function(newlineChar){
+	show: function(){
 		for(var i in this.nodes)
 			if(this.nodes[i].isLeaf)
-				document.write(this.nodes[i].toString(newlineChar) + newlineChar);
+				console.log(this.nodes[i] + '');
 	},
 
 	export: function(){

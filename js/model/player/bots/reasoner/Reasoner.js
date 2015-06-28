@@ -11,6 +11,7 @@ Reasoner.prototype = {
 
 	loadField: function(inputfield){
 		this.inputfield = inputfield;
+
 		var destroyedShips = inputfield.getDestroyedShips();
 
 		for(var i in destroyedShips)
@@ -19,21 +20,28 @@ Reasoner.prototype = {
 		for(var i = 0; i < inputfield.getMinesCount(); i ++)
 			this.ships.splice(this.ships.indexOf(1), 1);
 
+		this.undestroyedShips = this.ships.slice(); // makes a copy
+
 		this.graph = new Graph(inputfield, this.ships);
-		this.graph.generate();
+		//this.graph.generate();
 	},
 
 	generateScenarios: function(){
 		var shootableCells = this.inputfield.getShootablePositions();
 
-		//TODO loop through shootable cells
+		console.log('undestroyed ships:');
+		console.log(this.undestroyedShips);
 
-		var hypoFirePos = shootableCells[0];
+		var firePos = shootableCells[0];
+		console.log('firePos:');
+		console.log(firePos);
 
-		// TODO loop through fire-result-options
+		var possibleFireResults = this.inputfield.getPossibleFireResults(firePos, this.undestroyedShips);
 
-		var hypoFireResult = Cell.FIRED; //FIRED, WAVE, HIT, DESTROYED
-		
+		console.log('possibleFireResults:');
+		console.log(CellArrToStr(possibleFireResults));
+
+
 	}
-	
+
 };

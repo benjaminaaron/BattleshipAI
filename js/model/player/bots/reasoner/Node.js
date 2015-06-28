@@ -27,12 +27,12 @@ Node.prototype = {
 		return this.children.length > 0;
 	},
 
-	toString: function(newlineChar){
-		return 'node_' + this.ID + newlineChar + this.field.toString(newlineChar);
+	toString: function(){
+		return 'node_' + this.ID + '\n' + this.field;
 	},
 
 	getLabel: function(){
-		return this.toString('\n');
+		return '' + this;
 	}
-	
+
 };

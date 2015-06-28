@@ -14,12 +14,12 @@ var Field = function(rows, cols){
 
 Field.prototype = {
 
-    toString: function(newlineChar){
+    toString: function(){
         var str = '';
         for(var r = 0; r < this.rows; r ++){
             for(var c = 0; c < this.cols; c ++)
                 str += '[' + CellToChar(this.cells[r][c]) + ']';
-            str += newlineChar;
+            str += '\n';
         }
         return str;
     },
@@ -72,7 +72,7 @@ Field.prototype = {
             for(var c = 0; c <= this.cols - size; c ++)
                 if(this.isValidHorizPosition(r, c, size))
                     validPositions.push(new ShipPos(true, size, r, c));
-        
+
         if(size != 1){ // size 1 is a mine
             // vertical
             for(var r = 0; r <= this.rows - size; r ++)
@@ -155,16 +155,108 @@ Field.prototype = {
         return allRadiationsSatisfied;
     },
 
-    hasRequiredCelltypeAroundIt: function(pos, requiredCelltype){
+    hasRequiredCelltypeAroundIt: function(pos, requiredCelltype){ // use getNeighbourhood to reduce code? or is that a waste of Pos-Objects
         var hasIt = false;
         for(var c = pos.col - 1; c < pos.col + 2; c ++)
             for(var r = pos.row - 1; r < pos.row + 2; r ++)
-                if(this.validCoords(r, c))
-                    if(!(r == pos.row && c == pos.col))
-                        if(requiredCelltype.indexOf(this.cells[r][c]) != -1)
-                            hasIt = true;
+                if(this.validCoords(r, c) && !(r == pos.row && c == pos.col))
+                    if(requiredCelltype.indexOf(this.cells[r][c]) != -1)
+                        hasIt = true;
         return hasIt;
     },
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    /**
+    *   Used by generateScenarios in Reasoner
+    */
+    getNeighbourhood: function(pos){
+        var neighbourhood = [];
+        for(var c = pos.col - 1; c < pos.col + 2; c ++)
+            for(var r = pos.row - 1; r < pos.row + 2; r ++)
+                if(this.validCoords(r, c) && !(c == pos.col && r == pos.row))
+                    neighbourhood.push(new Pos(r, c));
+        return neighbourhood;
+    },
+
+    getPossibleFireResults: function(pos, undestroyedShips){
+        var possibleFireResults = [Cell.FIRED, Cell.WAVE, Cell.HIT, Cell.DESTROYED, Cell.RADIATION, Cell.MINE, Cell.WAVE_RADIATION];
+
+        var neighbourhood = this.getNeighbourhood(pos);
+
+        console.log('neighbourhood:');
+        var neighbourhoodCells = [];
+        for(var i in neighbourhood)
+            neighbourhoodCells.push(this.cells[neighbourhood[i].row][neighbourhood[i].col]);
+        console.log(CellArrToStr(neighbourhoodCells));
+
+        var hasTouchingHits = this.hasNeighbourhoodTouchingHits(neighbourhood);
+        console.log('hasTouchingHits: ' + hasTouchingHits);
+
+        if(hasTouchingHits)
+            this.removeFromPossibleFireResults(possibleFireResults, [Cell.HIT, Cell.DESTROYED]);
+
+
+        for(var i in neighbourhood){
+            var cell = this.cells[neighbourhood[i].row][neighbourhood[i].col];
+
+            switch(cell){
+                case Cell.WAVE:
+                    this.removeFromPossibleFireResults(possibleFireResults, [Cell.MINE]);
+                    break;
+                case Cell.RADIATION:
+                    this.removeFromPossibleFireResults(possibleFireResults, [Cell.HIT, Cell.DESTROYED]);
+                    break;
+                case Cell.FIRED:
+                    this.removeFromPossibleFireResults(possibleFireResults, [Cell.MINE, Cell.HIT, Cell.DESTROYED]);
+                    break;
+                case Cell.DESTROYED:
+                    this.removeFromPossibleFireResults(possibleFireResults, [Cell.FIRED, Cell.HIT, Cell.DESTROYED, Cell.MINE]);
+                    break;
+                case Cell.HIT:
+                    this.removeFromPossibleFireResults(possibleFireResults, [Cell.FIRED, Cell.MINE]);
+
+                    if(!hasTouchingHits)
+                        if(this.couldThisHitDestroyAship(pos, undestroyedShips))
+                            console.log(); // TODO
+
+                    break;
+                default:
+                    break;
+            }
+        }
+        return possibleFireResults;
+    },
+
+    hasNeighbourhoodTouchingHits: function(neighbourhood){ // investigate all different 1&1 pairs. TODO better way?
+        for(var i = 0; i < neighbourhood.length - 1; i ++)
+            for(var j = i + 1; j < neighbourhood.length; j ++){
+                var pos1 = neighbourhood[i];
+                var pos2 = neighbourhood[j];
+                var cell1 = this.cells[pos1.row][pos1.col];
+                var cell2 = this.cells[pos2.row][pos2.col];
+                if(cell1 == Cell.HIT && cell2 == Cell.HIT)
+                    if((pos1.col == pos2.col && Math.abs(pos1.row - pos2.row) == 1) || (pos1.row == pos2.row && Math.abs(pos1.col - pos2.col) == 1))
+                        return true;
+            }
+        return false;
+    },
+
+    removeFromPossibleFireResults: function(possibleFireResults, removeArr){
+        for(var i in removeArr){
+            var remove = removeArr[i];
+            var index = possibleFireResults.indexOf(remove);
+            if(index != -1)
+                possibleFireResults.splice(index, 1);
+        }
+    },
+
+    couldThisHitDestroyAship: function(pos){ //TODO
+        var hitstreaklength = 1;
+        // north
+        //while()
+    },
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -181,7 +273,7 @@ Field.prototype = {
     },
 
     getShootablePositions: function(){
-        this.getObjPositions(Cell.UNTOUCHED);
+        return this.getObjPositions(Cell.UNTOUCHED);
     },
 
     getObjPositions: function(cell){

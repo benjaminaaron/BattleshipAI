@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head> 
-        <title>Battleship AI reasoner dev</title> 
+    <head>
+        <title>Battleship AI reasoner dev</title>
         <style>
-            
+
             body {
                 font-family: 'Courier';
             }
 
-        </style> 
-    </head> 
-    <body>     
+        </style>
+    </head>
+    <body>
         <!-- JS vendors -->
         <script type="text/javascript" src="js/vendors/jquery-2.1.1.min.js"></script>
         <!-- JS own -->
@@ -22,7 +22,7 @@
         <script type="text/javascript" src="js/model/player/bots/reasoner/GraphmlExporter.js"></script>
 
         <script type="text/javascript" src="js/model/player/bots/reasoner/temp/Field.js"></script>
-        
+
         <script>
 
             testReasoner();
@@ -37,7 +37,7 @@
 
                 ships: 3,2,2,1
                 */
-                
+                /*
                 var shipTypes = [new ShipType(1, 'black', 1), new ShipType(3, 'orange', 1), new ShipType(2, 'lime', 2)];
                 var testfield = new Field(4, 6);
                 testfield.cells[0][1] = Cell.DESTROYED;
@@ -49,24 +49,29 @@
                 testfield.cells[2][5] = Cell.HIT;
                 testfield.cells[3][0] = Cell.RADIATION;
                 testfield.cells[3][4] = Cell.WAVE;
-                
+                */
 
-                //var shipTypes = [new ShipType(2, 'orange', 2)];
-                //var testfield = new Field(2, 3);
-                
+                var shipTypes = [new ShipType(3, 'orange', 1), new ShipType(2, 'orange', 1)];
+                var testfield = new Field(3, 4);
+                testfield.cells[0][0] = Cell.WAVE;
+                testfield.cells[0][1] = Cell.HIT;
+                //testfield.cells[1][1] = Cell.HIT;
+
+                testfield.cells[0][3] = Cell.HIT;
 
                 var reasoner = new Reasoner(shipTypes);
-
-                document.write('inputfield:<br>' + testfield.toString('<br>') + '<br>ships: ' + reasoner.ships + '<br><br>possible setups:<br><br>');
-
                 reasoner.loadField(testfield);
+
+
+                console.log('inputfield:\n' + testfield + '\nships: ' + reasoner.ships + '\n\npossible setups:\n\n');
                 reasoner.graph.show('<br>');
 
-                //reasoner.generateScenarios();
+
+                reasoner.generateScenarios();
                 //reasoner.graph.export();
             }
 
         </script>
 
-    </body> 
+    </body>
 </html>

@@ -1,6 +1,4 @@
 
-
-
 /**
 * for sorting the ships descending (biggest first)
 */
@@ -23,10 +21,11 @@ function download(filename, text) {
     else {
         pom.click();
     }
-}
+};
 
 
 // - - - - - - - - TEMP: integrates later with existing code - - - - - - - -
+
 
 function Pos(row, col){
     this.row = row;
@@ -55,7 +54,7 @@ var Cell = {
     //for internal use, won't come as inputfield with those on
     POSSIBLEMINE: 8,
     POSSIBLESHIP: 9
-}
+};
 
 function CellToChar(cell){
     switch(cell){
@@ -68,7 +67,7 @@ function CellToChar(cell){
         case Cell.HIT:
             return 'x';
         case Cell.DESTROYED:
-            return '=';  
+            return '=';
         case Cell.RADIATION:
             return '*';
         case Cell.MINE:
@@ -79,8 +78,42 @@ function CellToChar(cell){
             return 'm';
         case Cell.POSSIBLESHIP:
             return '-';
-        default: 
+        default:
             return 'err';
+    }
+};
+
+function CellArrToStr(cellArr){
+    var str = '';
+    for(var i in cellArr)
+        str += CellToString(cellArr[i]) + ', ';
+    return str.substring(0, str.length - 2);
+};
+
+function CellToString(cell){
+    switch(cell){
+        case Cell.UNTOUCHED:
+            return 'UNTOUCHED';
+        case Cell.FIRED:
+            return 'FIRED';
+        case Cell.WAVE:
+            return 'WAVE';
+        case Cell.HIT:
+            return 'HIT';
+        case Cell.DESTROYED:
+            return 'DESTROYED';
+        case Cell.RADIATION:
+            return 'RADIATION';
+        case Cell.MINE:
+            return 'MINE';
+        case Cell.WAVE_RADIATION:
+            return 'WAVE_RADIATION';
+        case Cell.POSSIBLEMINE:
+            return 'POSSIBLEMINE';
+        case Cell.POSSIBLESHIP:
+            return 'POSSIBLESHIP';
+        default:
+            return 'ERROR';
     }
 };
 
