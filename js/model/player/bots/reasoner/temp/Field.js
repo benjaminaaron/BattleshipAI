@@ -247,62 +247,6 @@ Field.prototype = {
         }
     },
 
-    /*
-    wouldThisWorkHere: function(pos, hypoFireResult){
-        var mypos = this.cells[pos.row][pos.col];
-
-        if(hypoFireResult != Cell.HIT && hypoFireResult != Cell.DESTROYED && hypoFireResult != Cell.MINE)
-            if(mypos != Cell.UNTOUCHED)
-                return false;
-
-        switch(hypoFireResult){
-            case Cell.FIRED:
-                if(this.hasOneOfTheseCellsAroundIt(pos, [Cell.POSSIBLEMINE, Cell.MINE, Cell.POSSIBLESHIP, Cell.HIT, Cell.DESTROYED]))
-                    return false;
-                break;
-            case Cell.WAVE:
-                if(!this.hasOneOfTheseCellsAroundIt(pos, [Cell.POSSIBLESHIP, Cell.HIT, Cell.DESTROYED]))
-                    return false;
-                break;
-            case Cell.HIT: //same as DESTROYED
-            case Cell.DESTROYED:
-                if(mypos != Cell.POSSIBLESHIP)
-                    return false;
-                break;
-            case Cell.RADIATION:
-                if(!this.hasOneOfTheseCellsAroundIt(pos, [Cell.POSSIBLEMINE, Cell.MINE]))
-                    return false;
-                break;
-            case Cell.MINE:
-                if(mypos != Cell.POSSIBLEMINE)
-                    return false;
-                break;
-            case Cell.WAVE_RADIATION:
-                if(!this.hasOneOfTheseCellsAroundIt(pos, [Cell.POSSIBLEMINE, Cell.MINE, Cell.POSSIBLESHIP, Cell.HIT, Cell.DESTROYED]))
-                    return false;
-                break;
-        }
-        return true;
-    },*/
-
-/*
-    getCellsAroundCell: function(pos){
-        var frame = [];
-        for(var c = pos.col - 1; c < pos.col + 2; c ++)
-            for(var r = pos.row - 1; r < pos.row + 2; r ++)
-                if(this.validCoords(r, c) && !(r == pos.row && c == pos.col))
-                    frame.push(this.cells[r][c]);
-        return frame;
-    },
-
-    contains: function(cells, checkcells){
-        for(var i in cells)
-            if(checkcells.indexOf(cells[i]) != -1)
-                return true;
-        return false;
-    },
-*/
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     getWavesPos: function(){

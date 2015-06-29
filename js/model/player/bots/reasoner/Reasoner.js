@@ -54,33 +54,7 @@ Reasoner.prototype = {
 			possibleFireResults = possibleFireResults.concat(newPossibleFireResults);
 		}
 
-		/*for(var i in allPossibleFireResults){
-			var fireResult = allPossibleFireResults[i];
-			if(this.worksWithAtLeastOneLeaf(leaves, pos, fireResult))
-				possibleFireResults.push(fireResult);
-		}*/
-
 		return removeDuplicates(possibleFireResults);
 	},
-
-/*
-	worksWithAtLeastOneLeaf: function(leaves, pos, hypoFireResult){
-		for(var i in leaves){
-			var leaf = leaves[i];
-			if(leaf.field.wouldThisWorkHere(pos, hypoFireResult)){
-				//console.log('' + leaf);
-				return true;
-			}
-		}
-		return false;
-	},
-
-	removeFromPossibleFireResults: function(possibleFireResults, removeArr){
-		for(var i in removeArr){
-			var index = possibleFireResults.indexOf(removeArr[i]);
-			if(index != -1)
-				possibleFireResults.splice(index, 1);
-		}
-	}
-*/
+	
 };
