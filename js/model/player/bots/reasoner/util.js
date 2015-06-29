@@ -23,6 +23,15 @@ function download(filename, text) {
     }
 };
 
+function removeDuplicates(arr){
+    var uniqueArr = [];
+    $.each(arr, function(i, el){
+        if($.inArray(el, uniqueArr) === -1) uniqueArr.push(el);
+    });
+    return uniqueArr;
+};
+
+
 // - - - - - - - - TEMP: integrates later with existing code - - - - - - - -
 
 
@@ -34,11 +43,11 @@ function Pos(row, col){
     }
 };
 
-function ShipPos(orientation, size, row, col){
+function ShipPos(orientation, size, headrow, headcol){
     this.orientation = orientation;
     this.size = size;
-    this.row = row;
-    this.col = col;
+    this.headrow = headrow;
+    this.headcol = headcol;
 };
 
 var Cell = {
@@ -86,7 +95,7 @@ function CellToChar(cell){
     }
 };
 
-/*
+
 function CellArrToStr(cellArr){
     var str = '';
     for(var i in cellArr)
@@ -120,7 +129,6 @@ function CellToString(cell){
             return 'ERROR';
     }
 };
-*/
 
 var ShipType = function(size, color, quantity){
     this.size = size;

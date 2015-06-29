@@ -99,10 +99,18 @@ Graph.prototype = {
 			delnode.parent.removeChild(delnode);
 	},
 
-	show: function(){
+	getLeaves: function(){
+		var leaves = [];
 		for(var i in this.nodes)
 			if(this.nodes[i].isLeaf)
-				console.log(this.nodes[i] + '');
+				leaves.push(this.nodes[i]);
+		return leaves;
+	},
+
+	showLeaves: function(){
+		var leaves = this.getLeaves();
+		for(var i in leaves)
+			console.log(leaves[i] + '');
 	},
 
 	export: function(){

@@ -10,6 +10,7 @@ var Field = function(rows, cols){
             row.push(Cell.UNTOUCHED);
         this.cells.push(row);
     }
+    this.myShipPositions = [];
 };
 
 Field.prototype = {
@@ -31,10 +32,11 @@ Field.prototype = {
         for(var r = 0; r < this.rows; r ++)
             for(var c = 0; c < this.cols; c ++)
                 copy.cells[r][c] = this.cells[r][c];
+        copy.myShipPositions = this.myShipPositions.slice();
         return copy;
     },
 
-    isIdenticalTo: function(otherfield){
+    isIdenticalTo: function(otherfield){ // for twin-sibling identification
         for(var r = 0; r < this.rows; r ++)
             for(var c = 0; c < this.cols; c ++)
                 if(this.cells[r][c] != otherfield.cells[r][c])
@@ -51,8 +53,9 @@ Field.prototype = {
             var isHoriz = shipPos.orientation ? 1 : 0;
             var isVert = shipPos.orientation ? 0 : 1;
             for(var i = 0; i < shipPos.size; i ++)
-                this.cells[shipPos.row + isVert * i][shipPos.col + isHoriz * i] = Cell.POSSIBLESHIP;
+                this.cells[shipPos.headrow + isVert * i][shipPos.headcol + isHoriz * i] = Cell.POSSIBLESHIP;
         }
+        this.myShipPositions.push(shipPos);
     },
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -156,7 +159,7 @@ Field.prototype = {
     allWavesSatisfied: function(wavesPos){
         var allWavesSatisfied = true;
         for(var i in wavesPos)
-            if(!this.hasRequiredCelltypeAroundIt(wavesPos[i], [Cell.POSSIBLESHIP, Cell.DESTROYED]))
+            if(!this.hasOneOfTheseCellsAroundIt(wavesPos[i], [Cell.POSSIBLESHIP, Cell.HIT, Cell.DESTROYED])) //POSSIBLEDEBUG added HIT later, should be there right??
                 allWavesSatisfied = false;
         return allWavesSatisfied;
     },
@@ -164,111 +167,139 @@ Field.prototype = {
     allRadiationsSatisfied: function(radiationsPos){
         var allRadiationsSatisfied = true;
         for(var i in radiationsPos)
-            if(!this.hasRequiredCelltypeAroundIt(radiationsPos[i], [Cell.POSSIBLEMINE, Cell.MINE]))
+            if(!this.hasOneOfTheseCellsAroundIt(radiationsPos[i], [Cell.POSSIBLEMINE, Cell.MINE]))
                 allRadiationsSatisfied = false;
         return allRadiationsSatisfied;
     },
 
-    hasRequiredCelltypeAroundIt: function(pos, requiredCelltype){ // use getNeighbourhood to reduce code? or is that a waste of Pos-Objects
-        var hasIt = false;
+    hasOneOfTheseCellsAroundIt: function(pos, cells){ // use getNeighbourhood to reduce code? or is that a waste of Pos-Objects
         for(var c = pos.col - 1; c < pos.col + 2; c ++)
             for(var r = pos.row - 1; r < pos.row + 2; r ++)
                 if(this.validCoords(r, c) && !(r == pos.row && c == pos.col))
-                    if(requiredCelltype.indexOf(this.cells[r][c]) != -1)
-                        hasIt = true;
-        return hasIt;
-    },
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-// APPROACH 1
-
-/*
-    isValid: function(allShips){
-        var dShips = this.getDestroyedShips();
-        for(var i in dShips)
-            if(dShips[i].size == 1)
-                return false;
-        // ... TODO
-        return true;
-    },
-*/
-
-// APPROACH 2
-
-    getNeighbourhood: function(pos){
-        var directions = [];
-        for(var r = pos.row - 1; r < pos.row + 2; r ++)
-            for(var c = pos.col - 1; c < pos.col + 2; c ++)
-                if(this.validCoords(r, c) && !(c == pos.col && r == pos.row))
-                    directions.push(this.cells[r][c]);
-                else
-                    directions.push(null);
-        return new Neighbourhood(pos, directions);
-    },
-
-/*
-    getNeighbourhood: function(pos){
-        var directions = [];
-        for(var r = pos.row - 1; r < pos.row + 2; r ++)
-            for(var c = pos.col - 1; c < pos.col + 2; c ++)
-                if(this.validCoords(r, c) && !(c == pos.col && r == pos.row))
-                    directions.push(this.cells[r][c]);
-        return directions;
-    },*/
-
-    getPossibleFireResults: function(pos, undestroyedShips){
-        var possibleFireResults = [Cell.FIRED, Cell.WAVE, Cell.HIT, Cell.DESTROYED, Cell.RADIATION, Cell.MINE, Cell.WAVE_RADIATION];
-
-        var neighbourhood = this.getNeighbourhood(pos);
-        console.log(neighbourhood + '');
-
-        console.log('can it be fired: ' + neighbourhood.canItBeFIRED());
-
-        console.log('can it be hit: ' + neighbourhood.canItBeHIT());
-
-
-
-
-        return possibleFireResults;
-    },
-
-
-    canItBeHIT: function(pos){
-
-
-    },
-
-/*
-    hasNeighbourhoodTouchingHits: function(neighbourhood){ // investigate all different 1&1 pairs. TODO better way?
-        for(var i = 0; i < neighbourhood.length - 1; i ++)
-            for(var j = i + 1; j < neighbourhood.length; j ++){
-                var pos1 = neighbourhood[i];
-                var pos2 = neighbourhood[j];
-                var cell1 = this.cells[pos1.row][pos1.col];
-                var cell2 = this.cells[pos2.row][pos2.col];
-                if(cell1 == Cell.HIT && cell2 == Cell.HIT)
-                    if((pos1.col == pos2.col && Math.abs(pos1.row - pos2.row) == 1) || (pos1.row == pos2.row && Math.abs(pos1.col - pos2.col) == 1))
-                        return true;
-            }
+                    if(cells.indexOf(this.cells[r][c]) != -1)
+                        return true; //POSSIBLEDEBUG changed here from interim boolean, that shouldn't affect anything?
         return false;
     },
-*/
-    removeFromPossibleFireResults: function(possibleFireResults, removeArr){
-        for(var i in removeArr){
-            var remove = removeArr[i];
-            var index = possibleFireResults.indexOf(remove);
-            if(index != -1)
-                possibleFireResults.splice(index, 1);
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - for generating scenarios
+
+    wouldBeDestroyingShot: function(pos, inputfield){ // TODO solve this mathematicall instead of loop-empirically?? :)
+        for(var i in this.myShipPositions){
+            var returnShipPos = null;
+
+            var shipPos = this.myShipPositions[i];
+            //console.log(shipPos.orientation, shipPos.size, shipPos.headrow, shipPos.headcol);
+            if(shipPos.orientation){
+                if(shipPos.headrow == pos.row){
+                    var hitcounter = 0;
+                    for(var c = shipPos.headcol; c < shipPos.headcol + shipPos.size; c ++){
+                        if(inputfield.cells[pos.row][c] == Cell.HIT)
+                            hitcounter ++;
+                        if(c == pos.col)
+                            returnShipPos = shipPos;
+                    }
+                }
+            } else {
+                if(shipPos.headcol == pos.col){
+                    var hitcounter = 0;
+                    for(var r = shipPos.headrow; r < shipPos.headrow + shipPos.size; r ++){
+                        if(inputfield.cells[r][pos.col] == Cell.HIT)
+                            hitcounter ++;
+                        if(r == pos.row)
+                            returnShipPos = shipPos;
+                    }
+
+                }
+            }
+
+            if(returnShipPos != null)
+                return returnShipPos.size - hitcounter == 1; // then the next hit would destroy the ship
         }
     },
 
+    whatCouldBeHere: function(pos, inputfield){
+
+        var mypos = this.cells[pos.row][pos.col];
+        switch(mypos){
+            case Cell.POSSIBLESHIP:
+                if(this.wouldBeDestroyingShot(pos, inputfield))
+                    return [Cell.DESTROYED];
+                else
+                    return [Cell.HIT];
+            case Cell.POSSIBLEMINE:
+                return [Cell.MINE];
+            default:
+                var couldbes = [];
+
+                if(this.hasOneOfTheseCellsAroundIt(pos, [Cell.HIT, Cell.DESTROYED, Cell.POSSIBLESHIP]))
+                    couldbes.push(Cell.WAVE);
+
+                if(this.hasOneOfTheseCellsAroundIt(pos, [Cell.MINE, Cell.POSSIBLEMINE]))
+                    couldbes.push(Cell.RADIATION);
+
+                if(couldbes.length == 2)
+                    couldbes.push(Cell.WAVE_RADIATION);
+
+                if(couldbes.length == 0)
+                    couldbes.push(Cell.FIRED);
+
+                return couldbes;
+        }
+    },
+
+    /*
+    wouldThisWorkHere: function(pos, hypoFireResult){
+        var mypos = this.cells[pos.row][pos.col];
+
+        if(hypoFireResult != Cell.HIT && hypoFireResult != Cell.DESTROYED && hypoFireResult != Cell.MINE)
+            if(mypos != Cell.UNTOUCHED)
+                return false;
+
+        switch(hypoFireResult){
+            case Cell.FIRED:
+                if(this.hasOneOfTheseCellsAroundIt(pos, [Cell.POSSIBLEMINE, Cell.MINE, Cell.POSSIBLESHIP, Cell.HIT, Cell.DESTROYED]))
+                    return false;
+                break;
+            case Cell.WAVE:
+                if(!this.hasOneOfTheseCellsAroundIt(pos, [Cell.POSSIBLESHIP, Cell.HIT, Cell.DESTROYED]))
+                    return false;
+                break;
+            case Cell.HIT: //same as DESTROYED
+            case Cell.DESTROYED:
+                if(mypos != Cell.POSSIBLESHIP)
+                    return false;
+                break;
+            case Cell.RADIATION:
+                if(!this.hasOneOfTheseCellsAroundIt(pos, [Cell.POSSIBLEMINE, Cell.MINE]))
+                    return false;
+                break;
+            case Cell.MINE:
+                if(mypos != Cell.POSSIBLEMINE)
+                    return false;
+                break;
+            case Cell.WAVE_RADIATION:
+                if(!this.hasOneOfTheseCellsAroundIt(pos, [Cell.POSSIBLEMINE, Cell.MINE, Cell.POSSIBLESHIP, Cell.HIT, Cell.DESTROYED]))
+                    return false;
+                break;
+        }
+        return true;
+    },*/
+
 /*
-    couldThisHitDestroyAship: function(pos){ //TODO
-        var hitstreaklength = 1;
-        // north
-        //while()
+    getCellsAroundCell: function(pos){
+        var frame = [];
+        for(var c = pos.col - 1; c < pos.col + 2; c ++)
+            for(var r = pos.row - 1; r < pos.row + 2; r ++)
+                if(this.validCoords(r, c) && !(r == pos.row && c == pos.col))
+                    frame.push(this.cells[r][c]);
+        return frame;
+    },
+
+    contains: function(cells, checkcells){
+        for(var i in cells)
+            if(checkcells.indexOf(cells[i]) != -1)
+                return true;
+        return false;
     },
 */
 

@@ -21,35 +21,66 @@ Reasoner.prototype = {
 		for(var i = 0; i < inputfield.getMinesCount(); i ++)
 			this.ships.splice(this.ships.indexOf(1), 1);
 
-		this.undestroyedShips = this.ships.slice(); // makes a copy
+		//this.undestroyedShips = this.ships.slice(); // makes a copy
 
 		this.graph = new Graph(inputfield, this.ships);
-		//this.graph.generate();
+		this.graph.generate();
 	},
 
 	generateScenarios: function(){
 		var shootableCells = this.inputfield.getShootablePositions();
 
-		//console.log(this.undestroyedShips);
+		var firePos = new Pos(2, 0);
+		console.log('\n\nfirePos: ' + firePos);
 
-		var firePos = new Pos(1, 1);
-		console.log('firePos: ' + firePos);
+		var possibleFireResults = this.getPossibleFireResults(firePos);
 
+		console.log('\n\npossibleFireResults:');
+		console.log(CellArrToStr(possibleFireResults));
+	},
 
-		var possibleFireResults = this.inputfield.getPossibleFireResults(firePos, this.undestroyedShips);
+	getPossibleFireResults: function(pos){
+		//var allPossibleFireResults = [Cell.FIRED, Cell.WAVE, Cell.HIT, Cell.DESTROYED, Cell.RADIATION, Cell.MINE, Cell.WAVE_RADIATION];
 
-		//console.log('possibleFireResults:');
-		//console.log(CellArrToStr(possibleFireResults));
+		var leaves = this.graph.getLeaves();
 
+		var possibleFireResults = [];
+		for(var i in leaves){
+			var leaf = leaves[i];
+			console.log('' + leaf);
+			var newPossibleFireResults = leaf.field.whatCouldBeHere(pos, this.inputfield);
+			console.log(CellArrToStr(newPossibleFireResults));
 
+			possibleFireResults = possibleFireResults.concat(newPossibleFireResults);
+		}
 
-		//APPROACH 1: neighbourhood, def. diff. possible patterns > expand to field if needed
-		//APPROACH 2: isValid whole field upon change
-		//APPROACH 3: place hypoFireResult and check if it is feeling ok there :)
-		//APPROACH 4: ask leaves if they would accomodate that fire-result, if none -> no option
+		/*for(var i in allPossibleFireResults){
+			var fireResult = allPossibleFireResults[i];
+			if(this.worksWithAtLeastOneLeaf(leaves, pos, fireResult))
+				possibleFireResults.push(fireResult);
+		}*/
 
+		return removeDuplicates(possibleFireResults);
+	},
 
+/*
+	worksWithAtLeastOneLeaf: function(leaves, pos, hypoFireResult){
+		for(var i in leaves){
+			var leaf = leaves[i];
+			if(leaf.field.wouldThisWorkHere(pos, hypoFireResult)){
+				//console.log('' + leaf);
+				return true;
+			}
+		}
+		return false;
+	},
 
+	removeFromPossibleFireResults: function(possibleFireResults, removeArr){
+		for(var i in removeArr){
+			var index = possibleFireResults.indexOf(removeArr[i]);
+			if(index != -1)
+				possibleFireResults.splice(index, 1);
+		}
 	}
-
+*/
 };
