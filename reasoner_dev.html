@@ -20,7 +20,7 @@
         <script type="text/javascript" src="js/model/player/bots/reasoner/Graph.js"></script>
         <script type="text/javascript" src="js/model/player/bots/reasoner/Node.js"></script>
         <script type="text/javascript" src="js/model/player/bots/reasoner/GraphmlExporter.js"></script>
-
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Neighbourhood.js"></script>
         <script type="text/javascript" src="js/model/player/bots/reasoner/temp/Field.js"></script>
 
         <script>
@@ -53,9 +53,12 @@
 
                 var shipTypes = [new ShipType(3, 'orange', 1), new ShipType(2, 'orange', 1)];
                 var testfield = new Field(3, 4);
-                testfield.cells[0][0] = Cell.WAVE;
+                //testfield.cells[0][0] = Cell.WAVE;
+                //testfield.cells[0][1] = Cell.HIT;
+
                 testfield.cells[0][1] = Cell.HIT;
-                testfield.cells[0][2] = Cell.HIT;
+                testfield.cells[2][1] = Cell.HIT;
+
 
                 //testfield.cells[0][3] = Cell.HIT;
 
@@ -63,12 +66,14 @@
                 reasoner.loadField(testfield);
 
 
-                console.log('inputfield:\n' + testfield + '\nships: ' + reasoner.ships + '\n\npossible setups:\n\n');
-                reasoner.graph.show('<br>');
-
+                console.log('inputfield:\n' + testfield + '\nships: ' + reasoner.ships);// + '\n\npossible setups:\n\n');
+                reasoner.graph.show();
 
                 reasoner.generateScenarios();
+
                 //reasoner.graph.export();
+
+
             }
 
         </script>

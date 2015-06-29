@@ -23,7 +23,6 @@ function download(filename, text) {
     }
 };
 
-
 // - - - - - - - - TEMP: integrates later with existing code - - - - - - - -
 
 
@@ -56,6 +55,10 @@ var Cell = {
     POSSIBLESHIP: 9
 };
 
+function CellToCharWrapped(cell){
+    return '[' + CellToChar(cell) + ']';
+};
+
 function CellToChar(cell){
     switch(cell){
         case Cell.UNTOUCHED:
@@ -79,10 +82,11 @@ function CellToChar(cell){
         case Cell.POSSIBLESHIP:
             return '-';
         default:
-            return 'err';
+            return '0';
     }
 };
 
+/*
 function CellArrToStr(cellArr){
     var str = '';
     for(var i in cellArr)
@@ -116,6 +120,7 @@ function CellToString(cell){
             return 'ERROR';
     }
 };
+*/
 
 var ShipType = function(size, color, quantity){
     this.size = size;

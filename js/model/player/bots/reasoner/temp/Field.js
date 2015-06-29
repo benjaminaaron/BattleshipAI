@@ -197,65 +197,50 @@ Field.prototype = {
 
 // APPROACH 2
 
+    getNeighbourhood: function(pos){
+        var directions = [];
+        for(var r = pos.row - 1; r < pos.row + 2; r ++)
+            for(var c = pos.col - 1; c < pos.col + 2; c ++)
+                if(this.validCoords(r, c) && !(c == pos.col && r == pos.row))
+                    directions.push(this.cells[r][c]);
+                else
+                    directions.push(null);
+        return new Neighbourhood(pos, directions);
+    },
+
 /*
     getNeighbourhood: function(pos){
-        var neighbourhood = [];
-        for(var c = pos.col - 1; c < pos.col + 2; c ++)
-            for(var r = pos.row - 1; r < pos.row + 2; r ++)
+        var directions = [];
+        for(var r = pos.row - 1; r < pos.row + 2; r ++)
+            for(var c = pos.col - 1; c < pos.col + 2; c ++)
                 if(this.validCoords(r, c) && !(c == pos.col && r == pos.row))
-                    neighbourhood.push(new Pos(r, c));
-        return neighbourhood;
-    },
+                    directions.push(this.cells[r][c]);
+        return directions;
+    },*/
 
     getPossibleFireResults: function(pos, undestroyedShips){
         var possibleFireResults = [Cell.FIRED, Cell.WAVE, Cell.HIT, Cell.DESTROYED, Cell.RADIATION, Cell.MINE, Cell.WAVE_RADIATION];
 
         var neighbourhood = this.getNeighbourhood(pos);
+        console.log(neighbourhood + '');
 
-        console.log('neighbourhood:');
-        var neighbourhoodCells = [];
-        for(var i in neighbourhood)
-            neighbourhoodCells.push(this.cells[neighbourhood[i].row][neighbourhood[i].col]);
-        console.log(CellArrToStr(neighbourhoodCells));
+        console.log('can it be fired: ' + neighbourhood.canItBeFIRED());
 
-        var hasTouchingHits = this.hasNeighbourhoodTouchingHits(neighbourhood);
-        console.log('hasTouchingHits: ' + hasTouchingHits);
-
-        if(hasTouchingHits)
-            this.removeFromPossibleFireResults(possibleFireResults, [Cell.HIT, Cell.DESTROYED]);
+        console.log('can it be hit: ' + neighbourhood.canItBeHIT());
 
 
-        for(var i in neighbourhood){
-            var cell = this.cells[neighbourhood[i].row][neighbourhood[i].col];
 
-            switch(cell){
-                case Cell.WAVE:
-                    this.removeFromPossibleFireResults(possibleFireResults, [Cell.MINE]);
-                    break;
-                case Cell.RADIATION:
-                    this.removeFromPossibleFireResults(possibleFireResults, [Cell.HIT, Cell.DESTROYED]);
-                    break;
-                case Cell.FIRED:
-                    this.removeFromPossibleFireResults(possibleFireResults, [Cell.MINE, Cell.HIT, Cell.DESTROYED]);
-                    break;
-                case Cell.DESTROYED:
-                    this.removeFromPossibleFireResults(possibleFireResults, [Cell.FIRED, Cell.HIT, Cell.DESTROYED, Cell.MINE]);
-                    break;
-                case Cell.HIT:
-                    this.removeFromPossibleFireResults(possibleFireResults, [Cell.FIRED, Cell.MINE]);
 
-                    if(!hasTouchingHits)
-                        if(this.couldThisHitDestroyAship(pos, undestroyedShips))
-                            console.log(); // TODO
-
-                    break;
-                default:
-                    break;
-            }
-        }
         return possibleFireResults;
     },
 
+
+    canItBeHIT: function(pos){
+
+
+    },
+
+/*
     hasNeighbourhoodTouchingHits: function(neighbourhood){ // investigate all different 1&1 pairs. TODO better way?
         for(var i = 0; i < neighbourhood.length - 1; i ++)
             for(var j = i + 1; j < neighbourhood.length; j ++){
@@ -269,7 +254,7 @@ Field.prototype = {
             }
         return false;
     },
-
+*/
     removeFromPossibleFireResults: function(possibleFireResults, removeArr){
         for(var i in removeArr){
             var remove = removeArr[i];
@@ -279,6 +264,7 @@ Field.prototype = {
         }
     },
 
+/*
     couldThisHitDestroyAship: function(pos){ //TODO
         var hitstreaklength = 1;
         // north

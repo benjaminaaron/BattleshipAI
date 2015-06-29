@@ -24,31 +24,32 @@ Reasoner.prototype = {
 		this.undestroyedShips = this.ships.slice(); // makes a copy
 
 		this.graph = new Graph(inputfield, this.ships);
-		this.graph.generate();
+		//this.graph.generate();
 	},
 
 	generateScenarios: function(){
 		var shootableCells = this.inputfield.getShootablePositions();
 
 		//console.log(this.undestroyedShips);
-		var firePos = shootableCells[0];
-		console.log('firePos:');
-		console.log(firePos);
 
-// APPROACH 2
-/*
-		var possibleFireResults = [Cell.FIRED, Cell.WAVE, Cell.HIT, Cell.DESTROYED, Cell.RADIATION, Cell.MINE, Cell.WAVE_RADIATION];
-		var testfield = this.inputfield.copy();
-		testfield.cells[firePos.row][firePos.col] = Cell.HIT;
-		console.log(testfield.isValid(this.allShips));
-*/
+		var firePos = new Pos(1, 1);
+		console.log('firePos: ' + firePos);
 
-// APPROACH 1
-/*
+
 		var possibleFireResults = this.inputfield.getPossibleFireResults(firePos, this.undestroyedShips);
-		console.log('possibleFireResults:');
-		console.log(CellArrToStr(possibleFireResults));
-*/
+
+		//console.log('possibleFireResults:');
+		//console.log(CellArrToStr(possibleFireResults));
+
+
+
+		//APPROACH 1: neighbourhood, def. diff. possible patterns > expand to field if needed
+		//APPROACH 2: isValid whole field upon change
+		//APPROACH 3: place hypoFireResult and check if it is feeling ok there :)
+		//APPROACH 4: ask leaves if they would accomodate that fire-result, if none -> no option
+
+
+
 	}
 
 };
