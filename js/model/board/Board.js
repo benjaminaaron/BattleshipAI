@@ -26,7 +26,7 @@ var Board = function(id, player, shipTypes, rows, cols){
             var element;
             if(shipTypes[shipType].size > 1) {
                 element = new Ship(this.id + '-' + this.elements.length, shipTypes[shipType].size, shipTypes[shipType].color, true);
-                this.ships.push(ship);
+                this.ships.push(element);
             }
             else
                 element = new Mine(this.id + '-mine');
@@ -130,5 +130,21 @@ Board.prototype = {
     },
     calculateAllPossibleSetups: function(){
         // TODO
+    },
+
+    /**
+     * Checks if all ships on this board have been destroyed.
+     * @returns {boolean} True, if every ship has been sunk - false otherwise.
+     */
+    areAllShipsDestroyed: function() {
+
+        var result = true;
+
+        for(var shipNo = 0; shipNo < this.ships.length; shipNo++) {
+            var currentShip = this.ships[shipNo];
+            result &= currentShip.isDestroyed();
+        }
+
+        return result;
     }
 };

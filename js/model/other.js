@@ -34,7 +34,6 @@ var MouseEvent = {
 
 var CellStatusMsg = function(status) {
     this.status = status;
-    console.log("Fired cell's status is: " + status);
     this.destroyedShipCode; // if there is one
     this.allShipsDestroyed = false;
 };

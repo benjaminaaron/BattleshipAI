@@ -48,9 +48,10 @@ AbstractPlayer.prototype = {
     },
 
     fire: function(row, col){
+
         var resultMsg = game.fire(this, row, col);
         var result = resultMsg.status;
-        console.log(this.name + ' CellStatus after shot:');
+
         switch(result){
             case CellStatus.FIRED:
                 console.log('no hit');
@@ -63,7 +64,7 @@ AbstractPlayer.prototype = {
                 this.fieldMemory.setCellStatusesAroundShipToWave(resultMsg.destroyedShipCode);
                 if(resultMsg.allShipsDestroyed){
                     console.log('all elements destroyed');
-                    game.iWon(this, this.fieldMemory.countFiredCells() + 1); 
+                    game.iWon(this, this.fieldMemory.countFiredCells() + 1);
                 }
                 break;
         }

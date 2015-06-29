@@ -81,7 +81,6 @@ Game.prototype = {
 
     setCurrentPlayer: function(player){
         this.currentPlayer = player;
-        //console.log(player);
     },
     
     /**
@@ -105,6 +104,14 @@ Game.prototype = {
         this.updatedBoard(UpdateReport.ONESETUPCOMPLETED);
     },
 
+    /**
+     * Gets called from Player object (defined in AbstractPlayer, different execution
+     * depending on Player type - human or bot).
+     * @param caller Function needs a context to know which player calls it.
+     * @param row
+     * @param col
+     * @returns {*} The outcome of the player's shot (like "hit", "mine", "no hit" etc.)
+     */
     fire: function(caller, row, col){
         var targetBoard = caller.opponent.board;
         var fireResult = targetBoard.fire(row, col);
@@ -117,15 +124,26 @@ Game.prototype = {
         return fireResult;
     },
 
+    /**
+     * Checks at the end of every turn if the game is over. If not,
+     * currentPlayer is switched and the other player's turn starts.
+     * @param caller
+     */
     turnCompleted: function(caller){
         if(this.gameRunning){
-            if(caller.ID == 0){
-                this.setCurrentPlayer(this.player1);
-                this.currentPlayer.yourTurn();
-            } else {
-                this.setCurrentPlayer(this.player0);
-                this.currentPlayer.yourTurn(); 
-            }        
+
+            if(this.currentPlayer.opponent.board.areAllShipsDestroyed())
+                this.iWon(this.currentPlayer, 100);
+
+            var player;
+
+            if(caller.ID == 0)
+                player = this.player1;
+            else
+                player = this.player0;
+
+            this.setCurrentPlayer(player);
+            this.currentPlayer.yourTurn();
         }
         this.updatedBoard(UpdateReport.ONETURNCOMPLETED);
     },

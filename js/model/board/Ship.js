@@ -17,6 +17,10 @@ Ship.prototype = {
         return this.isMine;
     },
 
+    isDestroyed: function() {
+        return this.destroyed;
+    },
+
     fire: function(){
         var msg;
 
