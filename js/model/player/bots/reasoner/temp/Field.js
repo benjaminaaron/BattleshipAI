@@ -183,7 +183,7 @@ Field.prototype = {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - for generating scenarios
 
-    wouldBeDestroyingShot: function(pos, inputfield){ // TODO solve this mathematicall instead of loop-empirically?? :)
+    wouldBeDestroyingShot: function(pos, inputfield){ // TODO solve this mathematically instead of loop-empirically?? :)
         for(var i in this.myShipPositions){
             var returnShipPos = null;
 
@@ -214,7 +214,7 @@ Field.prototype = {
 
             if(returnShipPos != null)
                 return returnShipPos.size - hitcounter == 1; // then the next hit would destroy the ship
-        }
+        }   // else case? should never happen
     },
 
     whatCouldBeHere: function(pos, inputfield){
