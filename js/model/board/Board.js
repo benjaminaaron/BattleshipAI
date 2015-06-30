@@ -124,8 +124,6 @@ Board.prototype = {
         if(this.destroyedShips == this.elements.length)
             fireResult.allShipsDestroyed = true;
 
-        console.log("CellStatus returned by Board.fire(): " + fireResult.status);
-
         return fireResult;
     },
     calculateAllPossibleSetups: function(){

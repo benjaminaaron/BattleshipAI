@@ -116,11 +116,6 @@ Game.prototype = {
         var targetBoard = caller.opponent.board;
         var fireResult = targetBoard.fire(row, col);
 
-        if (fireResult.status == CellStatus.MINE) {
-            caller.board.fire(row, col);
-            console.log("Hit Mine, cell " + row + "/" + col + " of own field was shot!");
-        }
-
         return fireResult;
     },
 

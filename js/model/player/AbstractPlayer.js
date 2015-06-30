@@ -67,6 +67,10 @@ AbstractPlayer.prototype = {
                     game.iWon(this, this.fieldMemory.countFiredCells() + 1);
                 }
                 break;
+            case CellStatus.MINE:
+                console.log("Hit Mine, cell " + row + "/" + col + " of own field was shot!");
+                this.board.fire(row, col);
+                break;
         }
         this.fieldMemory.setCellStatus(row, col, result);
         this.finishedTurn();
