@@ -48,7 +48,7 @@ Field.prototype = {
 
     place: function(shipPos){
         if(shipPos.size == 1) // mine
-            this.cells[shipPos.row][shipPos.col] = Cell.POSSIBLEMINE;
+            this.cells[shipPos.headrow][shipPos.headcol] = Cell.POSSIBLEMINE;
         else{
             var isHoriz = shipPos.orientation ? 1 : 0;
             var isVert = shipPos.orientation ? 0 : 1;
@@ -248,6 +248,21 @@ Field.prototype = {
     },
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    /**
+    * When only 1 leaf was generated things are clear, just hand over a list of shooting targets then
+    */
+    getRemainingTargetPos: function(inputfield){
+        var targets = [];
+        for(var r = 0; r < this.rows; r ++)
+            for(var c = 0; c < this.cols; c ++)
+                if(this.cells[r][c] == Cell.POSSIBLESHIP && inputfield.cells[r][c] == Cell.UNTOUCHED)
+                    targets.push(new Pos(r, c));
+        return targets;
+    },
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
     getWavesPos: function(){
         return this.getObjPositions(Cell.WAVE).concat(this.getObjPositions(Cell.WAVE_RADIATION));

@@ -50,23 +50,34 @@
                 testfield.cells[3][4] = Cell.WAVE;
                 */
 
-                var shipTypes = [new ShipType(3, 'orange', 1), new ShipType(2, 'orange', 1)];//, new ShipType(1, 'black', 1)];
-                var testfield = new Field(3, 4);
+                var shipTypes = [new ShipType(3, 'orange', 1), new ShipType(2, 'orange', 1), new ShipType(1, 'black', 1)];
+                var testfield = new Field(4, 5);
 
 
                 testfield.cells[0][0] = Cell.HIT;
+                testfield.cells[1][0] = Cell.HIT;
+
                 testfield.cells[2][3] = Cell.HIT;
                 testfield.cells[1][2] = Cell.WAVE;
 
+                testfield.cells[0][4] = Cell.MINE;
+
+                testfield.cells[2][2] = Cell.WAVE;
+                testfield.cells[2][4] = Cell.WAVE;
 
 
                 var reasoner = new Reasoner(shipTypes);
-                reasoner.loadField(testfield);
+                var leaves = reasoner.loadField(testfield);
+
+                console.log('leaves in graph: ' + leaves);
 
                 console.log('inputfield:\n' + testfield + '\nships: ' + reasoner.allShips);// + '\n\npossible setups:\n\n');
                 reasoner.graph.showLeaves();
 
-                reasoner.generateScenarios();
+                if(leaves == 1) //TODO leaves  == 0 error
+                    console.log(reasoner.graph.getLeaves()[0].field.getRemainingTargetPos(testfield));
+                else
+                    reasoner.generateScenarios();
 
                 //reasoner.graph.export();
             }

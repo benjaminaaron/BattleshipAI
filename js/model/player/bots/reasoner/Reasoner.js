@@ -25,21 +25,38 @@ Reasoner.prototype = {
 
 		this.graph = new Graph(inputfield, this.ships);
 		this.graph.generate();
+
+		return this.graph.getLeavesCount();
 	},
 
 	generateScenarios: function(){
-		var shootableCells = this.inputfield.getShootablePositions();
+		var shootablePositions = this.inputfield.getShootablePositions();
 
-		var firePos = new Pos(2, 0);
-		console.log('\n\nfirePos: ' + firePos);
+		var equallyBestFirePos = [];
+		var maxPruningAvg = -1;
 
-		var pruningAverage = this.getPruningAverage(firePos);
+		for(var i in shootablePositions){
+			var firePos = shootablePositions[i];
+			var pruningAvg = this.getPruningValue(firePos);
+			console.log('\n\pruningValue for pos ' + firePos + ': ' + pruningAvg);
 
-		console.log('\n\pruningAverage:');
-		console.log(pruningAverage);
+			if(pruningAvg > maxPruningAvg){
+				maxPruningAvg = pruningAvg;
+				equallyBestFirePos = [];
+			}
+			if(pruningAvg == maxPruningAvg)
+				equallyBestFirePos.push(firePos);
+		}
+
+		var chosenFirePos = equallyBestFirePos[Math.floor(Math.random() * equallyBestFirePos.length)];
+
+		console.log(equallyBestFirePos);
+		console.log(chosenFirePos);
+
+		//var firePos = new Pos(2, 2);
 	},
 
-	getPruningAverage: function(pos){
+	getPruningValue: function(pos){
 		//var allPossibleFireResults = [Cell.FIRED, Cell.WAVE, Cell.HIT, Cell.DESTROYED, Cell.RADIATION, Cell.MINE, Cell.WAVE_RADIATION];
 
 		var leaves = this.graph.getLeaves();
@@ -47,9 +64,9 @@ Reasoner.prototype = {
 		var possibleFireResults = [];
 		for(var i in leaves){
 			var leaf = leaves[i];
-			console.log('' + leaf);
+			//console.log('' + leaf);
 			var newPossibleFireResults = leaf.field.whatCouldBeHere(pos, this.inputfield);
-			console.log(CellArrToStr(newPossibleFireResults));
+			//console.log(CellArrToStr(newPossibleFireResults));
 			possibleFireResults = possibleFireResults.concat(newPossibleFireResults);
 		}
 
@@ -81,20 +98,36 @@ Reasoner.prototype = {
 			}
 		}
 
-
-
 		var sum = 0;
 		var nonZeros = 0;
+		var maxPruning = -1;
 
 		for(var i in counters)
 			if(counters[i] != 0){
-				sum += leaves.length - counters[i];
+				var pruningVal = leaves.length - counters[i];
+				if(pruningVal > maxPruning)
+					maxPruning = pruningVal;
+				sum += pruningVal;
 				nonZeros ++;
 			}
-
 		var pruningAverage = sum / nonZeros;
 
-		var str = leaves.length + ' leaves, possibleFireResults: ' + CellArrToStr(possibleFireResults) + '\n';
+
+		var maxPruningFactor = pruningAverage / 10;
+		var hitBonusFactor = pruningAverage / 10;
+		var destroyedBonusFactor = pruningAverage / 5;
+		var mineFactor = - pruningAverage / 2;
+
+		var maxPruningBonus = maxPruning * maxPruningFactor;
+		var hitBonus = counters[2] * hitBonusFactor;
+		var destroyedBonus = counters[3] * destroyedBonusFactor;
+		var minePunishment = counters[5] * mineFactor;
+
+		var pruningValue = pruningAverage + maxPruningBonus + hitBonus + destroyedBonus + mineFactor;
+
+
+		/* TODO outsource to new utils-func for debugging*/
+		var str = 'fire pos ' + pos + ' at ' + leaves.length + ' leaves, possibleFireResults: ' + CellArrToStr(possibleFireResults) + '\n';
 		str += 'FIRED: ' + counters[0] + (counters[0] == 0 ? '' : ' -> ' + (leaves.length - counters[0])) + '\n';
 		str += 'WAVE: ' + counters[1] + (counters[1] == 0 ? '' : ' -> ' + (leaves.length - counters[1])) + '\n';
 		str += 'HIT: ' + counters[2] + (counters[2] == 0 ? '' : ' -> ' + (leaves.length - counters[2])) + '\n';
@@ -102,10 +135,11 @@ Reasoner.prototype = {
 		str += 'RADIATION: ' + counters[4] + (counters[4] == 0 ? '' : ' -> ' + (leaves.length - counters[4])) + '\n';
 		str += 'MINE: ' + counters[5] + (counters[5] == 0 ? '' : ' -> ' + (leaves.length - counters[5])) + '\n';
 		str += 'WAVE_RADIATION: ' + counters[6] + (counters[6] == 0 ? '' : ' -> ' + (leaves.length - counters[6])) + '\n';
-		str += 'sum: ' + sum + ' nonZeros: ' + nonZeros + ' -> pruningAverage: ' + pruningAverage;
-		console.log(str);
+		str += '>> pruningValue: ' + pruningValue;
+		//console.log(str);
 
-		return pruningAverage;
+
+		return pruningValue;
 	},
 
 };

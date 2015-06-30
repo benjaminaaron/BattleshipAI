@@ -38,6 +38,7 @@ Graph.prototype = {
 				for(var j in validpositions){
 					var validPos = validpositions[j];
 					var childField = parentField.copy();
+
 					childField.place(validPos);
 
 					var createChild = true;
@@ -105,6 +106,10 @@ Graph.prototype = {
 			if(this.nodes[i].isLeaf)
 				leaves.push(this.nodes[i]);
 		return leaves;
+	},
+
+	getLeavesCount: function(){
+		return this.getLeaves().length;
 	},
 
 	showLeaves: function(){
