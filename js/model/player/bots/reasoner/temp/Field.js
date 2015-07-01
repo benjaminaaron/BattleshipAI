@@ -223,27 +223,33 @@ Field.prototype = {
         switch(mypos){
             case Cell.POSSIBLESHIP:
                 if(this.wouldBeDestroyingShot(pos, inputfield))
-                    return [Cell.DESTROYED];
+                    return Cell.DESTROYED;
                 else
-                    return [Cell.HIT];
+                    return Cell.HIT;
             case Cell.POSSIBLEMINE:
-                return [Cell.MINE];
+                return Cell.MINE;
             default:
-                var couldbes = [];
+                var couldbe = null;
+                var WAVE_RADIATION_casechecker = 0;
 
-                if(this.hasOneOfTheseCellsAroundIt(pos, [Cell.HIT, Cell.DESTROYED, Cell.POSSIBLESHIP]))
-                    couldbes.push(Cell.WAVE);
+                if(this.hasOneOfTheseCellsAroundIt(pos, [Cell.HIT, Cell.DESTROYED, Cell.POSSIBLESHIP])){
+                    couldbe = Cell.WAVE;
+                    WAVE_RADIATION_casechecker ++;
+                }
 
-                if(this.hasOneOfTheseCellsAroundIt(pos, [Cell.MINE, Cell.POSSIBLEMINE]))
-                    couldbes.push(Cell.RADIATION);
+                if(this.hasOneOfTheseCellsAroundIt(pos, [Cell.MINE, Cell.POSSIBLEMINE])){
+                    couldbe = Cell.RADIATION;
+                    WAVE_RADIATION_casechecker ++;
+                }
 
-                if(couldbes.length == 2)
-                    couldbes.push(Cell.WAVE_RADIATION);
+                if(WAVE_RADIATION_casechecker == 2){
+                    couldbe = Cell.WAVE_RADIATION;
+                }
 
-                if(couldbes.length == 0)
-                    couldbes.push(Cell.FIRED);
+                if(couldbe == null)
+                    couldbe = Cell.FIRED;
 
-                return couldbes;
+                return couldbe;
         }
     },
 

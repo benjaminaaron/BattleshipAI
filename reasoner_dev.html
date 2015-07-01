@@ -16,6 +16,7 @@
         <!-- JS own -->
         <!-- reasoner -->
         <script type="text/javascript" src="js/model/player/bots/reasoner/util.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/ReasonerWeighting.js"></script>
         <script type="text/javascript" src="js/model/player/bots/reasoner/Reasoner.js"></script>
         <script type="text/javascript" src="js/model/player/bots/reasoner/Graph.js"></script>
         <script type="text/javascript" src="js/model/player/bots/reasoner/Node.js"></script>
@@ -51,20 +52,14 @@
                 */
 
                 var shipTypes = [new ShipType(3, 'orange', 1), new ShipType(2, 'orange', 1), new ShipType(1, 'black', 1)];
-                var testfield = new Field(4, 5);
+                var testfield = new Field(4, 4);
 
 
                 testfield.cells[0][0] = Cell.HIT;
                 testfield.cells[1][0] = Cell.HIT;
 
-                testfield.cells[2][3] = Cell.HIT;
-                testfield.cells[1][2] = Cell.WAVE;
-
-                testfield.cells[0][4] = Cell.MINE;
-
-                testfield.cells[2][2] = Cell.WAVE;
-                testfield.cells[2][4] = Cell.WAVE;
-
+                testfield.cells[2][2] = Cell.WAVE_RADIATION;
+                testfield.cells[0][2] = Cell.WAVE;
 
                 var reasoner = new Reasoner(shipTypes);
                 var leaves = reasoner.loadField(testfield);
@@ -74,8 +69,10 @@
                 console.log('inputfield:\n' + testfield + '\nships: ' + reasoner.allShips);// + '\n\npossible setups:\n\n');
                 reasoner.graph.showLeaves();
 
-                if(leaves == 1) //TODO leaves  == 0 error
+                if(leaves == 1){ //TODO leaves  == 0 error
+                    console.log('position of all ships is known, now shooting remaining ship-positions:');
                     console.log(reasoner.graph.getLeaves()[0].field.getRemainingTargetPos(testfield));
+                  }
                 else
                     reasoner.generateScenarios();
 
