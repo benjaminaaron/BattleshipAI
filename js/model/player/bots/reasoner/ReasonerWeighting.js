@@ -89,10 +89,57 @@ function getShotValueApproach1(pos, leaves, inputfield){
   return pruningValue;
 };
 
-function getShotValueApproach2(){
-
+function getShotValueApproach2(pos, leaves, inputfield){
+  var possibleFireResults = [];
+  for(var i in leaves){
+    var leaf = leaves[i];
+    //console.log('' + leaf);
+    var newPossibleFireResult = leaf.field.whatCouldBeHere(pos, inputfield);
+    //console.log(CellArrToStr(newPossibleFireResults));
+    possibleFireResults.push(newPossibleFireResult);
+  }
+                // Fired, Wave, Hit, Destroyed, Radiation, Mine, Wave+Radion
+  var counters = [0, 0, 0, 0, 0, 0, 0];
+  var weights = characters['masochist'];
+  for(var i in possibleFireResults){
+    switch(possibleFireResults[i]){
+      case Cell.FIRED:
+        counters[0] ++;
+        break;
+      case Cell.WAVE:
+        counters[1] ++;
+        break;
+      case Cell.HIT:
+        counters[2] ++;
+        break;
+      case Cell.DESTROYED:
+        counters[3] ++;
+        break;
+      case Cell.RADIATION:
+        counters[4] ++;
+        break;
+      case Cell.MINE:
+        counters[5] ++;
+        break;
+      case Cell.WAVE_RADIATION:
+        counters[6] ++;
+        break;
+    }
+  }
+  var shotValue = 0;
+  for(i=0;i<counters.length;i++){
+    shotValue+=counters[i]*weights[i];
+  }
+  return shotValue;
 };
 
 function getPruningValue(){
 
 };
+
+// Character-Sets for weightened ShotApproach(getShotValueApproach2)
+var characters = {
+  'bloody': [5/7,4/7,6/7,7/7,2/7,1/7,3/7],
+  'sadist': [5/7,4/7,7/7,6/7,2/7,1/7,3/7],
+  'masochist': [4/7,3/7,2/7,1/7,6/7,7/7,5/7]
+}

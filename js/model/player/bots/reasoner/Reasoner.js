@@ -38,7 +38,7 @@ Reasoner.prototype = {
 		for(var i in shootablePositions){
 			var firePos = shootablePositions[i];
 
-			var shotValue = getShotValueApproach1(firePos, this.graph.getLeaves(), this.inputfield);
+			var shotValue = getShotValueApproach2(firePos, this.graph.getLeaves(), this.inputfield);
 			console.log('\n\shotValue for pos ' + firePos + ': ' + shotValue);
 
 			if(shotValue > maxShotValue){
