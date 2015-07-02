@@ -12,15 +12,15 @@ var Reasoner = function(shipTypes, inputfield){ //extends AbstractStragety?
 
 	//console.log('inputfield:\n' + inputfield + '\nships: ' + this.allShips);// + '\n\npossible setups:\n\n');
 
-	var leaves = this.loadField(inputfield);
+	var leavesCount = this.loadField(inputfield);
 	//this.graph.showLeaves();
 
 	this.chosenFirePos = null;
 
-	if(leaves == 1)
+	if(leavesCount == 1)
 			this.getOneOfRemainingTargetsPos();
 	else
-			this.generateScenarios(leaves);
+			this.generateScenarios();
 };
 
 Reasoner.prototype = {
@@ -49,7 +49,7 @@ Reasoner.prototype = {
 		return this.graph.getLeavesCount();
 	},
 
-	generateScenarios: function(leaves){
+	generateScenarios: function(){
 		var shootablePositions = this.inputfield.getShootablePositions();
 
 		var equallyBestFirePos = [];
@@ -58,7 +58,7 @@ Reasoner.prototype = {
 		for(var i in shootablePositions){
 			var firePos = shootablePositions[i];
 
-			var shotValue = this.getShotValue(firePos, leaves);
+			var shotValue = this.getShotValue(firePos);
 			//console.log('\n\shotValue for pos ' + firePos + ': ' + shotValue);
 
 			if(shotValue > maxShotValue){
@@ -72,7 +72,9 @@ Reasoner.prototype = {
 		this.chosenFirePos = equallyBestFirePos[Math.floor(Math.random() * equallyBestFirePos.length)];
 	},
 
-	getShotValue: function(pos, leaves){
+	getShotValue: function(pos){
+		var leaves = this.graph.getLeaves();
+
 		var possibleFireResults = [];
 		for(var i in leaves){
 			var leaf = leaves[i];
@@ -135,7 +137,21 @@ Reasoner.prototype = {
 	        nonZeros ++;
 	    }
 
-	    return sum / nonZeros; // pruningAverage
+			var pruningAverage = sum / nonZeros;
+
+			/*
+    	var str = 'FIRED: ' + counters[0] + (counters[0] == 0 ? '' : ' -> ' + (leavesCount- counters[0])) + '\n';
+    	str += 'WAVE: ' + counters[1] + (counters[1] == 0 ? '' : ' -> ' + (leavesCount - counters[1])) + '\n';
+    	str += 'HIT: ' + counters[2] + (counters[2] == 0 ? '' : ' -> ' + (leavesCount- counters[2])) + '\n';
+    	str += 'DESTROYED: ' + counters[3] + (counters[3] == 0 ? '' : ' -> ' + (leavesCount - counters[3])) + '\n';
+    	str += 'RADIATION: ' + counters[4] + (counters[4] == 0 ? '' : ' -> ' + (leavesCount - counters[4])) + '\n';
+    	str += 'MINE: ' + counters[5] + (counters[5] == 0 ? '' : ' -> ' + (leavesCount- counters[5])) + '\n';
+    	str += 'WAVE_RADIATION: ' + counters[6] + (counters[6] == 0 ? '' : ' -> ' + (leavesCount - counters[6])) + '\n';
+    	str += '>> pruningAverage: ' + pruningAverage;
+    	console.log(str);
+			*/
+
+	  return pruningAverage;
 	}
 
 };
