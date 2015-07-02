@@ -1,4 +1,4 @@
-var Reasoner = function(shipTypes){ //extends AbstractStragety?
+var Reasoner = function(shipTypes, inputfield){ //extends AbstractStragety?
 	this.graph;
     this.ships = [];
     for(var i = 0; i < shipTypes.length; i++)
@@ -8,10 +8,27 @@ var Reasoner = function(shipTypes){ //extends AbstractStragety?
 	this.allShips = this.ships.slice();
 
 	// decide about the weight algo here
-	this.weightAlgo = getShotWeightedValue; //getPruningValue
+	this.weightAlgo = this.getShotWeightedValue; //this.getPruningValue
+
+	//console.log('inputfield:\n' + inputfield + '\nships: ' + this.allShips);// + '\n\npossible setups:\n\n');
+
+	var leaves = this.loadField(inputfield);
+	//this.graph.showLeaves();
+
+	this.chosenFirePos = null;
+
+	if(leaves == 1)
+			this.getOneOfRemainingTargetsPos();
+	else
+			this.generateScenarios(leaves);
 };
 
 Reasoner.prototype = {
+
+	getOneOfRemainingTargetsPos(){
+		var targetsPos = this.graph.getLeaves()[0].field.getRemainingTargetsPos(this.inputfield);
+		this.chosenFirePos = targetsPos[Math.floor(Math.random() * targetsPos.length)];
+	},
 
 	loadField: function(inputfield){
 		this.inputfield = inputfield;
@@ -32,7 +49,7 @@ Reasoner.prototype = {
 		return this.graph.getLeavesCount();
 	},
 
-	generateScenarios: function(){
+	generateScenarios: function(leaves){
 		var shootablePositions = this.inputfield.getShootablePositions();
 
 		var equallyBestFirePos = [];
@@ -41,8 +58,8 @@ Reasoner.prototype = {
 		for(var i in shootablePositions){
 			var firePos = shootablePositions[i];
 
-			var shotValue = this.getShotValue(firePos);
-			console.log('\n\shotValue for pos ' + firePos + ': ' + shotValue);
+			var shotValue = this.getShotValue(firePos, leaves);
+			//console.log('\n\shotValue for pos ' + firePos + ': ' + shotValue);
 
 			if(shotValue > maxShotValue){
 				maxShotValue = shotValue;
@@ -52,17 +69,10 @@ Reasoner.prototype = {
 				equallyBestFirePos.push(firePos);
 		}
 
-		var chosenFirePos = equallyBestFirePos[Math.floor(Math.random() * equallyBestFirePos.length)];
-
-		console.log(equallyBestFirePos);
-		console.log(chosenFirePos);
+		this.chosenFirePos = equallyBestFirePos[Math.floor(Math.random() * equallyBestFirePos.length)];
 	},
 
-	getShotValue: function(pos){
-		//var allPossibleFireResults = [Cell.FIRED, Cell.WAVE, Cell.HIT, Cell.DESTROYED, Cell.RADIATION, Cell.MINE, Cell.WAVE_RADIATION];
-
-		var leaves = this.graph.getLeaves();
-
+	getShotValue: function(pos, leaves){
 		var possibleFireResults = [];
 		for(var i in leaves){
 			var leaf = leaves[i];
@@ -103,4 +113,35 @@ Reasoner.prototype = {
 		return this.weightAlgo(counters, leaves.length);
 	},
 
+// two WEIGHTALGOs
+
+	getShotWeightedValue: function(counters, leavesCount){
+		var weights = characters['bloody'];
+
+		var shotValue = 0;
+		for(var i in counters)
+				shotValue += counters[i] * weights[i];
+
+		return shotValue;
+	},
+
+	getPruningValue: function(counters, leavesCount){
+	    var sum = 0;
+	    var nonZeros = 0;
+
+	    for(var i in counters)
+	    if(counters[i] != 0){
+	        sum += leavesCount - counters[i];
+	        nonZeros ++;
+	    }
+
+	    return sum / nonZeros; // pruningAverage
+	}
+
+};
+
+var characters = {
+    'bloody': [5/7, 4/7, 6/7, 7/7, 2/7, 1/7, 3/7],
+    'sadist': [5/7, 4/7, 7/7, 6/7, 2/7, 1/7, 3/7],
+    'masochist': [4/7, 3/7, 2/7, 1/7, 6/7, 7/7, 5/7]
 };

@@ -258,7 +258,7 @@ Field.prototype = {
     /**
     * When only 1 leaf was generated things are clear, just hand over a list of shooting targets then
     */
-    getRemainingTargetPos: function(inputfield){
+    getRemainingTargetsPos: function(inputfield){
         var targets = [];
         for(var r = 0; r < this.rows; r ++)
             for(var c = 0; c < this.cols; c ++)
