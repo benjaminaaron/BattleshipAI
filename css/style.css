@@ -1,0 +1,43 @@
+body {
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-position: left top;
+}
+
+#gameControls {
+    width: 744px !important;
+    height: 40px !important;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #ddd;  
+    background-color: #eee;
+    margin: 0 0 10px 0;          
+}
+
+input, select {
+    margin: 10px 0 10px 10px;  
+}
+
+#statusLabel {
+    font-family: Georgia, sans-serif;
+    font-size:  14px;
+    color: #00f;
+    margin: 14px 0 0 0;
+    float: right;
+}
+
+.container {
+    float:left;
+    width: 370px !important;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #CCC;
+}
+
+canvas {
+    float: left;
+}
+
+.ui-widget {
+  font-size: 1em;
+}
