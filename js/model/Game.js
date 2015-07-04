@@ -115,6 +115,9 @@ Game.prototype = {
         var targetBoard = caller.opponent.board;
         var fireResult = targetBoard.fire(row, col);
 
+        if(fireResult.status == CellStatus.MINE)
+            caller.opponent.mineBonusShots = 3;
+
         return fireResult;
     },
 
@@ -125,19 +128,25 @@ Game.prototype = {
      */
     turnCompleted: function(caller){
         if(this.gameRunning){
-
             if(this.currentPlayer.opponent.board.areAllShipsDestroyed())
-                this.iWon(this.currentPlayer, 100);
+                this.iWon(this.currentPlayer, this.currentPlayer.shotcounter);
+            else {
+                if(caller.mineBonusShots > 0){
+                    caller.mineBonusShots --;
+                    caller.bonusTurn();
+                }
+                else {
+                    var player;
 
-            var player;
+                    if(caller.ID == 0)
+                        player = this.player1;
+                    else
+                        player = this.player0;
 
-            if(caller.ID == 0)
-                player = this.player1;
-            else
-                player = this.player0;
-
-            this.setCurrentPlayer(player);
-            this.currentPlayer.yourTurn();
+                    this.setCurrentPlayer(player);
+                    this.currentPlayer.yourTurn();
+                }
+            }
         }
         this.updatedBoard(UpdateReport.ONETURNCOMPLETED);
     },

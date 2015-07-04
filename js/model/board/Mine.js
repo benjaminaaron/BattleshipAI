@@ -13,8 +13,9 @@ Mine.prototype = {
     __proto__: Ship.prototype,
 
     fire: function(){
-        Ship.prototype.fire.call(this); // maybe the super call is what's causing the trouble?!
         console.log('hit a mine!');
+
+        return new CellStatusMsg(CellStatus.MINE);
 
         //TODO fire back randomly
     },

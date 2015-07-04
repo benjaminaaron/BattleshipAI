@@ -264,7 +264,7 @@ GameView.prototype = {
             this.drawShips(ctx, player.ID);
 
         // attributes: hits, waves, radiations, wave_radiations
-        this.drawAttributes(ctx, board);
+        this.drawAttributes(ctx, player.opponent.fieldMemory);
 
         // destroyed elements
         this.drawDestroyedShips(ctx, player.ID);
@@ -374,36 +374,47 @@ GameView.prototype = {
     	}
     },
 
-    drawAttributes: function(ctx, board){
-        var field = board.field;
-        var cellSizePx = this.cellSizePx;
-        var a = cellSizePx / 2 - 4;
-        ctx.strokeStyle = 'black';
-        ctx.fillStyle = 'black';
-        ctx.lineWidth = 2;
+    drawAttributes: function(ctx, fieldMemory){
 
-        var image = document.createElement("img");
-        image.style.position = "absolute";
+        for(var i = 0; i < fieldMemory.cells.length; i ++){
+            var cell = fieldMemory.cells[i];
+            var xCrd = cell.col * this.cellSizePx + this.fieldLeft;
+            var yCrd = cell.row * this.cellSizePx + this.fieldTop;
 
-        for(var i=0; i < field.cells.length; i++){
-            var cell = field.cells[i];
-            var xCrd = cell.col * cellSizePx + this.fieldLeft;
-            var yCrd = cell.row * cellSizePx + this.fieldTop;
-            var xMiddle = xCrd + cellSizePx / 2;
-            var yMiddle = yCrd + cellSizePx / 2;
+			var image = document.createElement('img');
+			image.style.position = 'absolute';
 
-            if(cell.fired)
-                if(cell.occupiedBy == null){
-                    image.src = this.getIconPath('fired');
-                    ctx.drawImage(image, xCrd, yCrd);
-                }
-                else {
+			var drawImg = true;
+
+			switch(cell.status) {
+				case CellStatus.UNTOUCHED:
+					drawImg = false;
+					break;
+				case CellStatus.FIRED:
+					image.src = this.getIconPath('fired');
+					break;
+				case CellStatus.HIT:
+				case CellStatus.DESTROYED:
 					image.src = this.getIconPath('hit');
-                    ctx.drawImage(image, xCrd, yCrd);
-                }
-
+					break;
+				case CellStatus.MINE:
+					image.src = this.getIconPath('mine');
+					break;
+				case CellStatus.WAVE:
+					image.src = this.getIconPath('wave');
+					break;
+				case CellStatus.RADIATION:
+					image.src = this.getIconPath('radiation');
+					break;
+				case CellStatus.WAVE_RADIATION:
+					image.src = this.getIconPath('wave_radiation');
+					break;
+				default:
+					break;
+			}
+			if(drawImg)
+				ctx.drawImage(image, xCrd, yCrd);
         }
-
     },
 
     drawDestroyedShips: function(ctx, playerID){

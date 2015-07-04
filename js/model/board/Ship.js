@@ -1,5 +1,5 @@
 
-var Ship = function(id, size, color, orientation){ 
+var Ship = function(id, size, color, orientation){
     this.id = id;
     this.size = size;
     this.color = color;
@@ -23,22 +23,15 @@ Ship.prototype = {
 
     fire: function(){
         var msg;
+        this.hits ++;
 
-        if(this.isMine) {
-            msg = new CellStatusMsg(CellStatus.MINE);
+        if(this.hits >= this.size){
+            this.destroyed = true;
+            msg = new CellStatusMsg(CellStatus.DESTROYED);
+            msg.destroyedShipCode = this.size + '_' + (this.orientation ? 'h_' : 'v_') + this.occupyingCells[0].row + '-' + this.occupyingCells[0].col;
         }
-
-        else {
-            this.hits++;
-
-            if(this.hits >= this.size){
-                this.destroyed = true;
-                msg = new CellStatusMsg(CellStatus.DESTROYED);
-                msg.destroyedShipCode = this.size + '_' + (this.orientation ? 'h_' : 'v_') + this.occupyingCells[0].row + '-' + this.occupyingCells[0].col;
-            }
-            else
-                msg = new CellStatusMsg(CellStatus.HIT);
-        }
+        else
+            msg = new CellStatusMsg(CellStatus.HIT);
 
         return msg;
     },

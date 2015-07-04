@@ -46,11 +46,9 @@ Board.prototype = {
      * @returns {boolean} True, if every mine and ship is placed - otherwise false.
      */
     allElementsPlaced: function(){
-
         for(var elementIndex = 0; elementIndex < this.elements.length; elementIndex++)
             if(this.elements[elementIndex].occupyingCells.length == 0)
                 return false;
-
         return true;
     },
 
