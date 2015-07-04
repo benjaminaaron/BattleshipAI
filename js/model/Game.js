@@ -13,7 +13,6 @@ var Game = function(players, shipTypes, viewModule){
 
     // PLAYER 0
     this.player0 = players[0];
-    console.log(this.player0);
     board = new Board(0, this.player0, shipTypes, this.rows, this.cols);
     this.player0.init(0, board);
 
@@ -24,7 +23,7 @@ var Game = function(players, shipTypes, viewModule){
 
     // defining corresponding opponents
     this.player0.setOpponent(this.player1);
-    this.player1.setOpponent(this.player0);  
+    this.player1.setOpponent(this.player0);
 
     this.inPlayPhase = false;
     this.gameRunning = false;
@@ -40,9 +39,9 @@ Game.prototype = {
     updatedBoard: function(updateReport){
         viewModule.handleUpdatedBoard(updateReport, this.currentPlayer.ID);
     },
-    
+
     /**
-     * gets called by the canvas listeners installed during the installCanvasListener-method in GameView 
+     * gets called by the canvas listeners installed during the installCanvasListener-method in GameView
      * (TODO, that's not a proper separation of view & logic!)
      * @param eventType MouseEvent mousedown, -up or -move
      * @param ID of the board = ID of the board-owning player
@@ -68,7 +67,7 @@ Game.prototype = {
                 case MouseEvent.MOUSEDOWN:
                     this.currentPlayer.mousedown(xMouse, yMouse);
                     break;
-                case MouseEvent.MOUSEMOVE: 
+                case MouseEvent.MOUSEMOVE:
                     this.currentPlayer.mousemove(xMouse, yMouse);
                     break;
                 case MouseEvent.MOUSEUP:
@@ -82,9 +81,9 @@ Game.prototype = {
     setCurrentPlayer: function(player){
         this.currentPlayer = player;
     },
-    
+
     /**
-     * gets called by finishedSetup in AbstractPlayer, which gets called by iAmDoneSettingUp in Human 
+     * gets called by finishedSetup in AbstractPlayer, which gets called by iAmDoneSettingUp in Human
      * or after the random setup from AbstractBot in yourSetup
      * @param caller is the person who is saying that they completed their setup
      */
@@ -99,8 +98,8 @@ Game.prototype = {
             $('#readyBtn').hide();
             $('#statusLabel').html('in <b>play phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
             this.setCurrentPlayer(this.player0);
-            this.currentPlayer.yourTurn(); 
-        }        
+            this.currentPlayer.yourTurn();
+        }
         this.updatedBoard(UpdateReport.ONESETUPCOMPLETED);
     },
 
@@ -147,11 +146,11 @@ Game.prototype = {
         this.gameRunning = false;
         var self = this;
         setTimeout(function(){
-            $('#statusLabel').html('<b>' + caller.name + ' won!</b>&nbsp;&nbsp;&nbsp;' + shotsFired + ' (' + game.totalShipCells + '-' + game.totalCells + ')&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'); 
+            $('#statusLabel').html('<b>' + caller.name + ' won!</b>&nbsp;&nbsp;&nbsp;' + shotsFired + ' (' + game.totalShipCells + '-' + game.totalCells + ')&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
             caller.board.winnerBoard = true;
             caller.opponent.board.loserBoard = true;
-            caller.board.showShips = true;                  
+            caller.board.showShips = true;
             self.updatedBoard(UpdateReport.GAMECOMPLETED);
-        }, 10);   
+        }, 10);
     }
 }

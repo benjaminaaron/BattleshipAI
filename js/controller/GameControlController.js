@@ -20,7 +20,7 @@ GameControlController.prototype = {
     registerButtonHandlers: function(){
         var self = this;
         $('#startBtn').on('click', function() {
-            console.log(self);
+            //console.log(self);
             self.driver.startGame.apply(self.driver);
         });
         $('#resetBtn').on('click', this.reset);

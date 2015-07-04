@@ -1,5 +1,5 @@
 /**
-* The driver module provides controlling logic for the whole application. 
+* The driver module provides controlling logic for the whole application.
 */
 
 /**
@@ -41,11 +41,11 @@ Driver.prototype = {
         this.gameControlController.showStatusInfo('in <b>setup phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 
         var shipTypes = [
-            new ShipType(1, 'black', 1),
+            new ShipType(1, 'gray', 1),
             new ShipType(5, 'aqua', 1),
-            new ShipType(4, 'maroon', 1),
+            new ShipType(4, 'red', 1),
             new ShipType(3, 'lime', 1),
-            new ShipType(2, 'orange', 2)
+            new ShipType(2, 'orange', 1)
         ];
 
         game = new Game(players, shipTypes, this.viewModule);

@@ -23,11 +23,18 @@ AbstractPlayer.prototype = {
 
     yourSetup: function(){
         this.myTurn = true;
-        //$('#container_' + this.id).addClass('activeContainer');    
+        //$('#container_' + this.id).addClass('activeContainer');
         console.log('>> i am setting up elements says ' + this.name);
     },
 
     finishedSetup: function(){
+
+        //setting cells to wave, radiation and wave_radiation if applicable
+        this.board.field.computeAttributes(this.board.elements);
+
+
+        console.log(this.board.field.toString());
+
         this.myTurn = false;
         // TODO warum wechseln wir in die playPhase, nur weil einmal finishedSetup aufgerufen wurde?
         // bezieht sich das nur auf den "player zustand?"
@@ -43,7 +50,7 @@ AbstractPlayer.prototype = {
 
     yourTurn: function(){
         this.myTurn = true;
-        $('#container_' + this.id).addClass('activeContainer');    
+        $('#container_' + this.id).addClass('activeContainer');
         console.log('>> it\'s my turn says ' + this.name);
     },
 
@@ -61,7 +68,7 @@ AbstractPlayer.prototype = {
                 break;
             case CellStatus.DESTROYED:
                 console.log('destroyed');
-                this.fieldMemory.setCellStatusesAroundShipToWave(resultMsg.destroyedShipCode);
+                //this.fieldMemory.setCellStatusesAroundShipToWave(resultMsg.destroyedShipCode); TODO
                 if(resultMsg.allShipsDestroyed){
                     console.log('all elements destroyed');
                     game.iWon(this, this.fieldMemory.countFiredCells() + 1);
@@ -77,7 +84,7 @@ AbstractPlayer.prototype = {
     },
     finishedTurn: function(){
         this.myTurn = false;
-        $('#container_' + this.id).removeClass('activeContainer');    
+        $('#container_' + this.id).removeClass('activeContainer');
         console.log('<< my turn is over says ' + this.name);
         game.turnCompleted(this);
     }

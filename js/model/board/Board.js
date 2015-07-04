@@ -16,11 +16,10 @@ var Board = function(id, player, shipTypes, rows, cols){
     this.field = new Field(rows, cols);
 
     //add elements as defined in shipTypes
-    this.elements = [];
+    this.elements = []; // ships + mines
     this.ships = [];
 
     for(var shipType = 0; shipType < shipTypes.length; shipType++)
-
         for(var ship = 0; ship < shipTypes[shipType].quantity; ship++){
 
             var element;
@@ -29,7 +28,7 @@ var Board = function(id, player, shipTypes, rows, cols){
                 this.ships.push(element);
             }
             else
-                element = new Mine(this.id + '-mine');
+                element = new Mine(this.id + '-mine', shipTypes[shipType].color);
 
             this.elements.push(element);
         }
@@ -55,7 +54,7 @@ Board.prototype = {
         return true;
     },
 
-    randomlyPlaceShips: function(){    
+    randomlyPlaceShips: function(){
         this.field.clear();
         for(var elementIndex=0; elementIndex < this.elements.length; elementIndex++){
             var element = this.elements[elementIndex];
@@ -68,8 +67,8 @@ Board.prototype = {
 
     /**
      * Gets called from ...? or randomlyPlaceShips().
-     * @param element
-     * @param orientation
+     * @param element: ship or mine
+     * @param orientation: true = horizontal, false = vertical
      * @param row
      * @param col
      */
@@ -83,7 +82,6 @@ Board.prototype = {
             cell.occupiedBy = element;
             element.occupyingCells.push(cell);
         }
-        //this.field.addWavesToFields(row, col, orientation);
     },
 
     getHorizontalValidElementPositions: function(ship){
@@ -126,23 +124,17 @@ Board.prototype = {
 
         return fireResult;
     },
-    calculateAllPossibleSetups: function(){
-        // TODO
-    },
 
     /**
      * Checks if all ships on this board have been destroyed.
      * @returns {boolean} True, if every ship has been sunk - false otherwise.
      */
     areAllShipsDestroyed: function() {
-
         var result = true;
-
         for(var shipNo = 0; shipNo < this.ships.length; shipNo++) {
             var currentShip = this.ships[shipNo];
             result &= currentShip.isDestroyed();
         }
-
         return result;
     }
 };
