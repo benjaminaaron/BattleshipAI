@@ -47,33 +47,32 @@ Game.prototype = {
      * @param ID of the board = ID of the board-owning player
      */
     handleCanvasEvent: function(eventType, ID, xMouse, yMouse){
+        if(this.currentPlayer.type == 'human' && this.gameRunning){
+            var eventOriginBoardOwner = ID == 0 ? this.player0 : this.player1;
+            // TODO Was genau ist hier ein canvas event? Klick auf ein Feld?
+            var sendCanvasEventToPlayer;
 
-        var eventOriginBoardOwner = ID == 0 ? this.player0 : this.player1;
-        // TODO Was genau ist hier ein canvas event? Klick auf ein Feld?
-        var sendCanvasEventToPlayer;
+            // In playphase, canvas events are shots on the other player's board so the event needs to be directed
+            // to the other player's board.
+            // If not in playphase, canvas events are e.g. the placing of the elements and thus happen on the player's own board.
+            if(this.inPlayPhase)
+                sendCanvasEventToPlayer = this.currentPlayer != eventOriginBoardOwner;
+            else
+                sendCanvasEventToPlayer = this.currentPlayer == eventOriginBoardOwner;
 
-        // In playphase, canvas events are shots on the other player's board so the event needs to be directed
-        // to the other player's board.
-        // If not in playphase, canvas events are e.g. the placing of the elements and thus happen on the player's own board.
-        if(this.inPlayPhase)
-            sendCanvasEventToPlayer = this.currentPlayer != eventOriginBoardOwner;
-        else
-            sendCanvasEventToPlayer = this.currentPlayer == eventOriginBoardOwner;
-
-        if(sendCanvasEventToPlayer){
-
-            switch(eventType){
-
-                case MouseEvent.MOUSEDOWN:
-                    this.currentPlayer.mousedown(xMouse, yMouse);
-                    break;
-                case MouseEvent.MOUSEMOVE:
-                    this.currentPlayer.mousemove(xMouse, yMouse);
-                    break;
-                case MouseEvent.MOUSEUP:
-                    this.currentPlayer.mouseup(xMouse, yMouse);
-                    break;
-                // TODO Default?
+            if(sendCanvasEventToPlayer){
+                switch(eventType){
+                    case MouseEvent.MOUSEDOWN:
+                        this.currentPlayer.mousedown(xMouse, yMouse);
+                        break;
+                    case MouseEvent.MOUSEMOVE:
+                        this.currentPlayer.mousemove(xMouse, yMouse);
+                        break;
+                    case MouseEvent.MOUSEUP:
+                        this.currentPlayer.mouseup(xMouse, yMouse);
+                        break;
+                    // TODO Default?
+                }
             }
         }
     },
@@ -116,7 +115,7 @@ Game.prototype = {
         var fireResult = targetBoard.fire(row, col);
 
         if(fireResult.status == CellStatus.MINE)
-            caller.opponent.mineBonusShots = 3;
+            caller.opponent.bonusShots = 3;
 
         return fireResult;
     },
@@ -131,8 +130,8 @@ Game.prototype = {
             if(this.currentPlayer.opponent.board.areAllShipsDestroyed())
                 this.iWon(this.currentPlayer, this.currentPlayer.shotcounter);
             else {
-                if(caller.mineBonusShots > 0){
-                    caller.mineBonusShots --;
+                if(caller.bonusShots > 0){
+                    caller.bonusShots --;
                     caller.bonusTurn();
                 }
                 else {
@@ -148,6 +147,7 @@ Game.prototype = {
                 }
             }
         }
+
         this.updatedBoard(UpdateReport.ONETURNCOMPLETED);
     },
 

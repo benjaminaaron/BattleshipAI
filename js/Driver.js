@@ -90,12 +90,12 @@ Driver.prototype = {
 
         var bot = false;
         var type = prompt(
-            'Choose the type of bot\n\nr'
-            + 'RandomBot\nrd'
-            + 'RandomDestroyerBot\nzsd'
-            + 'ZoningSquareDestroyerBot\nzrd'
-            + 'ZoningRectDestroyerBot\n',
-            'r'                                         // default text displayed inside prompt
+            'Choose the type of bot\n\n'
+            + 'r\tRandomBot\n'
+            + 'rd\tRandomDestroyerBot\n'
+            + 'zsd\tZoningSquareDestroyerBot\n'
+            + 'zrd\tZoningRectDestroyerBot\n',
+            'r' // default text displayed inside prompt
         );
 
         switch (type) {

@@ -31,7 +31,8 @@ FieldMemory.prototype = {
     },
 
     incorporateFireResult: function(firerow, firecol, resultMsg){
-        var firedCell = this.getCellByRowCol(firerow, firecol);
+        var firedCell = this.getCellByRowCol(firerow, firecol);    
+        this.lastTouchedCell = firedCell;
 
         switch(resultMsg.status) {
             case CellStatus.UNTOUCHED:
@@ -107,12 +108,6 @@ FieldMemory.prototype = {
                 return cell;
         return false;
         //console.log('cell ' + row + '/' + col + ' is being checked - is ' + returnVal);
-    },
-
-    setCellStatus: function(row, col, status){
-        var cell = this.getCellByRowCol(row, col);
-        cell.status = status;
-        this.lastTouchedCell = cell;
     },
 
     getUntouchedCells: function(){

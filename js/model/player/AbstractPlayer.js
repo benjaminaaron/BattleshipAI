@@ -8,8 +8,7 @@ var AbstractPlayer = function(name){
     this.inPlayPhase = false;
     this.opponent = null;
     this.shotcounter = 0;
-
-    this.mineBonusShots = 0;
+    this.bonusShots = 0;
 }
 
 AbstractPlayer.prototype = {
@@ -55,23 +54,20 @@ AbstractPlayer.prototype = {
         console.log('>> it\'s my turn says ' + this.name);
     },
 
-    bonusTurn: function(){
+    bonusTurn: function(){ // might cause weird stuff if a DestructionGoal is active while bonusTurns take place??
         this.myTurn = true;
-        $('#container_' + this.id).addClass('activeContainer');
-        console.log('>> it\'s my turn says ' + this.name);
-        
+        console.log('>> it\'s my turn in a BONUS TURN says ' + this.name);
         this.randomFire();
     },
 
     fire: function(row, col){
-        this.shotcounter ++;
+        if(this.bonusShots == 0) //dont count those into the shotcounter, right?
+            this.shotcounter ++;
 
         var resultMsg = game.fire(this, row, col);
-        var result = resultMsg.status;
 
         this.fieldMemory.incorporateFireResult(row, col, resultMsg);
-
-        console.log(this.fieldMemory.toString());
+        //console.log(this.fieldMemory.toString());
 
         this.finishedTurn();
     },

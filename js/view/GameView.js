@@ -222,11 +222,11 @@ GameView.prototype = {
         if(updateReport == UpdateReport.SHIPSWERERANDOMLYPLACED)
             this.updateWrappedShips(currentPlayerID);
 
-        this.drawBoard(this.canvas0.getContext('2d'), this.player0);
-        this.drawBoard(this.canvas1.getContext('2d'), this.player1);
+        this.drawBoard(this.canvas0.getContext('2d'), this.player0, updateReport);
+        this.drawBoard(this.canvas1.getContext('2d'), this.player1, updateReport);
     },
 
-    drawBoard: function(ctx, player){
+    drawBoard: function(ctx, player, updateReport){
         var width = ctx.canvas.width;
         var height = ctx.canvas.height;
         ctx.clearRect(0, 0, width, height);
@@ -264,7 +264,8 @@ GameView.prototype = {
             this.drawShips(ctx, player.ID);
 
         // attributes: hits, waves, radiations, wave_radiations
-        this.drawAttributes(ctx, player.opponent.fieldMemory);
+        if(game.inPlayPhase)
+			this.drawAttributes(ctx, player.opponent.fieldMemory);
 
         // destroyed elements
         this.drawDestroyedShips(ctx, player.ID);
@@ -381,7 +382,7 @@ GameView.prototype = {
             var xCrd = cell.col * this.cellSizePx + this.fieldLeft;
             var yCrd = cell.row * this.cellSizePx + this.fieldTop;
 
-			var image = document.createElement('img');
+			var image = new Image();
 			image.style.position = 'absolute';
 
 			var drawImg = true;
@@ -412,8 +413,10 @@ GameView.prototype = {
 				default:
 					break;
 			}
-			if(drawImg)
+
+			if(drawImg){
 				ctx.drawImage(image, xCrd, yCrd);
+			}
         }
     },
 

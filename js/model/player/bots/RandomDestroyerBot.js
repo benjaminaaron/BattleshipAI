@@ -2,7 +2,6 @@
 var RandomDestroyerBot = function(name){
     AbstractBot.call(this, name);
     this.type = 'bot';
-
     this.goal = null;
 }
 
@@ -10,16 +9,16 @@ RandomDestroyerBot.prototype = {
     __proto__: AbstractBot.prototype,
 
     yourSetup: function(){
-        AbstractBot.prototype.yourSetup.call(this); 
-        this.board.randomlyPlaceShips();  	
+        AbstractBot.prototype.yourSetup.call(this);
+        this.board.randomlyPlaceShips();
         game.updatedBoard(UpdateReport.SHIPSWERERANDOMLYPLACED);
     },
     yourTurn: function(){
         AbstractBot.prototype.yourTurn.call(this);
 
-        var row, col;
-        
         var lastTouchedCell = this.fieldMemory.lastTouchedCell;
+        //TODO lastTouchedCells (plural) for cases when bonusTurns take place while a DestructionGoal is active or should be activated?
+
         if(lastTouchedCell){
             if(lastTouchedCell.status == CellStatus.HIT && this.goal == null)
                 this.goal = new DestructionGoal(lastTouchedCell, this);
@@ -27,19 +26,9 @@ RandomDestroyerBot.prototype = {
                 this.goal = null;
         }
 
-        if(this.goal){
+        if(this.goal)
             this.goal.think();
-        } else {
-            var ok = false;
-            while(!ok){
-                row = Math.round(Math.random() * (game.rows - 1));
-                col = Math.round(Math.random() * (game.cols - 1));
-                ok = this.fieldMemory.getCellStatus(row, col) == CellStatus.UNTOUCHED;
-            }
-            var self = this;
-            setTimeout(function(){
-                self.fire(row, col);
-            }, 10);    
-        }
+        else
+            this.randomFire();
     }
 }
