@@ -24,6 +24,7 @@ Cell.prototype = {
         else {
             this.fired = true;
             var ship = this.occupiedBy;
+
             if(ship)
                 return ship.fire();
             else
