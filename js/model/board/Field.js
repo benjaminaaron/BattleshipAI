@@ -15,25 +15,25 @@ var Field = function(rows, cols){
 
 Field.prototype = {
     __proto__: FieldMemory.prototype,
-    allCellsFree: function(shipSize, orientation, rowHead, colHead){         
+    allCellsFree: function(shipSize, orientation, rowHead, colHead){
         var cellcluster = [];
         for(var i=0; i < shipSize; i++){
             var cell = this.getCellByRowCol(rowHead + (orientation ? 0 : i), colHead + (orientation ? i : 0));
             if(cell.occupiedBy)
                 return false;
             cellcluster.push(cell);
-        }    
+        }
         var neighbourCells = this.getCellsAroundCellcluster(cellcluster);
         for(var i=0; i < neighbourCells.length; i++)
             if(neighbourCells[i].occupiedBy)
                 return false;
-        return true; 
+        return true;
     },
     clear: function(){
         for(var i=0; i < this.cells.length; i++)
             this.cells[i].occupiedBy = null;
     },
-    toString: function(){
+    toStringList: function(){
         var str = '';
         for(var i=0; i < this.cells.length; i++)
             str = str + '\n' + this.cells[i];

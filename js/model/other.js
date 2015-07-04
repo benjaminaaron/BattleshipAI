@@ -4,15 +4,46 @@ var CellStatus = {
     FIRED : 1,  // been fired at, but is a miss
     HIT : 2,
     DESTROYED : 3,
-    SPARE: 4,   // for neighbour cells of elements
+    SHIP : 4,
+    SPARE: 5,   // for neighbour cells of elements
                 // TODO: change to WAVE
-    MINE: 5,
-    RADIATION: 6,    // indicates mine on adjacent cell
-    WAVE: 7         // for cells adjacent to elements
+    MINE: 6,
+    RADIATION: 7,    // indicates mine on adjacent cell
+    WAVE: 8,         // for cells adjacent to elements
+    WAVE_RADIATION: 9
 };
 
-/** 
-* Important for GUI to decide whether the canvas needs to be redrawn. 
+function CellToCharWrapped_debug(cell){
+    return '[' + CellToChar_debug(cell) + ']';
+};
+
+function CellToChar_debug(cell){
+    switch(cell){
+        case CellStatus.UNTOUCHED:
+            return ' ';
+        case CellStatus.FIRED:
+            return '.';
+        case CellStatus.WAVE:
+            return '~';
+        case CellStatus.HIT:
+            return 'x';
+        case CellStatus.DESTROYED:
+            return '=';
+        case CellStatus.RADIATION:
+            return '*';
+        case CellStatus.SHIP:
+            return 'S';
+        case CellStatus.MINE:
+            return 'M';
+        case CellStatus.WAVE_RADIATION:
+            return '#';
+        default:
+            return '0';
+    }
+};
+
+/**
+* Important for GUI to decide whether the canvas needs to be redrawn.
 */
 var UpdateReport = {
     INIT: 0,

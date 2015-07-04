@@ -7,9 +7,12 @@ var AbstractPlayer = function(name){
     this.myTurn = false;
     this.inPlayPhase = false;
     this.opponent = null;
+    this.shotcounter = 0;
+    this.bonusShots = 0;
 }
 
 AbstractPlayer.prototype = {
+
     init: function(ID, board){
         this.ID = ID;
         this.board = board;
@@ -23,11 +26,15 @@ AbstractPlayer.prototype = {
 
     yourSetup: function(){
         this.myTurn = true;
-        //$('#container_' + this.id).addClass('activeContainer');    
+        //$('#container_' + this.id).addClass('activeContainer');
         console.log('>> i am setting up elements says ' + this.name);
     },
 
     finishedSetup: function(){
+        //setting cells to wave, radiation and wave_radiation if applicable
+        this.board.field.computeAttributes(this.board.elements);
+        //console.log(this.board.field.toString());
+
         this.myTurn = false;
         // TODO warum wechseln wir in die playPhase, nur weil einmal finishedSetup aufgerufen wurde?
         // bezieht sich das nur auf den "player zustand?"
@@ -43,42 +50,42 @@ AbstractPlayer.prototype = {
 
     yourTurn: function(){
         this.myTurn = true;
-        $('#container_' + this.id).addClass('activeContainer');    
+        $('#container_' + this.id).addClass('activeContainer');
         console.log('>> it\'s my turn says ' + this.name);
     },
 
+    bonusTurn: function(){ // might cause weird stuff if a DestructionGoal is active while bonusTurns take place??
+        this.myTurn = true;
+        console.log('>> it\'s my turn in a BONUS TURN says ' + this.name);
+        this.randomFire();
+    },
+
     fire: function(row, col){
+        if(this.bonusShots == 0) //dont count those into the shotcounter, right?
+            this.shotcounter ++;
 
         var resultMsg = game.fire(this, row, col);
-        var result = resultMsg.status;
 
-        switch(result){
-            case CellStatus.FIRED:
-                console.log('no hit');
-                break;
-            case CellStatus.HIT:
-                console.log('hit');
-                break;
-            case CellStatus.DESTROYED:
-                console.log('destroyed');
-                this.fieldMemory.setCellStatusesAroundShipToWave(resultMsg.destroyedShipCode);
-                if(resultMsg.allShipsDestroyed){
-                    console.log('all elements destroyed');
-                    game.iWon(this, this.fieldMemory.countFiredCells() + 1);
-                }
-                break;
-            case CellStatus.MINE:
-                console.log("Hit Mine, cell " + row + "/" + col + " of own field was shot!");
-                this.board.fire(row, col);
-                break;
-        }
-        this.fieldMemory.setCellStatus(row, col, result);
+        this.fieldMemory.incorporateFireResult(row, col, resultMsg);
+        //console.log(this.fieldMemory.toString());
+
         this.finishedTurn();
     },
+
     finishedTurn: function(){
         this.myTurn = false;
-        $('#container_' + this.id).removeClass('activeContainer');    
+        $('#container_' + this.id).removeClass('activeContainer');
         console.log('<< my turn is over says ' + this.name);
         game.turnCompleted(this);
+    },
+
+    randomFire: function(){
+        var untouchedCells = this.fieldMemory.getUntouchedCells();
+        randomCell = untouchedCells[Math.floor(Math.random() * untouchedCells.length)];
+        var self = this;
+        setTimeout(function(){
+            self.fire(randomCell.row, randomCell.col);
+        }, 10);
     }
+
 };

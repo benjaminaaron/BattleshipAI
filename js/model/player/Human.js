@@ -5,14 +5,14 @@ var Human = function(name){
     this.selectedShipWr = null;
 }
 
-Human.prototype = { 
+Human.prototype = {
     __proto__: AbstractPlayer.prototype,
 
     yourSetup: function(){
-        AbstractPlayer.prototype.yourSetup.call(this); 
+        AbstractPlayer.prototype.yourSetup.call(this);
     },
-    
-    mousedown: function(xMouse, yMouse){    
+
+    mousedown: function(xMouse, yMouse){
         if(!this.inPlayPhase){
             this.xMousedown = xMouse;
             this.yMousedown = yMouse;
@@ -37,23 +37,22 @@ Human.prototype = {
         var isClick = Math.abs(this.xMousedown - xMouse) < 2 && Math.abs(this.yMousedown - yMouse) < 2;
         var shipWr = this.selectedShipWr;
         if(isClick){
-            if(shipWr){
+            if(shipWr)
                 viewModule.flipShipsOrientation(shipWr);
-            }
-            else 
+            else
                 if(viewModule.posIsOverField(xMouse, yMouse)){
                     this.board.randomlyPlaceShips();
                     game.updatedBoard(UpdateReport.SHIPSWERERANDOMLYPLACED);
                 }
                 else
                     this.iAmDoneSettingUp();
-                       
+
         } else
-            if(shipWr){
+            if(shipWr)
                 viewModule.placeShip(shipWr);
-            }
+                
         this.selectedShipWr = null;
-        
+
         if(!this.inPlayPhase && this.board.allElementsPlaced())
             $('#readyBtn').show();
     },

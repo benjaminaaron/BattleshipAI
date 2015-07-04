@@ -4,15 +4,8 @@
  * @param id
  * @constructor
  */
-var Mine = function(id){
-    this.id = id;
-    this.size = 1;
-    this.color = 'black';
-    this.orientation = true; //does not really matter with size 1, does it?
-    this.occupyingCells = [];
-    this.isMine = true;
-    this.hits = 0;
-    this.destroyed = false;
+var Mine = function(id, color){
+    Ship.call(this, id, 1, color, true);
 }
 
 Mine.prototype = {
@@ -20,11 +13,13 @@ Mine.prototype = {
     __proto__: Ship.prototype,
 
     fire: function(){
-        console.log("hit a mine!");
-        Ship.prototype.fire.call(this); // maybe the super call is what's causing the trouble?!
+        console.log('hit a mine!');
 
         return new CellStatusMsg(CellStatus.MINE);
+
+        //TODO fire back randomly
     },
+
     toString: function(){
         return 'mine: ' + this.id;
     }
