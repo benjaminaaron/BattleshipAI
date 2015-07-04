@@ -2,7 +2,6 @@
 var ZoningSquareDestroyerBot = function(name){
     AbstractBot.call(this, name);
     this.type = 'bot';
-
     this.goal = null;
 }
 
@@ -10,15 +9,13 @@ ZoningSquareDestroyerBot.prototype = {
     __proto__: AbstractBot.prototype,
 
     yourSetup: function(){
-        AbstractBot.prototype.yourSetup.call(this); 
-        this.board.randomlyPlaceShips();  	
+        AbstractBot.prototype.yourSetup.call(this);
+        this.board.randomlyPlaceShips();
         game.updatedBoard(UpdateReport.SHIPSWERERANDOMLYPLACED);
     },
     yourTurn: function(){
         AbstractBot.prototype.yourTurn.call(this);
 
-        var row, col;
-        
         var lastTouchedCell = this.fieldMemory.lastTouchedCell;
         if(lastTouchedCell){
             if(lastTouchedCell.status == CellStatus.HIT && this.goal == null)
@@ -34,7 +31,7 @@ ZoningSquareDestroyerBot.prototype = {
             var self = this;
             setTimeout(function(){
                 self.fire(chosenCell.row, chosenCell.col);
-            }, 10);    
+            }, 10);
         }
     }
 }

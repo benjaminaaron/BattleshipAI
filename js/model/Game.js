@@ -13,7 +13,6 @@ var Game = function(players, shipTypes, viewModule){
 
     // PLAYER 0
     this.player0 = players[0];
-    console.log(this.player0);
     board = new Board(0, this.player0, shipTypes, this.rows, this.cols);
     this.player0.init(0, board);
 
@@ -24,7 +23,7 @@ var Game = function(players, shipTypes, viewModule){
 
     // defining corresponding opponents
     this.player0.setOpponent(this.player1);
-    this.player1.setOpponent(this.player0);  
+    this.player1.setOpponent(this.player0);
 
     this.inPlayPhase = false;
     this.gameRunning = false;
@@ -40,41 +39,40 @@ Game.prototype = {
     updatedBoard: function(updateReport){
         viewModule.handleUpdatedBoard(updateReport, this.currentPlayer.ID);
     },
-    
+
     /**
-     * gets called by the canvas listeners installed during the installCanvasListener-method in GameView 
+     * gets called by the canvas listeners installed during the installCanvasListener-method in GameView
      * (TODO, that's not a proper separation of view & logic!)
      * @param eventType MouseEvent mousedown, -up or -move
      * @param ID of the board = ID of the board-owning player
      */
     handleCanvasEvent: function(eventType, ID, xMouse, yMouse){
+        if(this.currentPlayer.type == 'human' && this.gameRunning){
+            var eventOriginBoardOwner = ID == 0 ? this.player0 : this.player1;
+            // TODO Was genau ist hier ein canvas event? Klick auf ein Feld?
+            var sendCanvasEventToPlayer;
 
-        var eventOriginBoardOwner = ID == 0 ? this.player0 : this.player1;
-        // TODO Was genau ist hier ein canvas event? Klick auf ein Feld?
-        var sendCanvasEventToPlayer;
+            // In playphase, canvas events are shots on the other player's board so the event needs to be directed
+            // to the other player's board.
+            // If not in playphase, canvas events are e.g. the placing of the elements and thus happen on the player's own board.
+            if(this.inPlayPhase)
+                sendCanvasEventToPlayer = this.currentPlayer != eventOriginBoardOwner;
+            else
+                sendCanvasEventToPlayer = this.currentPlayer == eventOriginBoardOwner;
 
-        // In playphase, canvas events are shots on the other player's board so the event needs to be directed
-        // to the other player's board.
-        // If not in playphase, canvas events are e.g. the placing of the elements and thus happen on the player's own board.
-        if(this.inPlayPhase)
-            sendCanvasEventToPlayer = this.currentPlayer != eventOriginBoardOwner;
-        else
-            sendCanvasEventToPlayer = this.currentPlayer == eventOriginBoardOwner;
-
-        if(sendCanvasEventToPlayer){
-
-            switch(eventType){
-
-                case MouseEvent.MOUSEDOWN:
-                    this.currentPlayer.mousedown(xMouse, yMouse);
-                    break;
-                case MouseEvent.MOUSEMOVE: 
-                    this.currentPlayer.mousemove(xMouse, yMouse);
-                    break;
-                case MouseEvent.MOUSEUP:
-                    this.currentPlayer.mouseup(xMouse, yMouse);
-                    break;
-                // TODO Default?
+            if(sendCanvasEventToPlayer){
+                switch(eventType){
+                    case MouseEvent.MOUSEDOWN:
+                        this.currentPlayer.mousedown(xMouse, yMouse);
+                        break;
+                    case MouseEvent.MOUSEMOVE:
+                        this.currentPlayer.mousemove(xMouse, yMouse);
+                        break;
+                    case MouseEvent.MOUSEUP:
+                        this.currentPlayer.mouseup(xMouse, yMouse);
+                        break;
+                    // TODO Default?
+                }
             }
         }
     },
@@ -82,9 +80,9 @@ Game.prototype = {
     setCurrentPlayer: function(player){
         this.currentPlayer = player;
     },
-    
+
     /**
-     * gets called by finishedSetup in AbstractPlayer, which gets called by iAmDoneSettingUp in Human 
+     * gets called by finishedSetup in AbstractPlayer, which gets called by iAmDoneSettingUp in Human
      * or after the random setup from AbstractBot in yourSetup
      * @param caller is the person who is saying that they completed their setup
      */
@@ -99,8 +97,8 @@ Game.prototype = {
             $('#readyBtn').hide();
             $('#statusLabel').html('in <b>play phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
             this.setCurrentPlayer(this.player0);
-            this.currentPlayer.yourTurn(); 
-        }        
+            this.currentPlayer.yourTurn();
+        }
         this.updatedBoard(UpdateReport.ONESETUPCOMPLETED);
     },
 
@@ -116,6 +114,9 @@ Game.prototype = {
         var targetBoard = caller.opponent.board;
         var fireResult = targetBoard.fire(row, col);
 
+        if(fireResult.status == CellStatus.MINE)
+            caller.opponent.bonusShots = 3;
+
         return fireResult;
     },
 
@@ -126,20 +127,27 @@ Game.prototype = {
      */
     turnCompleted: function(caller){
         if(this.gameRunning){
-
             if(this.currentPlayer.opponent.board.areAllShipsDestroyed())
-                this.iWon(this.currentPlayer, 100);
+                this.iWon(this.currentPlayer, this.currentPlayer.shotcounter);
+            else {
+                if(caller.bonusShots > 0){
+                    caller.bonusShots --;
+                    caller.bonusTurn();
+                }
+                else {
+                    var player;
 
-            var player;
+                    if(caller.ID == 0)
+                        player = this.player1;
+                    else
+                        player = this.player0;
 
-            if(caller.ID == 0)
-                player = this.player1;
-            else
-                player = this.player0;
-
-            this.setCurrentPlayer(player);
-            this.currentPlayer.yourTurn();
+                    this.setCurrentPlayer(player);
+                    this.currentPlayer.yourTurn();
+                }
+            }
         }
+
         this.updatedBoard(UpdateReport.ONETURNCOMPLETED);
     },
 
@@ -147,11 +155,11 @@ Game.prototype = {
         this.gameRunning = false;
         var self = this;
         setTimeout(function(){
-            $('#statusLabel').html('<b>' + caller.name + ' won!</b>&nbsp;&nbsp;&nbsp;' + shotsFired + ' (' + game.totalShipCells + '-' + game.totalCells + ')&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'); 
+            $('#statusLabel').html('<b>' + caller.name + ' won!</b>&nbsp;&nbsp;&nbsp;' + shotsFired + ' (' + game.totalShipCells + '-' + game.totalCells + ')&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
             caller.board.winnerBoard = true;
             caller.opponent.board.loserBoard = true;
-            caller.board.showShips = true;                  
+            caller.board.showShips = true;
             self.updatedBoard(UpdateReport.GAMECOMPLETED);
-        }, 10);   
+        }, 10);
     }
 }
