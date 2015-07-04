@@ -403,45 +403,27 @@ GameView.prototype = {
         ctx.lineWidth = 2;
 
         var image = document.createElement("img");
-
+        image.style.position = "absolute";
 
         for(var i=0; i < field.cells.length; i++){
             var cell = field.cells[i];
-            var xMiddle = this.fieldLeft + cell.col * cellSizePx + cellSizePx / 2;
-            var yMiddle = this.fieldTop + cell.row * cellSizePx + cellSizePx / 2;
+            var xCrd = cell.col * cellSizePx + this.fieldLeft;
+            var yCrd = cell.row * cellSizePx + this.fieldTop;
+            var xMiddle = xCrd + cellSizePx / 2;
+            var yMiddle = yCrd + cellSizePx / 2;
+
             if(cell.fired)
                 if(cell.occupiedBy == null){
                     image.src = "fired.png";
-
-                    /*ctx.beginPath();
-                    ctx.arc(xMiddle, yMiddle, a / 2, 0, Math.PI*2); 
-                    ctx.closePath();
-                    ctx.fill();*/
-                // If hit:
+                    ctx.drawImage(image,xCrd,yCrd);
                 }
                 else {
                     image.src = "hit.png";
-                    
-                    
-
-                    /*ctx.beginPath();
-                    ctx.moveTo(xMiddle - a, yMiddle - a);
-                    ctx.lineTo(xMiddle + a, yMiddle + a);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(xMiddle - a, yMiddle + a);
-                    ctx.lineTo(xMiddle + a, yMiddle - a);
-                    ctx.stroke();*/
-                // If wave:
-
+                    ctx.drawImage(image,xCrd,yCrd);
                 }
-            image.style.position = "absolute";
-            // .style.left/top funktioniert nur mit >"50px"<
-            image.style.left = xMiddle;
-            image.style.top = yMiddle;
-            //console.log(image);
-            document.body.appendChild(image);
+            
         }
+            
     },
 
     drawDestroyedShips: function(ctx, playerID){
