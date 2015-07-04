@@ -22,6 +22,8 @@ var GameView = function(viewContainer){
 
     this.lastValidShipPositionCellsOwner = null;
     this.lastValidShipPositionCells = [];
+
+    
 }
 
 GameView.prototype = {
@@ -400,6 +402,9 @@ GameView.prototype = {
         ctx.fillStyle = 'black';
         ctx.lineWidth = 2;
 
+        var hitIMG = document.createElement("img");
+        hitIMG.src = "hit.png";
+
         for(var i=0; i < field.cells.length; i++){
             var cell = field.cells[i];
             var xMiddle = this.fieldLeft + cell.col * cellSizePx + cellSizePx / 2;
@@ -410,15 +415,24 @@ GameView.prototype = {
                     ctx.arc(xMiddle, yMiddle, a / 2, 0, Math.PI*2); 
                     ctx.closePath();
                     ctx.fill();
-                } else {
-                    ctx.beginPath();
+                // If hit:
+                }
+                else {
+                    hitIMGd = document.getElementById(hitIMG);
+                    hitIMGd.style.position = "absolute";
+                    hitIMGd.style.left = xMiddle;
+                    hitIMGd.style.top = yMiddle;
+                    document.body.appendChild(hitIMGd);
+                    /*ctx.beginPath();
                     ctx.moveTo(xMiddle - a, yMiddle - a);
                     ctx.lineTo(xMiddle + a, yMiddle + a);
                     ctx.stroke();
                     ctx.beginPath();
                     ctx.moveTo(xMiddle - a, yMiddle + a);
                     ctx.lineTo(xMiddle + a, yMiddle - a);
-                    ctx.stroke();
+                    ctx.stroke();*/
+                // If wave:
+
                 }
         }
     },
@@ -434,6 +448,11 @@ GameView.prototype = {
             }
         }
     }
+
+    /*drawWaves: function(ctx, playerID){
+
+    }*/
     // TODO: drawWaves, drawMines, drawRadiation
     // TODO: Placement for Mines like Ships
+
 }
