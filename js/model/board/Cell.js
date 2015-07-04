@@ -2,10 +2,12 @@
 var Cell = function(row, col){
     CellMemory.call(this, row, col);
     this.occupiedBy = null;
-    this.fired = false;
+    this.fired = false; // TODO nur noch für Darstellung über View drin, kommt raus!
 }
 
 Cell.prototype = {
+
+    __proto__: CellMemory.prototype,
 
     /**
      * Fires a shot to a cell. Cell forwards the shot to the occupying element (ship or mine), it it exists.
@@ -14,7 +16,7 @@ Cell.prototype = {
      */
     fire: function(){
 
-        if(this.fired){
+        if(this.getStatus() == CellStatus.FIRED) {//this.fired){
             //shouldn't be happening because AbstractPlayer doesn't allow those shots to go out
             // TODO gets thrown, probably when backshot of mine hits a field that was already shot.
             // Occurred during turn of bot when a mine was hit and a cell was targeted by the backshot
@@ -22,7 +24,8 @@ Cell.prototype = {
             throw("fire() of Cell cannot be called twice! " + this);
         }
         else {
-            this.fired = true;
+            this.fired = true;      // TODO nur noch für View drin, kommt raus!
+            CellMemory.status = CellStatus.FIRED;
             var ship = this.occupiedBy;
 
             if(ship)

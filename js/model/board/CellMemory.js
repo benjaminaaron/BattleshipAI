@@ -4,3 +4,9 @@ var CellMemory = function(row, col){
     this.col = col;
     this.status = CellStatus.UNTOUCHED;
 }
+
+CellMemory.prototype = {
+    getStatus: function() {
+        return this.status;
+    }
+}

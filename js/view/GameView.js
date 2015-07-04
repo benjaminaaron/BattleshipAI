@@ -412,7 +412,7 @@ GameView.prototype = {
             var xMiddle = xCrd + cellSizePx / 2;
             var yMiddle = yCrd + cellSizePx / 2;
 
-            if(cell.fired)
+            if(cell.getStatus() == CellStatus.FIRED)
                 if(cell.occupiedBy == null){
                     image.src = "fired.png";
                     ctx.drawImage(image,xCrd,yCrd);
