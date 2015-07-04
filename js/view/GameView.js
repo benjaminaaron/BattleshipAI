@@ -402,8 +402,8 @@ GameView.prototype = {
         ctx.fillStyle = 'black';
         ctx.lineWidth = 2;
 
-        var hitIMG = document.createElement("img");
-        hitIMG.src = "hit.png";
+        var image = document.createElement("img");
+
 
         for(var i=0; i < field.cells.length; i++){
             var cell = field.cells[i];
@@ -411,18 +411,19 @@ GameView.prototype = {
             var yMiddle = this.fieldTop + cell.row * cellSizePx + cellSizePx / 2;
             if(cell.fired)
                 if(cell.occupiedBy == null){
-                    ctx.beginPath();
+                    image.src = "fired.png";
+
+                    /*ctx.beginPath();
                     ctx.arc(xMiddle, yMiddle, a / 2, 0, Math.PI*2); 
                     ctx.closePath();
-                    ctx.fill();
+                    ctx.fill();*/
                 // If hit:
                 }
                 else {
-                    hitIMGd = document.getElementById(hitIMG);
-                    hitIMGd.style.position = "absolute";
-                    hitIMGd.style.left = xMiddle;
-                    hitIMGd.style.top = yMiddle;
-                    document.body.appendChild(hitIMGd);
+                    image.src = "hit.png";
+                    
+                    
+
                     /*ctx.beginPath();
                     ctx.moveTo(xMiddle - a, yMiddle - a);
                     ctx.lineTo(xMiddle + a, yMiddle + a);
@@ -434,6 +435,12 @@ GameView.prototype = {
                 // If wave:
 
                 }
+            image.style.position = "absolute";
+            // .style.left/top funktioniert nur mit >"50px"<
+            image.style.left = xMiddle;
+            image.style.top = yMiddle;
+            //console.log(image);
+            document.body.appendChild(image);
         }
     },
 
