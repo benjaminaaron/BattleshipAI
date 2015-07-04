@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Battleship AI reasoner dev</title>
+        <style>
+
+            body {
+                font-family: 'Courier';
+            }
+
+        </style>
+    </head>
+    <body>
+        <!-- JS vendors -->
+        <script type="text/javascript" src="js/vendors/jquery-2.1.1.min.js"></script>
+        <!-- JS own -->
+        <!-- reasoner -->
+        <script type="text/javascript" src="js/model/player/bots/reasoner/util.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Reasoner.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Graph.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Node.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/GraphmlExporter.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/RField.js"></script>
+
+        <script>
+
+            testReasoner();
+
+            function testReasoner(){
+
+                var shipTypes = [new ShipType(3, 'orange', 1), new ShipType(2, 'orange', 1), new ShipType(1, 'black', 1)];
+                var testfield = new RField(4, 4);
+
+                testfield.cells[0][0] = Cell.HIT;
+                testfield.cells[1][0] = Cell.HIT;
+
+                testfield.cells[2][2] = Cell.WAVE_RADIATION;
+                testfield.cells[0][2] = Cell.WAVE;
+
+                testfield.cells[0][3] = Cell.HIT;
+                //testfield.cells[3][3] = Cell.RADIATION;
+
+                var reasoner = new Reasoner(shipTypes, testfield);
+                console.log(">> fire at: " + reasoner.chosenFirePos);
+            }
+
+        </script>
+
+    </body>
+</html>
