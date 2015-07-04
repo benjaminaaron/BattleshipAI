@@ -18,9 +18,9 @@ var Reasoner = function(shipTypes, inputfield){ //extends AbstractStragety?
 	this.chosenFirePos = null;
 
 	if(leavesCount == 1)
-			this.getOneOfRemainingTargetsPos();
+		this.getOneOfRemainingTargetsPos();
 	else
-			this.generateScenarios();
+		this.generateScenarios();
 };
 
 Reasoner.prototype = {

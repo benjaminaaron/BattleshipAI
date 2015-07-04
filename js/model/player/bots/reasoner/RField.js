@@ -1,5 +1,5 @@
 
-var Field = function(rows, cols){
+var RField = function(rows, cols){
     this.rows = rows;
     this.cols = cols;
 
@@ -13,7 +13,7 @@ var Field = function(rows, cols){
     this.myShipPositions = [];
 };
 
-Field.prototype = {
+RField.prototype = {
 
     toString: function(){
         var str = '';
@@ -28,7 +28,7 @@ Field.prototype = {
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     copy: function(){
-        var copy = new Field(this.rows, this.cols);
+        var copy = new RField(this.rows, this.cols);
         for(var r = 0; r < this.rows; r ++)
             for(var c = 0; c < this.cols; c ++)
                 copy.cells[r][c] = this.cells[r][c];

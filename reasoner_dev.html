@@ -20,7 +20,7 @@
         <script type="text/javascript" src="js/model/player/bots/reasoner/Graph.js"></script>
         <script type="text/javascript" src="js/model/player/bots/reasoner/Node.js"></script>
         <script type="text/javascript" src="js/model/player/bots/reasoner/GraphmlExporter.js"></script>
-        <script type="text/javascript" src="js/model/player/bots/reasoner/temp/Field.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/RField.js"></script>
 
         <script>
 
@@ -29,7 +29,7 @@
             function testReasoner(){
 
                 var shipTypes = [new ShipType(3, 'orange', 1), new ShipType(2, 'orange', 1), new ShipType(1, 'black', 1)];
-                var testfield = new Field(4, 4);
+                var testfield = new RField(4, 4);
 
                 testfield.cells[0][0] = Cell.HIT;
                 testfield.cells[1][0] = Cell.HIT;
