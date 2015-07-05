@@ -9,6 +9,7 @@
 var Driver = function() {
     this.game;
     this.viewModule;
+    this.verbose = true;
 }
 
 Driver.prototype = {
@@ -35,6 +36,10 @@ Driver.prototype = {
      * Is called from index.html as soon as user clicks the "start game" button inside the game control bar.
      */
     startGame: function() {
+        if($('#verboseToggle').prop('checked'))
+            this.verbose = true;
+        else
+            this.verbose = false;
 
         var players = this.initializePlayers();
         this.gameControlController.handleButtonDisplay();
