@@ -1,6 +1,5 @@
 
 var Game = function(players, shipTypes, viewModule){
-
     var board;
 
     this.viewModule = viewModule;

@@ -113,7 +113,11 @@ Board.prototype = {
      * @returns {*}
      */
     fire: function(row, col){
-        var fireResult = this.field.getCellByRowCol(row, col).fire();
+        //console.log(row, col);
+        var cell = this.field.getCellByRowCol(row, col);
+        //console.log(cell);
+        var fireResult = cell.fire();
+        //console.log(fireResult);
 
         if(fireResult.status == CellStatus.DESTROYED)
             this.destroyedShips++;

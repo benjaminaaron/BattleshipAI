@@ -1,6 +1,5 @@
 # BattleshipAI
 A battleship game (Schiffe versenken) with a learning AI in the making. As part of the AI course with Prof. Franz Kurfess in the summer term 2015 at hm.edu.
-See the wiki [here](https://github.com/benjaminaaron/BattleshipAI/wiki).
 
 :smiley: **marketing blurb**:
 BattleshipAI is a fresh, entertaining, challenging and instructive take on the classic game that most people got to appreciate as a way to get through boring classes back in school. Though our version might just make up for a fascinating class itself.

@@ -16,6 +16,7 @@ Cell.prototype = {
 
         if(this.drawMe){
             //throw('undefined state' + this);
+            return new CellStatusMsg(CellStatus.UNDEFINED); //shouldnt happen but it does for some reason
         }
         else {
             this.drawMe = true;

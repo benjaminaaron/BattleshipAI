@@ -3,7 +3,7 @@ var BruteForceReasonerBot = function(name){
     AbstractBot.call(this, name);
     this.type = 'bot';
     this.goal = null;
-    this.destroyedShips = 0;
+    this.destroyedShipThreshold = 0;
 }
 
 BruteForceReasonerBot.prototype = {
@@ -25,14 +25,14 @@ BruteForceReasonerBot.prototype = {
         var self = this;
         //var biggestUntouchedArea = Zone.getBiggestArea(this.fieldMemory);
 
-        if(threshold < 30 || this.destroyedShips < 2){ //better when the biggest free rectangle is small enough?
+        if(threshold < 35 || this.destroyedShipThreshold < 3){ 
             var lastTouchedCell = this.fieldMemory.lastTouchedCell;
             if(lastTouchedCell){
                 if(lastTouchedCell.status == CellStatus.HIT && this.goal == null)
                     this.goal = new DestructionGoal(lastTouchedCell, this);
                 if(lastTouchedCell.status == CellStatus.DESTROYED){
                     this.goal = null;
-                    this.destroyedShips ++;
+                    this.destroyedShipThreshold ++;
                 }
             }
             if(this.goal)
@@ -44,6 +44,7 @@ BruteForceReasonerBot.prototype = {
                 }, 10);
         }
         else {
+            this.goal = null;
             var inputfield = this.convertFieldMemoryToRField();
 
             var reasoner = new Reasoner(game.shipTypes, inputfield);
