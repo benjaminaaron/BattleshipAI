@@ -1,69 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta name="author" content="stehrenberg, chanton1392, abstractCalculus, benjaminaaron">
-        <title>Battleship AI</title>
-        <style></style>
-    </head>
-    <body>
+<head>
+    <meta name="author" content="stehrenberg, chanton1392, abstractCalculus, benjaminaaron">
 
-        <div id='viewContainer'>
-            <div id='gameControls'>
-                <select id='gameOptions' style="width:135px">
-                    <option value='hb'>human vs. bot</option>
-                    <option value='hh'>human vs. human</option>
-                    <option value='bb'>bot vs. bot</option>
-                </select>
-                <input type='button' id='startBtn' value='start game'>
-                <input type='button' id='resetBtn' value='reset'>
-                <input type='button' id='infoBtn' value='info'>
-                <input type='checkbox' id='verboseBtn'>
-                <input type='button' id='readyBtn' value='setup completed'>
-                <div id='statusLabel'>enable javascript in your browser to play battleship&nbsp;&nbsp;&nbsp;</div>
-            </div>
+    <title>Battleship AI</title>
+
+    <!-- CSS own -->
+    <link href="css/style.css" rel="stylesheet"/>
+    <!-- JS vendors -->
+    <script type="text/javascript" src="js/vendors/jquery-2.1.1.min.js"></script>
+    <!-- JS own -->
+    <script type="text/javascript" src="js/controller/GameControlController.js"></script>
+    <!--<script type="text/javascript" src="js/control/GamefieldController.js"></script>-->
+    <script type="text/javascript" src="js/Driver.js"></script>
+    <script type="text/javascript" src="js/model/other.js"></script>
+    <script type="text/javascript" src="js/model/player/AbstractPlayer.js"></script>
+    <script type="text/javascript" src="js/model/player/Human.js"></script>
+    <script type="text/javascript" src="js/model/player/AbstractBot.js"></script>
+    <script type="text/javascript" src="js/model/player/bots/BotToolkit.js"></script>
+    <script type="text/javascript" src="js/model/player/bots/RandomBot.js"></script>
+    <script type="text/javascript" src="js/model/player/bots/RandomDestroyerBot.js"></script>
+    <script type="text/javascript" src="js/model/player/bots/ZoningSquareDestroyerBot.js"></script>
+    <script type="text/javascript" src="js/model/player/bots/ZoningRectDestroyerBot.js"></script>
+    <!-- reasoner start -->
+    <script type="text/javascript" src="js/model/player/bots/reasoner/util.js"></script>
+    <script type="text/javascript" src="js/model/player/bots/reasoner/Reasoner.js"></script>
+    <script type="text/javascript" src="js/model/player/bots/reasoner/Graph.js"></script>
+    <script type="text/javascript" src="js/model/player/bots/reasoner/Node.js"></script>
+    <script type="text/javascript" src="js/model/player/bots/reasoner/GraphmlExporter.js"></script>
+    <script type="text/javascript" src="js/model/player/bots/reasoner/RField.js"></script>
+    <script type="text/javascript" src="js/model/player/bots/BruteForceReasonerBot.js"></script>
+    <!-- reasoner end -->
+    <script type="text/javascript" src="js/model/Game.js"></script>
+    <script type="text/javascript" src="js/model/board/Board.js"></script>
+    <script type="text/javascript" src="js/model/board/FieldMemory.js"></script>
+    <script type="text/javascript" src="js/model/board/Field.js"></script>
+    <script type="text/javascript" src="js/model/board/CellMemory.js"></script>
+    <script type="text/javascript" src="js/model/board/Cell.js"></script>
+    <script type="text/javascript" src="js/model/board/Ship.js"></script>
+    <script type="text/javascript" src="js/model/board/Mine.js"></script>
+    <script type="text/javascript" src="js/view/ShipWrapper.js"></script>
+    <script type="text/javascript" src="js/view/GameView.js"></script>
+</head>
+
+<body>
+
+    <div id='viewContainer'>
+        <div id='gameControls'>
+            <select id='gameOptions' style="width:135px">
+                <option value='hb'>human vs. bot</option>
+                <option value='hh'>human vs. human</option>
+                <option value='bb'>bot vs. bot</option>
+            </select>
+            <input type='button' id='startBtn' value='start game'>
+            <input type='button' id='resetBtn' value='reset'>
+            <input type='button' id='infoBtn' value='info'>
+            <input type='checkbox' id='verboseBtn'>
+            <input type='button' id='readyBtn' value='setup completed'>
+            <div id='statusLabel'>enable javascript in your browser to play battleship&nbsp;&nbsp;&nbsp;</div>
         </div>
-
-        <!-- CSS own -->
-        <link href="css/style.css" rel="stylesheet"/>
-        <!-- JS vendors -->
-        <script type="text/javascript" src="js/vendors/jquery-2.1.1.min.js"></script>
-        <!-- JS own -->
-        <script type="text/javascript" src="js/controller/GameControlController.js"></script>
-        <!--<script type="text/javascript" src="js/control/GamefieldController.js"></script>-->
-        <script type="text/javascript" src="js/Driver.js"></script>
-        <script type="text/javascript" src="js/model/other.js"></script>
-        <script type="text/javascript" src="js/model/player/AbstractPlayer.js"></script>
-        <script type="text/javascript" src="js/model/player/Human.js"></script>
-        <script type="text/javascript" src="js/model/player/AbstractBot.js"></script>
-        <script type="text/javascript" src="js/model/player/bots/BotToolkit.js"></script>
-        <script type="text/javascript" src="js/model/player/bots/RandomBot.js"></script>
-        <script type="text/javascript" src="js/model/player/bots/RandomDestroyerBot.js"></script>
-        <script type="text/javascript" src="js/model/player/bots/ZoningSquareDestroyerBot.js"></script>
-        <script type="text/javascript" src="js/model/player/bots/ZoningRectDestroyerBot.js"></script>
-        <!-- reasoner start -->
-        <script type="text/javascript" src="js/model/player/bots/reasoner/util.js"></script>
-        <script type="text/javascript" src="js/model/player/bots/reasoner/Reasoner.js"></script>
-        <script type="text/javascript" src="js/model/player/bots/reasoner/Graph.js"></script>
-        <script type="text/javascript" src="js/model/player/bots/reasoner/Node.js"></script>
-        <script type="text/javascript" src="js/model/player/bots/reasoner/GraphmlExporter.js"></script>
-        <script type="text/javascript" src="js/model/player/bots/reasoner/RField.js"></script>
-        <script type="text/javascript" src="js/model/player/bots/BruteForceReasonerBot.js"></script>
-        <!-- reasoner end -->
-        <script type="text/javascript" src="js/model/Game.js"></script>
-        <script type="text/javascript" src="js/model/board/Board.js"></script>
-        <script type="text/javascript" src="js/model/board/FieldMemory.js"></script>
-        <script type="text/javascript" src="js/model/board/Field.js"></script>
-        <script type="text/javascript" src="js/model/board/CellMemory.js"></script>
-        <script type="text/javascript" src="js/model/board/Cell.js"></script>
-        <script type="text/javascript" src="js/model/board/Ship.js"></script>
-        <script type="text/javascript" src="js/model/board/Mine.js"></script>
-        <script type="text/javascript" src="js/view/ShipWrapper.js"></script>
-        <script type="text/javascript" src="js/view/GameView.js"></script>
-
-
-        <script type="text/javascript">
-            new Driver().initializeApplication();
-        </script>
-
-    </body>
+    </div>
+    
+    <script type="text/javascript">
+        new Driver().initializeApplication();
+    </script>
+</body>
 </html>
