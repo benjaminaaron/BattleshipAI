@@ -21,7 +21,13 @@ Driver.prototype = {
      */
     initializeApplication: function() {
         this.registerElementController();
+		this.hidePreloadedImages();
     },
+
+	hidePreloadedImages: function () {
+		// This is good enough when using localhost but it might be too early when on the web
+		$('.preload-images').hide();
+	},
 
     /**
      * Register EventHandlers on gamecontrol's buttons to start/reset the game, give info/help
