@@ -1,4 +1,4 @@
-var Reasoner = function(shipTypes, inputfield){ //extends AbstractStragety?
+var Reasoner = function(shipTypes, inputfield, cap){ //extends AbstractStragety?
 	this.graph;
     this.ships = [];
     for(var i = 0; i < shipTypes.length; i++)
@@ -13,7 +13,7 @@ var Reasoner = function(shipTypes, inputfield){ //extends AbstractStragety?
 		console.log('inputfield:\n' + inputfield + '\nships/mines: ' + this.allShips);// + '\n\npossible setups:\n\n');
 
 	this.inputfield = inputfield;
-	var leavesCount = this.loadField();
+	var leavesCount = this.loadField(cap); // -1 in case of not ranThrogh
 	//this.graph.showLeaves();
 
 	this.assessment = {
@@ -24,13 +24,17 @@ var Reasoner = function(shipTypes, inputfield){ //extends AbstractStragety?
 		'chosenFirePos' : null,
 		'equallyBestFirePos_length' : -1,
 		'mode' : null,
-		'remainingTargets' : null
+		'remainingTargets' : null,
+		'reachedCap' : false //cancelled
 	};
 
-	if(leavesCount == 1)
-		this.getOneOfRemainingTargetsPos();
-	else
-		this.generateScenarios();
+	if(leavesCount != -1){ //signal for cap was reached
+		if(leavesCount == 1)
+			this.getOneOfRemainingTargetsPos();
+		else
+			this.generateScenarios();
+	} else
+		this.assessment['reachedCap'] = true;
 
 	//this.graph.export();
 };
@@ -50,7 +54,7 @@ Reasoner.prototype = {
 		this.assessment['chosenFirePos'] = chosenFirePos;
 	},
 
-	loadField: function(){
+	loadField: function(cap){
 		var destroyedShips = this.inputfield.getDestroyedShips();
 
 		for(var i in destroyedShips)
@@ -64,9 +68,13 @@ Reasoner.prototype = {
 			console.log('undestroyed ships/mines: ' + this.undestroyedShips);
 
 		this.graph = new Graph(this.inputfield, this.ships);
-		this.graph.generate();
 
-		return this.graph.getLeavesCount();
+		var ranThrough = this.graph.generate(cap);
+
+		if(ranThrough)
+			return this.graph.getLeavesCount();
+		else
+			return -1;
 	},
 
 	generateScenarios: function(){
@@ -104,7 +112,7 @@ Reasoner.prototype = {
 			var leaf = leaves[i];
 			//console.log('' + leaf);
 			var newPossibleFireResult = leaf.field.whatCouldBeHere(pos, this.inputfield);
-			//console.log(CellArrToStr(newPossibleFireResults));
+			//console.log(RCellArrToStr(newPossibleFireResult));
 			possibleFireResults.push(newPossibleFireResult);
 		}
 

@@ -17,7 +17,6 @@ BruteForceReasonerBot.prototype = {
 
     yourTurn: function(){
         AbstractBot.prototype.yourTurn.call(this);
-        var firePos;
 
         var threshold = this.fieldMemory.rows * this.fieldMemory.cols - this.fieldMemory.countUntouchedCells();
         if(Driver.verboseLogging)
@@ -26,7 +25,29 @@ BruteForceReasonerBot.prototype = {
         var self = this;
         //var biggestUntouchedArea = Zone.getBiggestArea(this.fieldMemory);
 
-        if(threshold < 35 || this.destroyedShipThreshold < 3){ 
+        var firePos;
+        var useReasoner;
+        var reasoner;
+        var assessment;
+
+        if(threshold < 25 || this.destroyedShipThreshold < 2 || this.goal != null){ // goal is questionable here, let him finish the distruction first?
+            useReasoner = false;
+        }
+        else {
+            var inputfield = this.convertFieldMemoryToRField();
+
+            var cap = 1500;
+
+            reasoner = new Reasoner(game.shipTypes, inputfield, cap);
+            assessment = reasoner.getAssessment();
+
+            if(assessment.reachedCap || assessment.chosenFirePos == null)
+                useReasoner = false;
+            else
+                useReasoner = true;
+        }
+
+        if(!useReasoner){
             var lastTouchedCell = this.fieldMemory.lastTouchedCell;
             if(lastTouchedCell){
                 if(lastTouchedCell.status == CellStatus.HIT && this.goal == null)
@@ -44,23 +65,17 @@ BruteForceReasonerBot.prototype = {
                     self.fire(firePos.row, firePos.col);
                 }, 10);
         }
-        else {
+        else { // use reasoner
             this.goal = null;
-            var inputfield = this.convertFieldMemoryToRField();
 
-            var reasoner = new Reasoner(game.shipTypes, inputfield);
             if(Driver.verboseLogging)
                 console.log('reasoner assessment:');
-            var assessment = reasoner.getAssessment();
             if(Driver.verboseLogging)
                 console.log(assessment);
 
             var firePos = assessment.chosenFirePos;
             if(Driver.verboseLogging)
                 console.log('firing at: ' + firePos.row + '/' + firePos.col);
-
-            if(!firePos) //fallback-plan if reasoner cant deliver
-                firePos = Zone.getCentreOfBiggestRect(this.fieldMemory);
 
             setTimeout(function(){
                 self.fire(firePos.row, firePos.col);

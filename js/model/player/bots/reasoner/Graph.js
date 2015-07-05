@@ -20,7 +20,7 @@ var Graph = function(inputfield, ships){
 
 Graph.prototype = {
 
-	generate: function(){
+	generate: function(cap){
 		var parentNodes = [this.rootnode];
 
 		while(this.ships.length > 0){ //TODO recursive instead of top to bottom? checking for sibling-duplicates seems easier though this way
@@ -56,6 +56,9 @@ Graph.prototype = {
 						childNode.setParent(parentNode);
 						parentNode.addChild(childNode);
 						this.nodes.push(childNode);
+
+						if(this.nodes.length > cap)
+							return false;
 					}
 				}
 
@@ -77,6 +80,8 @@ Graph.prototype = {
 			for(var i in flaggedForDeletion)
 				this.deleteNode(flaggedForDeletion[i]);
 		}
+
+		return true;
 	},
 
 	hasIdenticalTwin: function(siblingnodes, newsiblingfield){

@@ -79,12 +79,6 @@ Driver.prototype = {
                 players[0] = new Human(name);
                 players[1] = this.createBot();
                 break;
-            case 'hh':
-                name = prompt('Enter the name of Player 1:', 'Max');
-                players[0] = new Human(name);
-                name = prompt('Enter the name of Player 2:', 'Erika');
-                players[1] = new Human(name);
-                break;
             case 'bb':
                 players[0] = this.createBot();
                 players[1] = this.createBot();

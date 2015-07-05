@@ -116,7 +116,7 @@ Board.prototype = {
         //console.log(row, col);
         var cell = this.field.getCellByRowCol(row, col);
         //console.log(cell);
-        var fireResult = cell.fire();
+        var fireResult = cell.fire(); //TODO sometimes error is thrown here with saying cell.fire() is not a function! 
         //console.log(fireResult);
 
         if(fireResult.status == CellStatus.DESTROYED)
