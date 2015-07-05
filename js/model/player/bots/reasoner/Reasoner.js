@@ -10,13 +10,22 @@ var Reasoner = function(shipTypes, inputfield){ //extends AbstractStragety?
 	// decide about the weight algo here
 	this.weightAlgo = this.getPruningValue; //this.getShotWeightedValue
 
-	//console.log('inputfield:\n' + inputfield + '\nships: ' + this.allShips);// + '\n\npossible setups:\n\n');
+	console.log('inputfield:\n' + inputfield + '\nships/mines: ' + this.allShips);// + '\n\npossible setups:\n\n');
 
 	this.inputfield = inputfield;
 	var leavesCount = this.loadField();
 	//this.graph.showLeaves();
 
-	this.chosenFirePos = null;
+	this.assessment = {
+		'allShips' : this.allShips,
+		'undestroyedShips' : this.undestroyedShips,
+		'leavesCount' : leavesCount,
+		'weightAlgo' : 'getPruningValue',
+		'chosenFirePos' : null,
+		'equallyBestFirePos_length' : -1,
+		'mode' : null,
+		'remainingTargets' : null
+	};
 
 	if(leavesCount == 1)
 		this.getOneOfRemainingTargetsPos();
@@ -28,9 +37,17 @@ var Reasoner = function(shipTypes, inputfield){ //extends AbstractStragety?
 
 Reasoner.prototype = {
 
-	getOneOfRemainingTargetsPos(){
+	getAssessment: function(){
+		return this.assessment;
+	},
+
+	getOneOfRemainingTargetsPos: function(){
 		var targetsPos = this.graph.getLeaves()[0].field.getRemainingTargetsPos(this.inputfield);
-		this.chosenFirePos = targetsPos[Math.floor(Math.random() * targetsPos.length)];
+		var chosenFirePos = targetsPos[Math.floor(Math.random() * targetsPos.length)];
+
+		this.assessment['mode'] = 'fireRemainingTargets';
+		this.assessment['remainingTargets'] = targetsPos.length;
+		this.assessment['chosenFirePos'] = chosenFirePos;
 	},
 
 	loadField: function(){
@@ -42,7 +59,8 @@ Reasoner.prototype = {
 		for(var i = 0; i < this.inputfield.getMinesCount(); i ++)
 			this.ships.splice(this.ships.indexOf(1), 1);
 
-		//this.undestroyedShips = this.ships.slice(); // makes a copy
+		this.undestroyedShips = this.ships.slice(); // makes a copy
+		console.log('undestroyed ships/mines: ' + this.undestroyedShips);
 
 		this.graph = new Graph(this.inputfield, this.ships);
 		this.graph.generate();
@@ -70,9 +88,11 @@ Reasoner.prototype = {
 				equallyBestFirePos.push(firePos);
 		}
 
-		this.equallyBestFirePos_length = equallyBestFirePos.length;
+		var chosenFirePos = equallyBestFirePos[Math.floor(Math.random() * equallyBestFirePos.length)];
 
-		this.chosenFirePos = equallyBestFirePos[Math.floor(Math.random() * equallyBestFirePos.length)];
+		this.assessment['mode'] = 'reasoning';
+		this.assessment['equallyBestFirePos_length'] = equallyBestFirePos.length;
+		this.assessment['chosenFirePos'] = chosenFirePos;
 	},
 
 	getShotValue: function(pos){

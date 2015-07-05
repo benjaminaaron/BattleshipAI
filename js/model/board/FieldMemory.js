@@ -14,6 +14,8 @@ var FieldMemory = function(rows, cols){
             this.cells.push(new CellMemory(i, j));
 
     this.lastTouchedCell = null;
+
+    this.destroyedShips = [];
 };
 
 FieldMemory.prototype = {
@@ -30,7 +32,7 @@ FieldMemory.prototype = {
         return str;
     },
 
-    incorporateFireResult: function(firerow, firecol, resultMsg){
+    incorporateFireResult: function(firerow, firecol, resultMsg, opponentField){
         var firedCell = this.getCellByRowCol(firerow, firecol);
         this.lastTouchedCell = firedCell;
 
@@ -39,10 +41,10 @@ FieldMemory.prototype = {
                 firedCell.status = CellStatus.FIRED;
                 break;
             case CellStatus.DESTROYED:
-                this.setCellStatusesAroundShipToWave_andShipCellsToDestroyed(resultMsg.destroyedShipCode);
+                this.setFrameAroundDestroyedShip(resultMsg.destroyedShipCode, opponentField);
                 break;
             case CellStatus.MINE:
-                this.setCellStatusesAroundMineToRadiation_andMineCellToMine(firedCell);
+                this.setFrameAroundMine(firedCell, opponentField);
                 break;
             default:
                 firedCell.status = resultMsg.status
@@ -50,25 +52,24 @@ FieldMemory.prototype = {
         }
     },
 
-    setCellStatusesAroundMineToRadiation_andMineCellToMine: function(cell){
+    setFrameAroundMine: function(cell, opponentField){
         cell.status = CellStatus.MINE;
         var frame = this.getCellsAroundCellcluster([cell]);
         for(var i in frame){
             var framecell = frame[i];
             if(framecell)
-                if(framecell.status != CellStatus.WAVE_RADIATION)
-                    if(framecell.status == CellStatus.WAVE)
-                        framecell.status = CellStatus.WAVE_RADIATION;
-                    else
-                        framecell.status = CellStatus.RADIATION;
+                framecell.status = opponentField.getCellByRowCol(framecell.row, framecell.col).status; // massive "breach", but no fix for logical error otherwise?
         }
     },
 
-    setCellStatusesAroundShipToWave_andShipCellsToDestroyed: function(shipCode){
+    setFrameAroundDestroyedShip: function(shipCode, opponentField){
         var size = parseInt(shipCode.split('_')[0]);
         var orientation = shipCode.split('_')[1] == 'h';
         var headRow = parseInt(shipCode.split('_')[2].split('-')[0]);
         var headCol = parseInt(shipCode.split('_')[2].split('-')[1]);
+
+        //this.destroyedShips.push(new RShipPos(orientation, size, headRow, headCol)); // for reasoner
+
         var deltaRow = orientation ? 0 : 1;
         var deltaCol = orientation ? 1 : 0;
 
@@ -78,16 +79,12 @@ FieldMemory.prototype = {
             shipcell.status = CellStatus.DESTROYED;
             cellcluster.push(shipcell);
         }
-        var neighbours = this.getCellsAroundCellcluster(cellcluster);
+        var frame = this.getCellsAroundCellcluster(cellcluster);
 
-        for(var i = 0; i < neighbours.length; i ++){
-            var cell = neighbours[i];
-            if(cell)
-                if(cell.status != CellStatus.WAVE_RADIATION)
-                    if(cell.status == CellStatus.RADIATION)
-                        cell.status = CellStatus.WAVE_RADIATION;
-                    else
-                        cell.status = CellStatus.WAVE;
+        for(var i in frame){
+            var framecell = frame[i];
+            if(framecell)
+                framecell.status = opponentField.getCellByRowCol(framecell.row, framecell.col).status;
         }
     },
 

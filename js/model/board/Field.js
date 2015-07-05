@@ -14,7 +14,9 @@ var Field = function(rows, cols){
 }
 
 Field.prototype = {
+
     __proto__: FieldMemory.prototype,
+
     allCellsFree: function(shipSize, orientation, rowHead, colHead){
         var cellcluster = [];
         for(var i=0; i < shipSize; i++){
@@ -29,10 +31,12 @@ Field.prototype = {
                 return false;
         return true;
     },
+
     clear: function(){
         for(var i=0; i < this.cells.length; i++)
             this.cells[i].occupiedBy = null;
     },
+    
     toStringList: function(){
         var str = '';
         for(var i=0; i < this.cells.length; i++)

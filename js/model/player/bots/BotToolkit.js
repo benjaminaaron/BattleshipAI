@@ -83,6 +83,7 @@ DestructionGoal.prototype = {
             this.fire(targetRow, targetCol);
         }
     },
+
     fire: function(row, col){
         var self = this;
         setTimeout(function(){
@@ -164,7 +165,42 @@ Zone.getCentreOfBiggestSquare = function(fieldMemory) {
 	return untouchedCells[choiceIndex];
 };
 
+/*
+Zone.getBiggestArea = function(fieldMemory) { //method copied and adapted from getCentreOfBiggestSquare
+	var untouchedCells = fieldMemory.getUntouchedCells();
+	var maxArea = 0;
 
+	for(var i = 0; i < untouchedCells.length; i ++){
+		var cell = untouchedCells[i];
+		var row = cell.row;
+		var col = cell.col;
+		var expand = true;
+		var sideLength = 1;
+
+		while(expand){
+			sideLength += 2;
+			var d = Math.round(sideLength / 2) - 1;
+			var N = true;
+			for(var j=0; j < sideLength; j++)
+				N = N && fieldMemory.cellIsExistingAndUntouched(row - d, col - d + j);
+			var S = true;
+			for(var j=0; j < sideLength; j++)
+				S = S && fieldMemory.cellIsExistingAndUntouched(row + d, col - d + j);
+			var E = true;
+			for(var j=0; j < sideLength - 2; j++)
+				E = E && fieldMemory.cellIsExistingAndUntouched(row - d + 1 + j, col + d);
+			var W = true;
+			for(var j=0; j < sideLength - 2; j++)
+				W = W && fieldMemory.cellIsExistingAndUntouched(row - d + 1 + j, col - d);
+			expand = N && E && S && W;
+		}
+		var area = Math.pow(sideLength - 2, 2);
+		if(area > maxArea)
+			maxArea = area;
+    }
+    return maxArea;
+};
+*/
 
 Zone.expandIntoDir = function(fieldMemory, startCell, rowDir, colDir){
 	var nextCell = startCell;
@@ -317,6 +353,7 @@ var Patch = function(NWrow, NWcol, rowsHigh, colsWide){ //is one free rectangula
 }
 
 Patch.prototype = {
+
 	getOneMiddleCell: function(){
 		var NWrow = this.NWcell.row;
 		var NWcol = this.NWcell.col;

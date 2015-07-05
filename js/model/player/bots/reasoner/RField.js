@@ -331,7 +331,7 @@ RField.prototype = {
             var headcol = ship[0].col;
             var size = ship.length;
             var orientation = size == 1 ? null : ship[0].row == ship[1].row
-            destroyedShips.push(new ShipPos(orientation, size, headrow, headcol));
+            destroyedShips.push(new RShipPos(orientation, size, headrow, headcol));
         }
 
         return destroyedShips;

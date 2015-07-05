@@ -15,7 +15,7 @@ Cell.prototype = {
     fire: function(){
 
         if(this.drawMe){
-            throw('undefined state' + this);
+            //throw('undefined state' + this);
         }
         else {
             this.drawMe = true;

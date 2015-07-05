@@ -61,11 +61,12 @@ var RCell = {
     WAVE_RADIATION: 7,
     //for internal use, won't come as inputfield with those on
     POSSIBLEMINE: 8,
-    POSSIBLESHIP: 9
+    POSSIBLESHIP: 9,
+    UNDEFINED: 10
 };
 
 function RCellToCharWrapped(cell){
-    return '[' + CellToChar(cell) + ']';
+    return '[' + RCellToChar(cell) + ']';
 };
 
 function RCellToChar(cell){
@@ -95,11 +96,38 @@ function RCellToChar(cell){
     }
 };
 
+function RCharToCell(char){
+    switch(char){
+        case ' ':
+            return RCell.UNTOUCHED;
+        case '.':
+            return RCell.FIRED;
+        case '~':
+            return RCell.WAVE;
+        case 'x':
+            return RCell.HIT;
+        case '=':
+            return RCell.DESTROYED;
+        case '*':
+            return RCell.RADIATION;
+        case 'M':
+            return RCell.MINE ;
+        case '#':
+            return RCell.WAVE_RADIATION;
+        case 'm':
+            return RCell.POSSIBLEMINE;
+        case '-':
+            return RCell.POSSIBLESHIP;
+        default:
+            return RCell.UNDEFINED;
+    }
+};
+
 
 function RCellArrToStr(cellArr){
     var str = '';
     for(var i in cellArr)
-        str += CellToString(cellArr[i]) + ', ';
+        str += RCellToString(cellArr[i]) + ', ';
     return str.substring(0, str.length - 2);
 };
 

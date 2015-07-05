@@ -23,26 +23,81 @@
         <script type="text/javascript" src="js/model/player/bots/reasoner/GraphmlExporter.js"></script>
         <script type="text/javascript" src="js/model/player/bots/reasoner/RField.js"></script>
 
+        <script type="text/javascript" src="js/model/player/bots/reasoner/debug/FieldReader.js"></script>
+
         <script>
 
             testReasoner();
 
             function testReasoner(){
 
+                /*
                 var shipTypes = [new ShipType(3, 'orange', 1), new ShipType(2, 'orange', 1), new ShipType(1, 'black', 1)];
                 var testfield = new RField(4, 4);
-
                 testfield.cells[0][0] = RCell.HIT;
                 testfield.cells[1][0] = RCell.HIT;
-
                 testfield.cells[2][2] = RCell.WAVE_RADIATION;
                 testfield.cells[0][2] = RCell.WAVE;
-
                 testfield.cells[0][3] = RCell.HIT;
-                //testfield.cells[3][3] = Cell.RADIATION;
+                //testfield.cells[3][3] = RCell.RADIATION;
+                */
+
+                /*
+                var testfield = new RField(10, 10);
+
+                var shipTypes = [
+                    new ShipType(1, 'gray', 1),
+                    new ShipType(5, 'aqua', 1),
+                    new ShipType(4, 'red', 1),
+                    new ShipType(3, 'lime', 1),
+                    new ShipType(2, 'orange', 1)
+                ];
+
+                testfield.cells[0][4] = RCell.FIRED;
+                testfield.cells[1][1] = RCell.FIRED;
+                testfield.cells[1][2] = RCell.FIRED;
+                testfield.cells[1][5] = RCell.FIRED;
+                testfield.cells[1][7] = RCell.FIRED;
+                testfield.cells[2][0] = RCell.FIRED;
+                testfield.cells[2][2] = RCell.FIRED;
+                testfield.cells[2][4] = RCell.FIRED;
+                testfield.cells[2][8] = RCell.FIRED;
+                testfield.cells[3][4] = RCell.FIRED;
+                testfield.cells[3][6] = RCell.FIRED;
+                testfield.cells[4][2] = RCell.WAVE;
+                testfield.cells[4][5] = RCell.WAVE;
+                testfield.cells[4][7] = RCell.FIRED;
+                testfield.cells[4][9] = RCell.HIT;
+                testfield.cells[5][0] = RCell.WAVE;
+                testfield.cells[5][1] = RCell.HIT;
+                testfield.cells[5][3] = RCell.HIT;
+                testfield.cells[5][4] = RCell.HIT;
+                testfield.cells[5][6] = RCell.FIRED;
+                testfield.cells[5][8] = RCell.WAVE;
+                testfield.cells[5][9] = RCell.HIT;
+                testfield.cells[6][4] = RCell.WAVE;
+                testfield.cells[7][0] = RCell.WAVE;
+                testfield.cells[7][1] = RCell.WAVE;
+                testfield.cells[7][2] = RCell.FIRED;
+                testfield.cells[7][4] = RCell.HIT;
+                testfield.cells[7][6] = RCell.HIT;
+                testfield.cells[7][7] = RCell.WAVE;
+                testfield.cells[8][0] = RCell.DESTROYED;
+                testfield.cells[8][1] = RCell.WAVE;
+                testfield.cells[8][3] = RCell.WAVE;
+                testfield.cells[8][7] = RCell.WAVE;
+                testfield.cells[8][9] = RCell.HIT;
+                testfield.cells[9][0] = RCell.DESTROYED;
+                testfield.cells[9][1] = RCell.WAVE;
+                testfield.cells[9][2] = RCell.FIRED;
+                testfield.cells[9][4] = RCell.FIRED;*/
+
+                var fieldReader = new FieldReader();
+                var shipTypes = fieldReader.shipTypes;
+                var testfield = fieldReader.debugfield;
 
                 var reasoner = new Reasoner(shipTypes, testfield);
-                console.log(">> fire at: " + reasoner.chosenFirePos);
+                console.log(reasoner.getAssessment());
             }
 
         </script>

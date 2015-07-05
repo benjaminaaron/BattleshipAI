@@ -27,7 +27,7 @@ Graph.prototype = {
 			var shipsize = this.ships.splice(0, 1)[0];
 			var onLeaflevel = this.ships.length == 0;
 
-			//console.log('looking at ship: ' + shipsize);
+			console.log('looking at ' + (shipsize == 1 ? 'mine: ' : 'ship: ') + shipsize + ' (' + this.ships.length + ' remaining)');
 			var collectNextLevel = [];
 
 			for(var i in parentNodes){

@@ -2,6 +2,8 @@
 var BruteForceReasonerBot = function(name){
     AbstractBot.call(this, name);
     this.type = 'bot';
+    this.goal = null;
+    this.destroyedShips = 0;
 }
 
 BruteForceReasonerBot.prototype = {
@@ -18,27 +20,48 @@ BruteForceReasonerBot.prototype = {
         var firePos;
 
         var threshold = this.fieldMemory.rows * this.fieldMemory.cols - this.fieldMemory.countUntouchedCells();
-        console.log('threshold: ' + threshold + ' (BruteForceReasoner activates at 30)');
+        console.log('threshold: ' + threshold + ' (BruteForceReasoner activates at 30 and two destroyed ship)');
 
-        if(threshold < 30){
-            firePos = Zone.getCentreOfBiggestRect(this.fieldMemory);
+        var self = this;
+        //var biggestUntouchedArea = Zone.getBiggestArea(this.fieldMemory);
+
+        if(threshold < 30 || this.destroyedShips < 2){ //better when the biggest free rectangle is small enough?
+            var lastTouchedCell = this.fieldMemory.lastTouchedCell;
+            if(lastTouchedCell){
+                if(lastTouchedCell.status == CellStatus.HIT && this.goal == null)
+                    this.goal = new DestructionGoal(lastTouchedCell, this);
+                if(lastTouchedCell.status == CellStatus.DESTROYED){
+                    this.goal = null;
+                    this.destroyedShips ++;
+                }
+            }
+            if(this.goal)
+                this.goal.think();
+            else
+                setTimeout(function(){
+                    var firePos = Zone.getCentreOfBiggestRect(self.fieldMemory);
+                    self.fire(firePos.row, firePos.col);
+                }, 10);
         }
         else {
             var inputfield = this.convertFieldMemoryToRField();
 
-            console.log(inputfield + '');
             var reasoner = new Reasoner(game.shipTypes, inputfield);
-            var firePos = reasoner.chosenFirePos;
-            console.log(">> fire at: " + firePos + ' (' + reasoner.equallyBestFirePos_length + ')');
+            console.log('reasoner assessment:');
+            var assessment = reasoner.getAssessment();
+            console.log(assessment);
+
+            var firePos = assessment.chosenFirePos;
+            console.log('firing at: ' + firePos.row + '/' + firePos.col);
 
             if(!firePos) //fallback-plan if reasoner cant deliver
                 firePos = Zone.getCentreOfBiggestRect(this.fieldMemory);
+
+            setTimeout(function(){
+                self.fire(firePos.row, firePos.col);
+            }, 10);
         }
 
-        var self = this;
-        setTimeout(function(){
-            self.fire(firePos.row, firePos.col);
-        }, 10);
     },
 
     convertFieldMemoryToRField: function(){
