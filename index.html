@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head> 
+    <head>
         <meta name="author" content="stehrenberg, chanton1392, abstractCalculus, benjaminaaron">
-        <title>Battleship AI</title> 
-        <style></style> 
-    </head> 
+        <title>Battleship AI</title>
+        <style></style>
+    </head>
     <body>
-        
+
         <div id='viewContainer'>
             <div id='gameControls'>
                 <select id='gameOptions' style="width:135px">
@@ -39,6 +39,15 @@
         <script type="text/javascript" src="js/model/player/bots/RandomDestroyerBot.js"></script>
         <script type="text/javascript" src="js/model/player/bots/ZoningSquareDestroyerBot.js"></script>
         <script type="text/javascript" src="js/model/player/bots/ZoningRectDestroyerBot.js"></script>
+        <!-- reasoner start -->
+        <script type="text/javascript" src="js/model/player/bots/reasoner/util.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Reasoner.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Graph.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/Node.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/GraphmlExporter.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/reasoner/RField.js"></script>
+        <script type="text/javascript" src="js/model/player/bots/BruteForceReasonerBot.js"></script>
+        <!-- reasoner end -->
         <script type="text/javascript" src="js/model/Game.js"></script>
         <script type="text/javascript" src="js/model/board/Board.js"></script>
         <script type="text/javascript" src="js/model/board/FieldMemory.js"></script>
@@ -50,9 +59,10 @@
         <script type="text/javascript" src="js/view/ShipWrapper.js"></script>
         <script type="text/javascript" src="js/view/GameView.js"></script>
 
+
         <script type="text/javascript">
             new Driver().initializeApplication();
         </script>
-        
-    </body> 
+
+    </body>
 </html>

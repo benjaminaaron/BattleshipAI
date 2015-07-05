@@ -1,16 +1,13 @@
 
 var CellStatus = {
     UNTOUCHED: 0,
-    FIRED : 1,  // been fired at, but is a miss
-    HIT : 2,
-    DESTROYED : 3,
-    SHIP : 4,
-    SPARE: 5,   // for neighbour cells of elements
-                // TODO: change to WAVE
+    FIRED: 1,
+    WAVE: 2,
+    HIT: 3,
+    DESTROYED: 4,
+    RADIATION: 5,
     MINE: 6,
-    RADIATION: 7,    // indicates mine on adjacent cell
-    WAVE: 8,         // for cells adjacent to elements
-    WAVE_RADIATION: 9
+    WAVE_RADIATION: 7,
 };
 
 function CellToCharWrapped_debug(cell){
@@ -79,4 +76,7 @@ var ShipType = function(size, color, quantity){
     this.size = size;
     this.color = color;
     this.quantity = quantity;
+    this.isMine = false;
+    if(size == 1)
+        this.isMine = true;
 };

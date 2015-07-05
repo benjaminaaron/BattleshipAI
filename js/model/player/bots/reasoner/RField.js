@@ -7,7 +7,7 @@ var RField = function(rows, cols){
     for(var r = 0; r < rows; r ++){
         var row = [];
         for(var c = 0; c < cols; c ++)
-            row.push(Cell.UNTOUCHED);
+            row.push(RCell.UNTOUCHED);
         this.cells.push(row);
     }
     this.myShipPositions = [];
@@ -19,7 +19,7 @@ RField.prototype = {
         var str = '';
         for(var r = 0; r < this.rows; r ++){
             for(var c = 0; c < this.cols; c ++)
-                str += '[' + CellToChar(this.cells[r][c]) + ']';
+                str += '[' + RCellToChar(this.cells[r][c]) + ']';
             str += '\n';
         }
         return str;
@@ -48,12 +48,12 @@ RField.prototype = {
 
     place: function(shipPos){
         if(shipPos.size == 1) // mine
-            this.cells[shipPos.headrow][shipPos.headcol] = Cell.POSSIBLEMINE;
+            this.cells[shipPos.headrow][shipPos.headcol] = RCell.POSSIBLEMINE;
         else{
             var isHoriz = shipPos.orientation ? 1 : 0;
             var isVert = shipPos.orientation ? 0 : 1;
             for(var i = 0; i < shipPos.size; i ++)
-                this.cells[shipPos.headrow + isVert * i][shipPos.headcol + isHoriz * i] = Cell.POSSIBLESHIP;
+                this.cells[shipPos.headrow + isVert * i][shipPos.headcol + isHoriz * i] = RCell.POSSIBLESHIP;
         }
         this.myShipPositions.push(shipPos);
     },
@@ -74,14 +74,14 @@ RField.prototype = {
         for(var r = 0; r < this.rows; r ++)
             for(var c = 0; c <= this.cols - size; c ++)
                 if(this.isValidHorizPosition(r, c, size))
-                    validPositions.push(new ShipPos(true, size, r, c));
+                    validPositions.push(new RShipPos(true, size, r, c));
 
         if(size != 1){ // size 1 is a mine, enough to collect valid positions once
             // vertical
             for(var r = 0; r <= this.rows - size; r ++)
                 for(var c = 0; c < this.cols; c ++)
                     if(this.isValidVertPosition(r, c, size))
-                        validPositions.push(new ShipPos(false, size, r, c));
+                        validPositions.push(new RShipPos(false, size, r, c));
         }
 
         return validPositions;
@@ -93,7 +93,7 @@ RField.prototype = {
         for(var c = col; c < col + size; c ++){
             if(!this.validForCore(this.cells[row][c], size == 1))
                 return false;
-            if(this.cells[row][c] == Cell.HIT)
+            if(this.cells[row][c] == RCell.HIT)
                 hitcounter ++;
         }
         if(hitcounter == size)
@@ -115,7 +115,7 @@ RField.prototype = {
         for(var r = row; r < row + size; r ++){
             if(!this.validForCore(this.cells[r][col], size == 1))
                 return false;
-            if(this.cells[r][col] == Cell.HIT)
+            if(this.cells[r][col] == RCell.HIT)
                 hitcounter ++;
         }
         if(hitcounter == size)
@@ -132,13 +132,13 @@ RField.prototype = {
     },
 
     validForCore: function(cell, isMine){
-        if(cell == Cell.UNTOUCHED || (!isMine && cell == Cell.HIT))
+        if(cell == RCell.UNTOUCHED || (!isMine && cell == RCell.HIT))
             return true;
         return false;
     },
 
     validForFrame: function(cell){
-        if(cell == Cell.UNTOUCHED || cell == Cell.WAVE || cell == Cell.RADIATION || cell == Cell.WAVE_RADIATION)
+        if(cell == RCell.UNTOUCHED || cell == RCell.WAVE || cell == RCell.RADIATION || cell == RCell.WAVE_RADIATION)
             return true;
         return false;
     },
@@ -151,25 +151,33 @@ RField.prototype = {
 
     allHitsSatisfied: function(hitsPos){
         for(var i in hitsPos)
-            if(this.cells[hitsPos[i].row][hitsPos[i].col] != Cell.POSSIBLESHIP)
+            if(this.cells[hitsPos[i].row][hitsPos[i].col] != RCell.POSSIBLESHIP)
                 return false;
         return true;
     },
 
     allWavesSatisfied: function(wavesPos){
-        var allWavesSatisfied = true;
-        for(var i in wavesPos)
-            if(!this.hasOneOfTheseCellsAroundIt(wavesPos[i], [Cell.POSSIBLESHIP, Cell.HIT, Cell.DESTROYED])) //POSSIBLEDEBUG added HIT later, should be there right??
-                allWavesSatisfied = false;
-        return allWavesSatisfied;
+        for(var i in wavesPos){
+            var wavePos = wavesPos[i];
+            if(!this.hasOneOfTheseCellsAroundIt(wavePos, [RCell.POSSIBLESHIP, RCell.HIT, RCell.DESTROYED])) //POSSIBLEDEBUG added HIT later, should be there right??
+                return false;
+            if(this.cells[wavePos.row][wavePos.col] != RCell.WAVE_RADIATION)
+                if(this.hasOneOfTheseCellsAroundIt(wavePos, [RCell.POSSIBLEMINE, RCell.MINE]))
+                    return false;
+        }
+        return true;
     },
 
     allRadiationsSatisfied: function(radiationsPos){
-        var allRadiationsSatisfied = true;
-        for(var i in radiationsPos)
-            if(!this.hasOneOfTheseCellsAroundIt(radiationsPos[i], [Cell.POSSIBLEMINE, Cell.MINE]))
-                allRadiationsSatisfied = false;
-        return allRadiationsSatisfied;
+        for(var i in radiationsPos){
+            var radiationPos = radiationsPos[i];
+            if(!this.hasOneOfTheseCellsAroundIt(radiationPos, [RCell.POSSIBLEMINE, RCell.MINE]))
+                return false;
+            if(this.cells[radiationPos.row][radiationPos.col] != RCell.WAVE_RADIATION)
+                if(this.hasOneOfTheseCellsAroundIt(radiationPos, [RCell.POSSIBLESHIP, RCell.HIT, RCell.DESTROYED]))
+                    return false;
+        }
+        return true;
     },
 
     hasOneOfTheseCellsAroundIt: function(pos, cells){ // use getNeighbourhood to reduce code? or is that a waste of Pos-Objects
@@ -193,7 +201,7 @@ RField.prototype = {
                 if(shipPos.headrow == pos.row){
                     var hitcounter = 0;
                     for(var c = shipPos.headcol; c < shipPos.headcol + shipPos.size; c ++){
-                        if(inputfield.cells[pos.row][c] == Cell.HIT)
+                        if(inputfield.cells[pos.row][c] == RCell.HIT)
                             hitcounter ++;
                         if(c == pos.col)
                             returnShipPos = shipPos;
@@ -203,7 +211,7 @@ RField.prototype = {
                 if(shipPos.headcol == pos.col){
                     var hitcounter = 0;
                     for(var r = shipPos.headrow; r < shipPos.headrow + shipPos.size; r ++){
-                        if(inputfield.cells[r][pos.col] == Cell.HIT)
+                        if(inputfield.cells[r][pos.col] == RCell.HIT)
                             hitcounter ++;
                         if(r == pos.row)
                             returnShipPos = shipPos;
@@ -221,33 +229,33 @@ RField.prototype = {
 
         var mypos = this.cells[pos.row][pos.col];
         switch(mypos){
-            case Cell.POSSIBLESHIP:
+            case RCell.POSSIBLESHIP:
                 if(this.wouldBeDestroyingShot(pos, inputfield))
-                    return Cell.DESTROYED;
+                    return RCell.DESTROYED;
                 else
-                    return Cell.HIT;
-            case Cell.POSSIBLEMINE:
-                return Cell.MINE;
+                    return RCell.HIT;
+            case RCell.POSSIBLEMINE:
+                return RCell.MINE;
             default:
                 var couldbe = null;
                 var WAVE_RADIATION_casechecker = 0;
 
-                if(this.hasOneOfTheseCellsAroundIt(pos, [Cell.HIT, Cell.DESTROYED, Cell.POSSIBLESHIP])){
-                    couldbe = Cell.WAVE;
+                if(this.hasOneOfTheseCellsAroundIt(pos, [RCell.HIT, RCell.DESTROYED, RCell.POSSIBLESHIP])){
+                    couldbe = RCell.WAVE;
                     WAVE_RADIATION_casechecker ++;
                 }
 
-                if(this.hasOneOfTheseCellsAroundIt(pos, [Cell.MINE, Cell.POSSIBLEMINE])){
-                    couldbe = Cell.RADIATION;
+                if(this.hasOneOfTheseCellsAroundIt(pos, [RCell.MINE, RCell.POSSIBLEMINE])){
+                    couldbe = RCell.RADIATION;
                     WAVE_RADIATION_casechecker ++;
                 }
 
                 if(WAVE_RADIATION_casechecker == 2){
-                    couldbe = Cell.WAVE_RADIATION;
+                    couldbe = RCell.WAVE_RADIATION;
                 }
 
                 if(couldbe == null)
-                    couldbe = Cell.FIRED;
+                    couldbe = RCell.FIRED;
 
                 return couldbe;
         }
@@ -262,28 +270,27 @@ RField.prototype = {
         var targets = [];
         for(var r = 0; r < this.rows; r ++)
             for(var c = 0; c < this.cols; c ++)
-                if(this.cells[r][c] == Cell.POSSIBLESHIP && inputfield.cells[r][c] == Cell.UNTOUCHED)
+                if(this.cells[r][c] == RCell.POSSIBLESHIP && inputfield.cells[r][c] == RCell.UNTOUCHED)
                     targets.push(new Pos(r, c));
         return targets;
     },
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-
     getWavesPos: function(){
-        return this.getObjPositions(Cell.WAVE).concat(this.getObjPositions(Cell.WAVE_RADIATION));
+        return this.getObjPositions(RCell.WAVE).concat(this.getObjPositions(RCell.WAVE_RADIATION));
     },
 
     getHitsPos: function(){
-        return this.getObjPositions(Cell.HIT);
+        return this.getObjPositions(RCell.HIT);
     },
 
     getRadiationsPos: function(){
-        return this.getObjPositions(Cell.RADIATION).concat(this.getObjPositions(Cell.WAVE_RADIATION));
+        return this.getObjPositions(RCell.RADIATION).concat(this.getObjPositions(RCell.WAVE_RADIATION));
     },
 
     getShootablePositions: function(){
-        return this.getObjPositions(Cell.UNTOUCHED);
+        return this.getObjPositions(RCell.UNTOUCHED);
     },
 
     getObjPositions: function(cell){
@@ -298,7 +305,7 @@ RField.prototype = {
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     getDestroyedShips: function(){
-        var destroyedCellsPos = this.getObjPositions(Cell.DESTROYED);
+        var destroyedCellsPos = this.getObjPositions(RCell.DESTROYED);
 
         var ships = []; // will be arrays of cells finding each other, within an array
 
@@ -341,7 +348,7 @@ RField.prototype = {
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     getMinesCount: function(){
-        return this.getObjPositions(Cell.MINE).length;
+        return this.getObjPositions(RCell.MINE).length;
     }
 
 };

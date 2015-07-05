@@ -43,14 +43,14 @@ function Pos(row, col){
     }
 };
 
-function ShipPos(orientation, size, headrow, headcol){
+function RShipPos(orientation, size, headrow, headcol){
     this.orientation = orientation;
     this.size = size;
     this.headrow = headrow;
     this.headcol = headcol;
 };
 
-var Cell = {
+var RCell = {
     UNTOUCHED: 0,
     FIRED: 1,
     WAVE: 2,
@@ -64,31 +64,31 @@ var Cell = {
     POSSIBLESHIP: 9
 };
 
-function CellToCharWrapped(cell){
+function RCellToCharWrapped(cell){
     return '[' + CellToChar(cell) + ']';
 };
 
-function CellToChar(cell){
+function RCellToChar(cell){
     switch(cell){
-        case Cell.UNTOUCHED:
+        case RCell.UNTOUCHED:
             return ' ';
-        case Cell.FIRED:
+        case RCell.FIRED:
             return '.';
-        case Cell.WAVE:
+        case RCell.WAVE:
             return '~';
-        case Cell.HIT:
+        case RCell.HIT:
             return 'x';
-        case Cell.DESTROYED:
+        case RCell.DESTROYED:
             return '=';
-        case Cell.RADIATION:
+        case RCell.RADIATION:
             return '*';
-        case Cell.MINE:
+        case RCell.MINE:
             return 'M';
-        case Cell.WAVE_RADIATION:
+        case RCell.WAVE_RADIATION:
             return '#';
-        case Cell.POSSIBLEMINE:
+        case RCell.POSSIBLEMINE:
             return 'm';
-        case Cell.POSSIBLESHIP:
+        case RCell.POSSIBLESHIP:
             return '-';
         default:
             return '0';
@@ -96,40 +96,42 @@ function CellToChar(cell){
 };
 
 
-function CellArrToStr(cellArr){
+function RCellArrToStr(cellArr){
     var str = '';
     for(var i in cellArr)
         str += CellToString(cellArr[i]) + ', ';
     return str.substring(0, str.length - 2);
 };
 
-function CellToString(cell){
+function RCellToString(cell){
     switch(cell){
-        case Cell.UNTOUCHED:
+        case RCell.UNTOUCHED:
             return 'UNTOUCHED';
-        case Cell.FIRED:
+        case RCell.FIRED:
             return 'FIRED';
-        case Cell.WAVE:
+        case RCell.WAVE:
             return 'WAVE';
-        case Cell.HIT:
+        case RCell.HIT:
             return 'HIT';
-        case Cell.DESTROYED:
+        case RCell.DESTROYED:
             return 'DESTROYED';
-        case Cell.RADIATION:
+        case RCell.RADIATION:
             return 'RADIATION';
-        case Cell.MINE:
+        case RCell.MINE:
             return 'MINE';
-        case Cell.WAVE_RADIATION:
+        case RCell.WAVE_RADIATION:
             return 'WAVE_RADIATION';
-        case Cell.POSSIBLEMINE:
+        case RCell.POSSIBLEMINE:
             return 'POSSIBLEMINE';
-        case Cell.POSSIBLESHIP:
+        case RCell.POSSIBLESHIP:
             return 'POSSIBLESHIP';
         default:
             return 'ERROR';
     }
 };
 
+
+/*
 var ShipType = function(size, color, quantity){
     this.size = size;
     this.color = color;
@@ -137,4 +139,4 @@ var ShipType = function(size, color, quantity){
     this.isMine = false;
     if(size == 1)
         this.isMine = true;
-};
+};*/

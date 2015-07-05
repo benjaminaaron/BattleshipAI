@@ -31,7 +31,7 @@ FieldMemory.prototype = {
     },
 
     incorporateFireResult: function(firerow, firecol, resultMsg){
-        var firedCell = this.getCellByRowCol(firerow, firecol);    
+        var firedCell = this.getCellByRowCol(firerow, firecol);
         this.lastTouchedCell = firedCell;
 
         switch(resultMsg.status) {
@@ -112,10 +112,18 @@ FieldMemory.prototype = {
 
     getUntouchedCells: function(){
         var cells = [];
-        for(var i=0; i < this.cells.length; i++)
+        for(var i = 0; i < this.cells.length; i ++)
             if(this.cells[i].status == CellStatus.UNTOUCHED)
                 cells.push(this.cells[i]);
         return cells;
+    },
+
+    countUntouchedCells: function(){
+        var count = 0;
+        for(var i = 0; i < this.cells.length; i ++)
+            if(this.cells[i].status == CellStatus.UNTOUCHED)
+                count ++;
+        return count;
     },
 
     getCellsAroundCellcluster: function(cellcluster){

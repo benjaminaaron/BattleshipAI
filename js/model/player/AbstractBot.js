@@ -12,7 +12,7 @@ AbstractBot.prototype = {
         AbstractPlayer.prototype.yourSetup.call(this);
 
         if(this.type == 'bot' && this.opponent.type == 'human')// case human vs. bot
-            this.board.showShips = true; //TODO false of course :)
+            this.board.showShips = false;
 
         var self = this;
         setTimeout(function(){ //required to give the Game-constructor time to "finish" the game object, it isn't available yet otherwise

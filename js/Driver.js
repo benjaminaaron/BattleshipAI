@@ -94,8 +94,9 @@ Driver.prototype = {
             + 'r\tRandomBot\n'
             + 'rd\tRandomDestroyerBot\n'
             + 'zsd\tZoningSquareDestroyerBot\n'
-            + 'zrd\tZoningRectDestroyerBot\n',
-            'r' // default text displayed inside prompt
+            + 'zrd\tZoningRectDestroyerBot\n'
+            + 'bfr\tBruteForceReasonerBot\n',
+            'bfr' // default text displayed inside prompt
         );
 
         switch (type) {
@@ -110,6 +111,9 @@ Driver.prototype = {
                 break;
             case 'zrd':
                 bot = new ZoningRectDestroyerBot('zoning rect destroyer bot');
+                break;
+            case 'bfr':
+                bot = new BruteForceReasonerBot('brute force reasoner bot');
                 break;
         }
 

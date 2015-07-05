@@ -8,7 +8,8 @@ var Game = function(players, shipTypes, viewModule){
     this.totalCells = this.rows * this.cols;
     this.totalShipCells = 0; // counting them for winning stats
 
-    for(var i=0; i < shipTypes.length; i++)
+    this.shipTypes = shipTypes; //need to get that for reasoner
+    for(var i = 0; i < shipTypes.length; i ++)
         this.totalShipCells = this.totalShipCells + shipTypes[i].quantity * shipTypes[i].size;
 
     // PLAYER 0

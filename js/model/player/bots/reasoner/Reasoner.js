@@ -8,11 +8,12 @@ var Reasoner = function(shipTypes, inputfield){ //extends AbstractStragety?
 	this.allShips = this.ships.slice();
 
 	// decide about the weight algo here
-	this.weightAlgo = this.getShotWeightedValue; //this.getPruningValue
+	this.weightAlgo = this.getPruningValue; //this.getShotWeightedValue
 
 	//console.log('inputfield:\n' + inputfield + '\nships: ' + this.allShips);// + '\n\npossible setups:\n\n');
 
-	var leavesCount = this.loadField(inputfield);
+	this.inputfield = inputfield;
+	var leavesCount = this.loadField();
 	//this.graph.showLeaves();
 
 	this.chosenFirePos = null;
@@ -21,6 +22,8 @@ var Reasoner = function(shipTypes, inputfield){ //extends AbstractStragety?
 		this.getOneOfRemainingTargetsPos();
 	else
 		this.generateScenarios();
+
+	//this.graph.export();
 };
 
 Reasoner.prototype = {
@@ -30,20 +33,18 @@ Reasoner.prototype = {
 		this.chosenFirePos = targetsPos[Math.floor(Math.random() * targetsPos.length)];
 	},
 
-	loadField: function(inputfield){
-		this.inputfield = inputfield;
-
-		var destroyedShips = inputfield.getDestroyedShips();
+	loadField: function(){
+		var destroyedShips = this.inputfield.getDestroyedShips();
 
 		for(var i in destroyedShips)
 			this.ships.splice(this.ships.indexOf(destroyedShips[i].size), 1);
 
-		for(var i = 0; i < inputfield.getMinesCount(); i ++)
+		for(var i = 0; i < this.inputfield.getMinesCount(); i ++)
 			this.ships.splice(this.ships.indexOf(1), 1);
 
 		//this.undestroyedShips = this.ships.slice(); // makes a copy
 
-		this.graph = new Graph(inputfield, this.ships);
+		this.graph = new Graph(this.inputfield, this.ships);
 		this.graph.generate();
 
 		return this.graph.getLeavesCount();
@@ -69,6 +70,8 @@ Reasoner.prototype = {
 				equallyBestFirePos.push(firePos);
 		}
 
+		this.equallyBestFirePos_length = equallyBestFirePos.length;
+
 		this.chosenFirePos = equallyBestFirePos[Math.floor(Math.random() * equallyBestFirePos.length)];
 	},
 
@@ -88,25 +91,25 @@ Reasoner.prototype = {
 
 		for(var i in possibleFireResults){
 			switch(possibleFireResults[i]){
-				case Cell.FIRED:
+				case RCell.FIRED:
 					counters[0] ++;
 					break;
-				case Cell.WAVE:
+				case RCell.WAVE:
 					counters[1] ++;
 					break;
-				case Cell.HIT:
+				case RCell.HIT:
 					counters[2] ++;
 					break;
-				case Cell.DESTROYED:
+				case RCell.DESTROYED:
 					counters[3] ++;
 					break;
-				case Cell.RADIATION:
+				case RCell.RADIATION:
 					counters[4] ++;
 					break;
-				case Cell.MINE:
+				case RCell.MINE:
 					counters[5] ++;
 					break;
-				case Cell.WAVE_RADIATION:
+				case RCell.WAVE_RADIATION:
 					counters[6] ++;
 					break;
 			}

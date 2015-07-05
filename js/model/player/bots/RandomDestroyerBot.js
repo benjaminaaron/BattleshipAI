@@ -13,6 +13,7 @@ RandomDestroyerBot.prototype = {
         this.board.randomlyPlaceShips();
         game.updatedBoard(UpdateReport.SHIPSWERERANDOMLYPLACED);
     },
+    
     yourTurn: function(){
         AbstractBot.prototype.yourTurn.call(this);
 
