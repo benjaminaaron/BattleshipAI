@@ -66,7 +66,8 @@ AbstractPlayer.prototype = {
 
         var resultMsg = game.fire(this, row, col);
 
-        this.fieldMemory.incorporateFireResult(row, col, resultMsg, this.opponent.board.field);
+        if(resultMsg.status != CellStatus.UNDEFINED)
+            this.fieldMemory.incorporateFireResult(row, col, resultMsg, this.opponent.board.field);
         //console.log(this.fieldMemory.toString());
 
         this.finishedTurn();

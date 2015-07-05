@@ -40,6 +40,7 @@ GameControlController.prototype = {
         $('#gameviewRadioBtn').hide();
         $('#statsviewRadioBtn').hide();
         $('#resetBtn').show();
+        $('#verboseToggle').hide();
     },
 
     /**

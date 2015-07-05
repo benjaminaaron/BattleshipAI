@@ -8,6 +8,7 @@ var CellStatus = {
     RADIATION: 5,
     MINE: 6,
     WAVE_RADIATION: 7,
+    UNDEFINED: 8
 };
 
 function CellToCharWrapped_debug(cell){

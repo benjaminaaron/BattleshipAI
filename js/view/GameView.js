@@ -54,7 +54,6 @@ GameView.prototype = {
      * @returns The pure canvas element. If we returned the canvas obj itself, we would get a lot of jQuery BS.
      */
     initializeCanvas: function(canvasID, canvasWidthPx, canvasHeightPx){
-
         var canvas = $('<canvas>').attr({
             'id': 'canvas_' + canvasID,
             'width': canvasWidthPx,
@@ -72,9 +71,7 @@ GameView.prototype = {
      * @param player
      */
     wrapAndInitShips: function(player){
-
         var ships = player.board.elements;
-
         for(var shipNo = 0; shipNo < ships.length; shipNo++){
             var shipWrapper = new ShipWrapper(player, ships[shipNo], shipNo, this.cellSizePx, this.fieldLeft, this.fieldRight, this.fieldTop);
             this.shipsWrapped.push(shipWrapper);

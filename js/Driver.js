@@ -9,6 +9,7 @@
 var Driver = function() {
     this.game;
     this.viewModule;
+    this.verbose = true;
 }
 
 Driver.prototype = {
@@ -35,17 +36,21 @@ Driver.prototype = {
      * Is called from index.html as soon as user clicks the "start game" button inside the game control bar.
      */
     startGame: function() {
+        if($('#verboseToggle').prop('checked'))
+            this.verbose = true;
+        else
+            this.verbose = false;
 
         var players = this.initializePlayers();
         this.gameControlController.handleButtonDisplay();
         this.gameControlController.showStatusInfo('in <b>setup phase</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 
         var shipTypes = [
-            new ShipType(1, 'gray', 1),
+            new ShipType(1, 'gray', 2),
             new ShipType(5, 'aqua', 1),
             new ShipType(4, 'red', 1),
             new ShipType(3, 'lime', 1),
-            new ShipType(2, 'orange', 1)
+            new ShipType(2, 'orange', 2)
         ];
 
         game = new Game(players, shipTypes, this.viewModule);

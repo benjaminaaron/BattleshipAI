@@ -9,7 +9,7 @@
  * @param fieldTop
  * @constructor
  */
-var ShipWrapper = function(player, ship, posNumb, cellSizePx, fieldLeft, fieldRight, fieldTop){ 
+var ShipWrapper = function(player, ship, posNumb, cellSizePx, fieldLeft, fieldRight, fieldTop){
     this.player = player;
     this.ship = ship;
 
@@ -28,7 +28,7 @@ var ShipWrapper = function(player, ship, posNumb, cellSizePx, fieldLeft, fieldRi
     this.h = this.ship.orientation ? this.hHoriz : this.hVert;
 
     this.x = fieldRight + 15;
-    this.y = fieldTop + 20 + posNumb * cellSizePx * 2; // x,y points always to top left corner of rect
+    this.y = fieldTop + posNumb * cellSizePx * 1.4; // x,y points always to top left corner of rect
 
     this.cellSizePx = cellSizePx;
     this.fieldLeft = fieldLeft;
