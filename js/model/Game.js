@@ -28,6 +28,7 @@ var Game = function(players, shipTypes, viewModule){
 
     this.inPlayPhase = false;
     this.gameRunning = false;
+    this.verboseLogging = false;
     this.setCurrentPlayer(this.player0);
 }
 

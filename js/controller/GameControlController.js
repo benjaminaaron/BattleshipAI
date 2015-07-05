@@ -11,7 +11,6 @@ var GameControlController = function(driver){
 }
 
 GameControlController.prototype = {
-    //__proto__: AbstractController.prototype,
 
     /**
      * Register EventHandlers on gamecontrol's buttons to start/reset the game, give info/help
@@ -25,6 +24,7 @@ GameControlController.prototype = {
         });
         $('#resetBtn').on('click', this.reset);
         $('#infoBtn').on('click', this.info);
+        $('#verboseBtn').on('click', this.setVerboseLogging);
         $('#readyBtn').on('click', function() {
             game.currentPlayer.iAmDoneSettingUp()
         });    // iAmDoneSettingUp does not exist at this point!
@@ -72,5 +72,13 @@ GameControlController.prototype = {
      */
     reset: function(){
         location.reload();
+    },
+
+    /**
+     * Enables verbose logging were additional messages are emitted on the browser's console. Slows down the overall
+     * gaming, but helps with debugging!
+     */
+    setVerboseLogging: function() {
+        game.verboseLogging = true;
     }
 }
