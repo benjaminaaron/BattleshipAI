@@ -15,12 +15,10 @@ Cell.prototype = {
     fire: function(){
 
         if(this.drawMe){
-            //throw('undefined state' + this);
             return new CellStatusMsg(CellStatus.UNDEFINED); //shouldnt happen but it does for some reason
         }
         else {
             this.drawMe = true;
-
             var element = this.occupiedBy; // ship or mine
             if(element)
                 return element.fire();

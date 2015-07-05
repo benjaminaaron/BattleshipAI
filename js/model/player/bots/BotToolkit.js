@@ -49,7 +49,8 @@ DestructionGoal.prototype = {
 
         if(this.cell != lastTouchedCell && lastTouchedCell.status == CellStatus.HIT){
             this.secondHitFound = true;
-            console.log('2nd hit was in dir ' + this.lastDir.name);
+			if(Driver.verboseLogging)
+            	console.log('2nd hit was in dir ' + this.lastDir.name);
         }
 
         if(!this.secondHitFound){
@@ -326,7 +327,8 @@ Patches.prototype = {
 	},
 	show: function(){
 		for(var i=0; i < this.patches.length; i++)
-			console.log('' + this.patches[i]);
+			if(Driver.verboseLogging)
+				console.log('' + this.patches[i]);
 	},
 	getOneBiggestPatch: function(){
 		var index = 0;

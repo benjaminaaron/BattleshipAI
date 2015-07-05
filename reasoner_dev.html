@@ -97,7 +97,8 @@
                 var testfield = fieldReader.debugfield;
 
                 var reasoner = new Reasoner(shipTypes, testfield);
-                console.log(reasoner.getAssessment());
+                if(Driver.verboseLogging)
+                    console.log(reasoner.getAssessment());
             }
 
         </script>

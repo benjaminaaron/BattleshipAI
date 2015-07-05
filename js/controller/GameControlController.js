@@ -24,9 +24,11 @@ GameControlController.prototype = {
         });
         $('#resetBtn').on('click', this.reset);
         $('#infoBtn').on('click', this.info);
-        $('#verboseBtn').on('click', this.setVerboseLogging);
+        $('#verboseBtn').on('click', function() {
+            self.setVerboseLogging();
+        });
         $('#readyBtn').on('click', function() {
-            game.currentPlayer.iAmDoneSettingUp()
+            game.currentPlayer.iAmDoneSettingUp();
         });    // iAmDoneSettingUp does not exist at this point!
     },
 
@@ -40,7 +42,7 @@ GameControlController.prototype = {
         $('#gameviewRadioBtn').hide();
         $('#statsviewRadioBtn').hide();
         $('#resetBtn').show();
-        $('#verboseToggle').hide();
+        $('#verboseBtn').hide();
     },
 
     /**
@@ -80,6 +82,9 @@ GameControlController.prototype = {
      * gaming, but helps with debugging!
      */
     setVerboseLogging: function() {
-        game.verboseLogging = true;
+        if($('#verboseBtn').prop('checked'))
+            Driver.verboseLogging = true;
+        else
+            Driver.verboseLogging = false;
     }
 }

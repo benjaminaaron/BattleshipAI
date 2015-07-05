@@ -26,8 +26,8 @@ AbstractPlayer.prototype = {
 
     yourSetup: function(){
         this.myTurn = true;
-        //$('#container_' + this.id).addClass('activeContainer');
-        console.log('>> i am setting up elements says ' + this.name);
+        if(Driver.verboseLogging)
+            console.log('>> i am setting up elements says ' + this.name);
     },
 
     finishedSetup: function(){
@@ -39,24 +39,28 @@ AbstractPlayer.prototype = {
         // TODO warum wechseln wir in die playPhase, nur weil einmal finishedSetup aufgerufen wurde?
         // bezieht sich das nur auf den "player zustand?"
         this.inPlayPhase = true;
-        console.log('<< i am done setting up elements says ' + this.name);
+        if(Driver.verboseLogging)
+            console.log('<< i am done setting up elements says ' + this.name);
         game.setupCompleted(this);
     },
 
     iAmDoneSettingUp: function() {
-        console.log(this);
+        if(Driver.verboseLogging)
+            console.log(this);
         throw('Non-human players cannot call iAmDoneSettingUp!');
     },
 
     yourTurn: function(){
         this.myTurn = true;
         $('#container_' + this.id).addClass('activeContainer');
-        console.log('>> it\'s my turn says ' + this.name);
+        if(Driver.verboseLogging)
+            console.log('>> it\'s my turn says ' + this.name);
     },
 
     bonusTurn: function(){ // might cause weird stuff if a DestructionGoal is active while bonusTurns take place??
         this.myTurn = true;
-        console.log('>> it\'s my turn in a BONUS TURN says ' + this.name);
+        if(Driver.verboseLogging)
+            console.log('>> it\'s my turn in a BONUS TURN says ' + this.name);
         this.randomFire();
     },
 
@@ -76,7 +80,8 @@ AbstractPlayer.prototype = {
     finishedTurn: function(){
         this.myTurn = false;
         $('#container_' + this.id).removeClass('activeContainer');
-        console.log('<< my turn is over says ' + this.name);
+        if(Driver.verboseLogging)
+            console.log('<< my turn is over says ' + this.name);
         game.turnCompleted(this);
     },
 

@@ -20,7 +20,8 @@ BruteForceReasonerBot.prototype = {
         var firePos;
 
         var threshold = this.fieldMemory.rows * this.fieldMemory.cols - this.fieldMemory.countUntouchedCells();
-        console.log('threshold: ' + threshold + ' (BruteForceReasoner activates at 30 and two destroyed ship)');
+        if(Driver.verboseLogging)
+            console.log('threshold: ' + threshold + ' (BruteForceReasoner activates at 30 and two destroyed ship)');
 
         var self = this;
         //var biggestUntouchedArea = Zone.getBiggestArea(this.fieldMemory);
@@ -48,12 +49,15 @@ BruteForceReasonerBot.prototype = {
             var inputfield = this.convertFieldMemoryToRField();
 
             var reasoner = new Reasoner(game.shipTypes, inputfield);
-            console.log('reasoner assessment:');
+            if(Driver.verboseLogging)
+                console.log('reasoner assessment:');
             var assessment = reasoner.getAssessment();
-            console.log(assessment);
+            if(Driver.verboseLogging)
+                console.log(assessment);
 
             var firePos = assessment.chosenFirePos;
-            console.log('firing at: ' + firePos.row + '/' + firePos.col);
+            if(Driver.verboseLogging)
+                console.log('firing at: ' + firePos.row + '/' + firePos.col);
 
             if(!firePos) //fallback-plan if reasoner cant deliver
                 firePos = Zone.getCentreOfBiggestRect(this.fieldMemory);

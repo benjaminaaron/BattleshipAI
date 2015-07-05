@@ -27,7 +27,8 @@ Graph.prototype = {
 			var shipsize = this.ships.splice(0, 1)[0];
 			var onLeaflevel = this.ships.length == 0;
 
-			console.log('looking at ' + (shipsize == 1 ? 'mine: ' : 'ship: ') + shipsize + ' (' + this.ships.length + ' remaining)');
+			if(Driver.verboseLogging)
+				console.log('looking at ' + (shipsize == 1 ? 'mine: ' : 'ship: ') + shipsize + ' (' + this.ships.length + ' remaining)');
 			var collectNextLevel = [];
 
 			for(var i in parentNodes){
@@ -115,7 +116,8 @@ Graph.prototype = {
 	showLeaves: function(){
 		var leaves = this.getLeaves();
 		for(var i in leaves)
-			console.log(leaves[i] + '');
+			if(Driver.verboseLogging)
+				console.log(leaves[i] + '');
 	},
 
 	export: function(){

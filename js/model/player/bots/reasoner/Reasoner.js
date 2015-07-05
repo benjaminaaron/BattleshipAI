@@ -9,8 +9,8 @@ var Reasoner = function(shipTypes, inputfield){ //extends AbstractStragety?
 
 	// decide about the weight algo here
 	this.weightAlgo = this.getPruningValue; //this.getShotWeightedValue
-
-	console.log('inputfield:\n' + inputfield + '\nships/mines: ' + this.allShips);// + '\n\npossible setups:\n\n');
+	if(Driver.verboseLogging)
+		console.log('inputfield:\n' + inputfield + '\nships/mines: ' + this.allShips);// + '\n\npossible setups:\n\n');
 
 	this.inputfield = inputfield;
 	var leavesCount = this.loadField();
@@ -60,7 +60,8 @@ Reasoner.prototype = {
 			this.ships.splice(this.ships.indexOf(1), 1);
 
 		this.undestroyedShips = this.ships.slice(); // makes a copy
-		console.log('undestroyed ships/mines: ' + this.undestroyedShips);
+		if(Driver.verboseLogging)
+			console.log('undestroyed ships/mines: ' + this.undestroyedShips);
 
 		this.graph = new Graph(this.inputfield, this.ships);
 		this.graph.generate();

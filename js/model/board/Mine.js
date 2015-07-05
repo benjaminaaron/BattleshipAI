@@ -13,7 +13,9 @@ Mine.prototype = {
     __proto__: Ship.prototype,
 
     fire: function(){
-        console.log('hit a mine!');
+
+        if(Driver.verboseLogging)
+            console.log('hit a mine!');
 
         return new CellStatusMsg(CellStatus.MINE);
 
