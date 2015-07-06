@@ -9,7 +9,8 @@ var Game = function(players, shipTypes, viewModule){
 
     this.shipTypes = shipTypes; //need to get that for reasoner
     for(var i = 0; i < shipTypes.length; i ++)
-        this.totalShipCells = this.totalShipCells + shipTypes[i].quantity * shipTypes[i].size;
+        if(shipTypes[i].size > 1)
+            this.totalShipCells = this.totalShipCells + shipTypes[i].quantity * shipTypes[i].size;
 
     // PLAYER 0
     this.player0 = players[0];
